@@ -26,7 +26,7 @@ mkdir c:\sipt_venv\apps
 
 mkdir c:\sipt_venv\apps\sipt\
 
-Finally, download and copy main.py and main.kv into c:\sipt_venv\apps\sipt\
+Finally, download all the files and move them into c:\sipt_venv\apps\sipt\
 
 To run the app:
 
