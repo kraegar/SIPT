@@ -2499,11 +2499,11 @@ class MainApp(App):
     def build(self):
         global use_timer
         global timer_seconds
-        if int(self.config.get('options', 'usetimer')) == 0:
+        if int(self.config.get('timeroptions', 'usetimer')) == 0:
             use_timer = False
         else:
             use_timer = True
-        timer_seconds = int(self.config.get('options', 'timerseconds'))
+        timer_seconds = int(self.config.get('timeroptions', 'timerseconds'))
         global displayopts
         displayopts['FirstExplore'] = {}
         for item in ['phase', 'rules']:
@@ -2679,11 +2679,11 @@ class MainApp(App):
         global timer_seconds
         global displayopts
         if section == 'timeroptions':
-            if int(self.config.get('options', 'usetimer')) == 0:
+            if int(self.config.get('timeroptions', 'usetimer')) == 0:
                 use_timer = False
             else:
                 use_timer = True
-            timer_seconds = int(self.config.get('options', 'timerseconds'))
+            timer_seconds = int(self.config.get('timeroptions', 'timerseconds'))
         else:
             #displayopts[section]={}
             displayopts[section][key]=int(value)
