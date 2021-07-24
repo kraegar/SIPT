@@ -14,7 +14,7 @@ python -m pip install --upgrade pip setuptools virtualenv
 
 c:
 
-cd \
+cd \\
 python -m virtualenv sipt_venv
 
 c:\sipt_venv\Scripts\activate
