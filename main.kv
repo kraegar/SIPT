@@ -1,0 +1,847 @@
+#ScreenManagement - all screens defined here.
+#:import Factory kivy.factory.Factory
+MainManager:
+	id: 'mainmanager'
+	#FadeTransition didn't work. Should look at other transition options.
+    #transition: FadeTransition()
+	PhaseScreen:
+
+
+#Kivy Screens
+#Currently I'm using a gridlayout with a single column as the main wrapper
+#This divides the screen horizontally into equal sections
+#If you want to subdivide one of those horizontal sections, I use BoxLayout with 2 columns
+#I kept a consistent number of GridLayout sections by adding empty Label sections
+#Variables: root.variable means it's a screen variable, from the corresponding screen class in python
+#Variables: app.variable means it's an app variable, from the MainApp class in python
+#to do - all Labels should probably have a unique ID... allows more advanced Kivy options
+
+<HelpPopup@Popup>:
+	title: 'Spirit Island Phase Tracker'
+    #auto_dismiss: False
+	size_hint_x: .95
+	size_hint_y: .95
+	GridLayout:
+		cols: 1
+		Label:
+			text: 'Welcome to the Spirit Island Phase Tracker, by Tony Akens and Tricia Blosser.\nSpirit Island and all terms, text, and assets belongs to More Than Play Games.\n\nThis app is intended to assist in playing the board game, by helping remind you of rules as you play.\nTo get started, select the expansions you\'ll be playing with.\nThis will set the available adversaries and number of players.\nNext, select your adversary, adversary level, and number of players.\nHit start to begin.\nAs you play, use the \"Next Screen\" button to advance through the phases.\nAs you play, if your island becomes blighted, check the \"Blighted Island\" button.  You\'ll begin on Stage I, when you flip your first card from Stage II, press the \"Stage2\" button. Do the same for your first Stage III card.\nThis app saves its state automatically. To reload your previous state, just hit the \"Reload Previous Session\" from the main screen.'
+			text_size: self.width, None
+			height: self.texture_size[1]
+		Button:
+			text: 'Close'
+			size_hint_y: 0.1
+			on_release: root.dismiss()
+			
+<BlightPopup@Popup>:
+	title: 'Blighted Island'
+	size_hint_x: .75
+	size_hint_y: .3
+	GridLayout:
+		cols: 1
+		id: BlightPopup
+		Label: 
+			text: 'The island is blighted, flip over the blight card and follow the instructions on the back of the card.'
+			text_size: self.width, None
+			height: self.texture_size[1]
+		Button:
+			text: 'Close'
+			size_hint_y: 0.25
+			on_release: root.dismiss() 
+			
+
+
+<ScaleLabel@Label>:
+    _scale: 1. if self.texture_size[0] < self.width*0.95 else float(self.width*0.95) / self.texture_size[0]
+    canvas.before:
+        PushMatrix
+        Scale:
+            origin: self.center
+            x: self._scale or 1.
+            y: self._scale or 1.
+    canvas.after:
+        PopMatrix
+		
+<-ScaleButton@Button>:
+    state_image: self.background_normal if self.state == 'normal' else self.background_down
+    disabled_image: self.background_disabled_normal if self.state == 'normal' else self.background_disabled_down
+    _scale: 1. if self.texture_size[0] < self.width*0.75 else float(self.width*0.75) / self.texture_size[0]
+    canvas:
+        Color:
+            rgba: self.background_color
+        BorderImage:
+            border: self.border
+            pos: self.pos
+            size: self.size
+            source: self.disabled_image if self.disabled else self.state_image
+        PushMatrix
+        Scale:
+            origin: self.center
+            x: self._scale or 1.
+            y: self._scale or 1.
+        Color:
+            rgba: self.disabled_color if self.disabled else self.color
+        Rectangle:
+            texture: self.texture
+            size: self.texture_size
+            pos: int(self.center_x - self.texture_size[0] / 2.), int(self.center_y - self.texture_size[1] / 2.)
+        PopMatrix
+
+
+
+<PhaseScreen>:
+	name: 'Phase'
+	id: PhaseScreen
+	GridLayout:
+		cols: 1
+		size_hint_y: 1
+		size_hint_x: 1
+		BoxLayout:
+			size_hint_y: .15
+			cols: 3
+			BoxLayout:
+				size_hint_x: .05
+				orientation: 'vertical'
+				rows: 2
+				Button:	
+					id: configbutton
+					canvas:
+						Rectangle:
+							source: "resources/gear.png"
+							pos: (self.width - configbutton.width)/2 + self.pos[0], (self.height - configbutton.width)/2 + self.pos[1]
+							size: configbutton.width, configbutton.width
+					on_release: app.open_settings()
+				Label:
+			ScaleLabel:
+				text: root.title
+				font_size: self.height*0.7
+				size_hint_x: .90	
+				halign: 'center'
+				valign: 'center'
+			BoxLayout:
+				orientation: 'vertical'
+				size_hint_x: .05
+				rows: 2
+				Button:
+					text: 'X'
+					on_release: app.stop()
+				Button:
+					text: '?'
+					on_release: Factory.HelpPopup().open()
+		BoxLayout:
+			size_hint_y: .75 if root.setupScreens else .60
+			PhaseManager:
+				id: Phase_Manager
+				MainScreen:
+				SpiritSelectScreen:
+				BoardSetupScreen:
+				SpiritSetupScreen:
+				FirstExploreScreen:
+				GrowthScreen:
+				EnergyScreen:
+				PowerCardsScreen:
+				FastPowerScreen:
+				BlightedIslandScreen:
+				EventScreen:
+				FearScreen:
+				HighImmigrationScreen:
+				RavageScreen:
+				BuildScreen:
+				ExploreScreen:
+				AdvanceCardsScreen:
+				SlowPowerScreen:
+				TimePassesScreen:
+		BoxLayout:
+		#Enemy Health
+			size_hint_y: 0 if root.setupScreens else .10
+			opacity: 0 if root.setupScreens else 1
+			cols:8
+			Image:
+				source: "resources/si_explorer_icon.png"
+				height: 55
+			BoxLayout:
+				orientation: "vertical"
+				rows: 2
+				ScaleLabel:
+					text: root.ehealth + " H"
+					font_size: self.height*0.7
+				ScaleLabel:
+					text: root.edamage + " D"
+					font_size: self.height*0.7
+			Image:
+				source: "resources/si_town_icon.png"
+				height: 55
+			BoxLayout:
+				orientation: "vertical"
+				rows: 2
+				ScaleLabel:
+					text: root.thealth + " H"
+					font_size: self.height*0.7
+				ScaleLabel:
+					text: root.tdamage + " D"
+					font_size: self.height*0.7
+			Image:
+				source: "resources/si_city_icon.png"
+				height: 55
+			BoxLayout:
+				orientation: "vertical"
+				rows: 2
+				ScaleLabel:
+					text: root.chealth + " H"
+					font_size: self.height*0.7
+				ScaleLabel:
+					text: root.cdamage + " D"
+					font_size: self.height*0.7
+			Image:
+				source: "resources/si_dahan_icon.png"
+				height: 55
+			BoxLayout:
+				orientation: "vertical"
+				rows: 2
+				ScaleLabel:
+					text: root.dhealth + " H"
+					font_size: self.height*0.7
+				ScaleLabel:
+					text: root.ddamage + " D"
+					font_size: self.height*0.7
+
+		BoxLayout:
+			size_hint_y: 0 if root.setupScreens else .075
+			opacity: 0 if root.setupScreens else 1
+			cols: 4
+			CheckBox:
+				canvas:
+					Color:
+						rgba: [1, 0, 0, 0.2] if self.active else [0, 1, 0, 0.2]
+					Rectangle: 
+						size: self.size
+						pos: self.pos
+				active: root.blighted
+				on_active:  Factory.BlightPopup().open() if root.blight_checkbox(self.active) else ""
+				id: blight
+			ScaleLabel:
+				canvas:
+					Color:
+						rgba: [1, 0, 0, 0.2] if blight.active else [0, 1, 0, 0.2]
+					Rectangle: 
+						size: self.size
+						pos: self.pos
+				text: 'Blighted\nIsland'
+				font_size: self.height*0.4
+			ToggleButton:
+				state: 'down' if root.I else 'normal'
+				text: "I"
+				id: stage1
+				group: "stage_group"
+				font_size: self.height*0.95
+				on_press: root.on_stage_toggle ("I")
+			ToggleButton:
+				state: 'down' if root.II else 'normal'
+				text: "II"
+				id: stage2
+				group: "stage_group"
+				font_size: self.height*0.95
+				on_press: root.on_stage_toggle ("II")
+			ToggleButton:
+				state: 'down' if root.III else 'normal'
+				text: "III"
+				id: stage3
+				group: "stage_group"
+				font_size: self.height*0.95
+				on_press: root.on_stage_toggle ("III")		
+		BoxLayout:
+			cols: 2
+			size_hint_y: .075
+			ScaleButton:
+				#on_release: root.read_state() if root.currentP == 'Main' else app.root.current = root.on_back()
+				#on_release: Phase_Manager.current = root.on_back()
+				on_release: Phase_Manager.current = root.read_state() if root.currentP == 'Main' else root.on_back()
+				text: 'Load Previous\nSession' if root.currentP == 'Main' else 'Back'
+				font_size: self.height*0.4
+				size_hint_x: .3
+				height: 55
+			ScaleButton:
+				on_release: Phase_Manager.current = root.on_next_Phase()
+				#text: root.next_button_text() + root.time
+				text: root.next_button_value if root.setupScreens else "Next Phase  " + root.time
+				font_size: self.height*0.8
+				height: 55
+
+<MainScreen>:
+    name: 'Main'
+	GridLayout:
+		cols: 1
+		BoxLayout:
+			orientation: "horizontal"
+			cols: 4
+			size_hint_y: .0775
+			Label:
+				size_hint_x: 40
+				text: "Branch and Claw:"
+				font_size: 20
+			CheckBox:
+				size_hint_x: 10
+				id: branchandclaw
+				active: root.bc
+				on_active: root.bc_clicked(self.active)
+		#BoxLayout:
+			#orientation: "horizontal"
+			#cols: 2
+			#size_hint_y: .0775
+			Label:
+				size_hint_x: 40
+				text: "Jagged Earth:"
+				font_size: 20
+			CheckBox:
+				size_hint_x: 10
+				id: jaggedearth
+				active: False
+				on_active: root.je_clicked(self.active)
+		BoxLayout:
+			orientation: "horizontal"
+			cols: 4
+			size_hint_y: .0775
+			Label:
+				size_hint_x: 40
+				text: "Promo Pack 1:"
+				font_size: 20
+			CheckBox:
+				size_hint_x: 10
+				id: promo1
+				active: False
+				on_active: root.promo1_clicked(self.active)	
+		#BoxLayout:
+			#orientation: "horizontal"
+			#cols: 2
+			#size_hint_y: .0775
+			Label:
+				size_hint_x: 40
+				text: "Promo Pack 2:"
+				font_size: 20
+			CheckBox:
+				size_hint_x: 10
+				id: promo2
+				active: False
+				on_active: root.promo2_clicked(self.active)			
+		BoxLayout:
+			orientation: "horizontal"
+			cols: 4
+			size_hint_y: .0775
+			Label:
+				size_hint_x: 40
+				text: "Thematic Map:"
+				font_size: 20
+			CheckBox:
+				size_hint_x: 10
+				id: thematicmap
+				active: False
+				on_active: root.thematic_clicked(self.active)		
+			Label:
+				size_hint_x: 40
+				
+			Label:
+				size_hint_x: 10
+		BoxLayout:
+			orientation: "horizontal"
+			cols: 2
+			size_hint_y: .0775
+			Label:
+				id: opponent
+				text: 'Adversary'
+				font_size: 20
+			Spinner:
+				background_color: [1,0,0,1]
+				text: root.opp
+				values: root.opp_list
+				on_text: root.opponent_clicked(self.text)
+		BoxLayout:
+			orientation: "horizontal"
+			cols: 2
+			size_hint_y: .0775
+			Label:
+				id: level
+				text: "Adversary Level"
+				font_size: 20
+			Spinner:
+				background_color: [0, 0, 1, 1]
+				text: root.lvl
+				on_text: root.level_clicked(self.text)
+				values: root.max_levels
+		BoxLayout:
+			orientation: "horizontal"
+			cols: 2
+			size_hint_y: .0775
+			Label:
+				id: opponent
+				text: 'Scenario'
+				font_size: 20
+			Spinner:
+				background_color: [.5,0,.5,1]
+				text: "None"
+				values: root.scen_list
+				on_text: ""
+		BoxLayout:
+			orientation: "horizontal"
+			cols: 2
+			size_hint_y: .0775
+			Label:
+				id: player
+				text: "Players"
+				font_size: 20
+			Spinner:
+				background_color: [0, 1, 1, 1]
+				text: root.play
+				on_text: root.players_clicked(self.text)
+				values: root.max_play		
+#		BoxLayout:
+#			orientation: "horizontal"
+#			cols: 2
+#			size_hint_y: .075
+#options button, needs moved
+#			ScaleButton:
+#				on_release: app.open_settings()
+#				text: 'Options'
+#				font_size: self.height*0.8
+#				size_hint_x: .3
+
+<SpiritSelectScreen>:
+	name: 'SpiritSelect'
+	GridLayout:
+		cols: 1
+### First Row
+		BoxLayout:
+			cols: 2
+			size_hint_y: .075
+			Label:
+				size_hint_x: .5
+				text: 'Spirit 1'
+			Label:
+				opacity: 0 if root.play < 2 else 1
+				disabled: True if root.play < 2 else False
+				size_hint_x: .5
+				text: 'Spirit 2'
+		BoxLayout:
+			cols: 2
+			size_hint_y: .1
+			Spinner:
+				size_hint_x: .5
+				text: root.spirit1
+				values: root.spirit_values
+				on_text: root.on_select_spirit(1, self.text)
+			Spinner:
+				opacity: 0 if root.play < 2 else 1
+				disabled: True if root.play < 2 else False
+				size_hint_x: .5
+				text: root.spirit2
+				values: root.spirit_values
+				on_text: root.on_select_spirit(2, self.text)
+		BoxLayout:
+			cols: 2
+			size_hint_y: .075
+			Spinner:
+				opacity: 1 if root.spirit1_has_aspect else 0
+				disabled: False if root.spirit1_has_aspect else True
+				size_hint_x: .5
+				text: root.aspect1
+				values: root.spirit1_aspects
+				on_text: root.on_select_aspect (1, self.text)
+			Spinner:
+				opacity: 1 if root.spirit2_has_aspect else 0
+				disabled: False if root.spirit2_has_aspect else True
+				size_hint_x: .5
+				text: root.aspect2
+				values: root.spirit2_aspects
+				on_text: root.on_select_aspect (2, self.text)
+### second row
+		BoxLayout:
+			cols: 2
+			size_hint_y: .075
+			Label:
+				opacity: 0 if root.play < 3 else 1
+				disabled: True if root.play < 3 else False
+				size_hint_x: .5
+				text: 'Spirit 3'
+			Label:
+				opacity: 0 if root.play < 4 else 1
+				disabled: True if root.play < 4 else False
+				size_hint_x: .5
+				text: 'Spirit 4'
+		BoxLayout:
+			cols: 2
+			size_hint_y: .1
+			Spinner:
+				opacity: 0 if root.play < 3 else 1
+				disabled: True if root.play < 3 else False
+				size_hint_x: .5
+				text: root.spirit3
+				values: root.spirit_values
+				on_text: root.on_select_spirit(3, self.text)
+			Spinner:
+				opacity: 0 if root.play < 4 else 1
+				disabled: True if root.play < 4 else False
+				size_hint_x: .5
+				text: root.spirit4
+				values: root.spirit_values
+				on_text: root.on_select_spirit(4, self.text)
+		BoxLayout:
+			cols: 2
+			size_hint_y: .075
+			Spinner:
+				opacity: 1 if root.spirit3_has_aspect else 0
+				disabled: False if root.spirit3_has_aspect else True
+				size_hint_x: .5
+				text: root.aspect3
+				values: root.spirit3_aspects
+				on_text: root.on_select_aspect (3, self.text)
+			Spinner:
+				opacity: 1 if root.spirit4_has_aspect else 0
+				disabled: False if root.spirit4_has_aspect else True
+				size_hint_x: .5
+				text: root.aspect4
+				values: root.spirit4_aspects		
+				on_text: root.on_select_aspect (4, self.text)				
+### Third Row
+		BoxLayout:
+			cols: 2
+			size_hint_y: .075
+			Label:
+				opacity: 0 if root.play < 5 else 1
+				disabled: True if root.play < 5 else False
+				size_hint_x: .5
+				text: 'Spirit 5'
+			Label:
+				opacity: 0 if root.play < 6 else 1
+				disabled: True if root.play < 6 else False
+				size_hint_x: .5
+				text: 'Spirit 6'
+		BoxLayout:
+			cols: 2
+			size_hint_y: .1
+			Spinner:
+				opacity: 0 if root.play < 5 else 1
+				disabled: True if root.play < 5 else False
+				size_hint_x: .5
+				text: root.spirit5
+				values: root.spirit_values
+				on_text: root.on_select_spirit(5, self.text)
+			Spinner:
+				opacity: 0 if root.play < 6 else 1
+				disabled: True if root.play < 6 else False
+				size_hint_x: .5
+				text: root.spirit6
+				values: root.spirit_values
+				on_text: root.on_select_spirit(6, self.text)
+		BoxLayout:
+			cols: 2
+			size_hint_y: .075
+			Spinner:
+				opacity: 1 if root.spirit5_has_aspect else 0
+				disabled: False if root.spirit5_has_aspect else True
+				size_hint_x: .5
+				text: root.aspect5
+				values: root.spirit5_aspects
+				on_text: root.on_select_aspect (5, self.text)
+			Spinner:
+				opacity: 1 if root.spirit6_has_aspect else 0
+				disabled: False if root.spirit6_has_aspect else True
+				size_hint_x: .5
+				text: root.aspect6
+				values: root.spirit6_aspects
+				on_text: root.on_select_aspect (6, self.text)
+				
+<BoardSetupScreen>:
+    name: 'BoardSetup'
+	GridLayout:
+		size_hint_y: 1
+		cols: 1
+		ScrollView:
+			do_scroll_x: False
+			do_scroll_y: True
+			bar_width: 4
+			Label:
+				size_hint_y: None
+				text: root.text
+				font_size: 15
+				text_size: self.width, None
+				height: self.texture_size[1]
+
+
+<SpiritSetupScreen>:
+	name: 'SpiritSetup'
+	BoxLayout:
+		size_hint_y: 1
+		ScrollView:
+			do_scroll_x: False
+			do_scroll_y: True
+			bar_width: 4
+			Label:
+				size_hint_y: None
+				text: root.spirits_text
+				font_size: 15
+				text_size: self.width, None
+				height: self.texture_size[1]
+
+		
+<FirstExploreScreen>:
+    name: 'FirstExplore'
+	BoxLayout:
+		size_hint_y: 1
+		cols: 1
+		ScrollView:
+			do_scroll_x: False
+			do_scroll_y: True
+			bar_width: 4
+			Label:
+				size_hint_y: None
+				text: root.text
+				font_size: 15
+				text_size: self.width, None
+				height: self.texture_size[1]
+
+            
+<GrowthScreen>:
+    name: 'Growth'
+	BoxLayout:
+		#size_hint_y: None
+		size_hint_y: 1
+		cols: 1
+		ScrollView:
+			do_scroll_x: False
+			do_scroll_y: True
+			bar_width: 4
+			Label:
+				size_hint_y: None
+				text: root.text
+				font_size: 15
+				text_size: self.width, None
+				height: self.texture_size[1]
+
+<EnergyScreen>:
+    name: 'Energy'
+	BoxLayout:
+		cols: 1
+		size_hint_y: 1
+		ScrollView:
+			do_scroll_x: False
+			do_scroll_y: True
+			bar_width: 4
+			Label:
+				size_hint_y: None
+				text: root.text
+				font_size: 15
+				text_size: self.width, None
+				height: self.texture_size[1]
+
+			
+<PowerCardsScreen>:
+    name: 'PowerCards'
+	BoxLayout:
+		cols: 1
+		size_hint_y: 1
+		ScrollView:
+			do_scroll_x: False
+			do_scroll_y: True
+			bar_width: 4
+			Label:
+				size_hint_y: None
+				text: root.text
+				font_size: 15
+				text_size: self.width, None
+				height: self.texture_size[1]
+			
+<FastPowerScreen>:
+    name: 'FastPower'
+	BoxLayout:
+		cols: 1
+		size_hint_y: 1
+		ScrollView:
+			do_scroll_x: False
+			do_scroll_y: True
+			bar_width: 4
+			Label:
+				size_hint_y: None
+				text: root.text
+				font_size: 15
+				text_size: self.width, None
+				height: self.texture_size[1]
+			
+<BlightedIslandScreen>:
+    name: 'BlightedIsland'
+	BoxLayout:
+		cols: 1
+		size_hint_y: 1
+		ScrollView:
+			do_scroll_x: False
+			do_scroll_y: True
+			bar_width: 4
+			Label:
+				size_hint_y: None
+				text: root.text
+				font_size: 15
+				text_size: self.width, None
+				height: self.texture_size[1]
+
+			
+<EventScreen>:
+    name: 'Event'
+	BoxLayout:
+		cols: 1
+		size_hint_y: 1
+		ScrollView:
+			do_scroll_x: False
+			do_scroll_y: True
+			bar_width: 4
+			Label:
+				size_hint_y: None
+				text: root.text
+				font_size: 15
+				text_size: self.width, None
+				height: self.texture_size[1]
+			
+<FearScreen>:
+    name: 'Fear'
+	BoxLayout:
+		cols: 1
+		size_hint_y: 1
+		ScrollView:
+			do_scroll_x: False
+			do_scroll_y: True
+			bar_width: 4
+			Label:
+				size_hint_y: None
+				text: root.text
+				font_size: 15
+				text_size: self.width, None
+				height: self.texture_size[1]
+
+				
+<HighImmigrationScreen>:
+    name: 'HighImmigration'
+	BoxLayout:
+		cols: 1
+		size_hint_y: 1
+		ScrollView:
+			do_scroll_x: False
+			do_scroll_y: True
+			bar_width: 4
+			Label:
+				size_hint_y: None
+				text: root.text
+				font_size: 15
+				text_size: self.width, None
+				height: self.texture_size[1]
+
+			
+<RavageScreen>:
+    name: 'Ravage'
+	BoxLayout:
+		cols: 1
+		size_hint_y: 1
+		ScrollView:
+			do_scroll_x: False
+			do_scroll_y: True
+			bar_width: 4
+			Label:
+				size_hint_y: None
+				text: root.text
+				font_size: 15
+				text_size: self.width, None
+				height: self.texture_size[1]
+			
+<BuildScreen>:
+    name: 'Build'
+	BoxLayout:
+		cols: 1
+		size_hint_y: 1
+		ScrollView:
+			do_scroll_x: False
+			do_scroll_y: True
+			bar_width: 4
+			Label:
+				size_hint_y: None
+				text: root.text
+				font_size: 15
+				text_size: self.width, None
+				height: self.texture_size[1]
+				
+<ExploreScreen>:
+    name: 'Explore'
+	GridLayout:
+		cols: 1
+		size_hint_y: 1
+		BoxLayout:
+			cols: 3
+			size_hint_y: .4
+			Label:
+				size_hint_x: .02
+			Image:
+				size_hint_x: .04
+				source: "resources/flag.jpg" 
+				opacity: 100 if app.flagicon else 0
+			Label:
+				text: app.stage2flag
+				size_hint_x: 0.94
+				font_size: 15
+				text_size: self.width*0.97, None
+				height: self.texture_size[1]
+				valign: 'bottom'
+		BoxLayout:
+			cols: 1
+			size_hint_y: .60
+			ScrollView:
+				do_scroll_x: False
+				do_scroll_y: True
+				bar_width: 4
+				Label:
+					size_hint_y: None
+					text: root.text
+					font_size: 15
+					text_size: self.width, None
+					height: self.texture_size[1]
+			
+<AdvanceCardsScreen>:
+    name: 'AdvanceCards'
+	BoxLayout:
+		cols: 1
+		size_hint_y: 1
+		ScrollView:
+			do_scroll_x: False
+			do_scroll_y: True
+			bar_width: 4
+			Label:
+				size_hint_y: None
+				text: root.text
+				font_size: 15
+				text_size: self.width, None
+				height: self.texture_size[1]
+			
+<SlowPowerScreen>:
+    name: 'SlowPower'
+	BoxLayout:
+		cols: 1
+		size_hint_y: 1
+		ScrollView:
+			do_scroll_x: False
+			do_scroll_y: True
+			bar_width: 4
+			Label:
+				size_hint_y: None
+				text: root.text
+				font_size: 15
+				text_size: self.width, None
+				height: self.texture_size[1]
+			
+<TimePassesScreen>:
+    name: 'TimePasses'
+	BoxLayout:
+		cols: 1
+		size_hint_y: 1
+		ScrollView:
+			do_scroll_x: False
+			do_scroll_y: True
+			bar_width: 4
+			Label:
+				size_hint_y: None
+				text: root.text
+				font_size: 15
+				text_size: self.width, None
+				height: self.texture_size[1]
