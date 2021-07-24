@@ -206,7 +206,7 @@ setup_changes = { 'None':                ['',
                                           '',
                                           '',
                                           'Add an additional fear to the pool per player\n'],
-                  'France':              ['Return all but 7 towns to the box before setup.\n',
+                  'France':              ['Return all but 7 towns per player to the box before setup.\n',
                                           'Put the Slave Rebellion Event under the top 3 cards of the event deck.\n',
                                           'On each board add one town to the highest numbered land without a town.\nAdd one town to land 1.\n',
                                           '',
@@ -1029,7 +1029,7 @@ explorescreen_rules = {
                             '',
                             ''],
     'France': [
-                            'After invaders successfully expore into a land which had no towns/cities, add one explorer there.\n',
+                            'After invaders successfully explore into a land which had no towns/cities, add one explorer there.\n',
                             '',
                             '',
                             '',
@@ -1236,7 +1236,7 @@ screenTitles = { 'Main': 'Spirit Island Phase Tracker',
                  'HighImmigration': 'High Immigration', 
                  'Ravage': 'Invaders Ravage the Island', 
                  'Build': 'Invaders Build on the Island', 
-                 'Explore': 'Invaders Expore the Island', 
+                 'Explore': 'Invaders Explore the Island', 
                  'AdvanceCards': 'Advance the Invader Cards', 
                  'SlowPower': 'Slow Powers', 
                  'TimePasses': 'Time Passes'}
@@ -2320,7 +2320,7 @@ class BuildScreen(Screen):
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if displayopts[currentPhase]['opponent']:
             for x in range(int(level)):
-                opprules += highimmigrationscreen_rules[opponent][x]
+                opprules += buildscreen_rules[opponent][x]
         if displayopts[currentPhase]['all']:
             for x in range(int(level)):
                 allrules += allscreen_rules[opponent][x]
@@ -2354,7 +2354,7 @@ class ExploreScreen(Screen):
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if displayopts[currentPhase]['opponent']:
             for x in range(int(level)):
-                opprules += highimmigrationscreen_rules[opponent][x]
+                opprules += explorescreen_rules[opponent][x]
         if displayopts[currentPhase]['all']:
             for x in range(int(level)):
                 allrules += allscreen_rules[opponent][x]
@@ -2383,7 +2383,7 @@ class AdvanceCardsScreen(Screen):
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if displayopts[currentPhase]['opponent']:
             for x in range(int(level)):
-                opprules += highimmigrationscreen_rules[opponent][x]
+                opprules += advancecardsscreen_rules[opponent][x]
         if displayopts[currentPhase]['all']:
             for x in range(int(level)):
                 allrules += allscreen_rules[opponent][x]
@@ -2409,7 +2409,7 @@ class SlowPowerScreen(Screen):
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if displayopts[currentPhase]['opponent']:
             for x in range(int(level)):
-                opprules += highimmigrationscreen_rules[opponent][x]
+                opprules += slowpowerscreen_rules[opponent][x]
         if displayopts[currentPhase]['all']:
             for x in range(int(level)):
                 allrules += allscreen_rules[opponent][x]
@@ -2430,7 +2430,7 @@ class TimePassesScreen(Screen):
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if displayopts[currentPhase]['opponent']:
             for x in range(int(level)):
-                opprules += highimmigrationscreen_rules[opponent][x]
+                opprules += timepassesscreen_rules[opponent][x]
         if displayopts[currentPhase]['all']:
             for x in range(int(level)):
                 allrules += allscreen_rules[opponent][x]
@@ -2694,6 +2694,7 @@ class MainApp(App):
         if value == 'II':
             if opponent != 'None':
                 self.flagicon = True
+                self.stage2flag = stage2_flag[opponent]
                 self.stage2flag = stage2_flag[opponent]
             else:
                 self.flagicon = False
