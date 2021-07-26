@@ -1362,7 +1362,6 @@ class PhaseScreen(Screen):
             nextP = 'TimePasses'
         if currentPhase == 'TimePasses':
             nextP = 'Growth'
-        print(nextP)
         self.title = screenTitles[nextP]
         self.currentP = nextP
         self.start_clock()
@@ -1429,11 +1428,11 @@ class PhaseScreen(Screen):
             return False
     def calc_health_damage(self):
         self.ehealth = str(opponentmod_rules[opponent][int(level)][0])
-        self.edamage = str(opponentmod_rules[opponent][int(level)][4])
+        self.edamage = str(opponentmod_rules[opponent][int(level)][3])
         self.thealth = str(opponentmod_rules[opponent][int(level)][1])
         self.tdamage = str(opponentmod_rules[opponent][int(level)][4])
         self.chealth = str(opponentmod_rules[opponent][int(level)][2])
-        self.cdamage = str(opponentmod_rules[opponent][int(level)][5])
+        self.cdamage = str(opponentmod_rules[opponent][int(level)][5])      
     time = StringProperty()
     def timer(self, *args):
         if use_timer:
@@ -1511,7 +1510,6 @@ class PhaseScreen(Screen):
         #currentPhase=(store.get('currentPhase')['value'])
         #previousPhase.append(currentPhase)
         currentPhase = previousPhase[-1]
-        print(currentPhase)
         if blight != 'Healthy':
             self.blighted = True
         else:
@@ -1956,7 +1954,6 @@ class SpiritSelectScreen(Screen):
     def on_select_aspect(self, player, value):
         global aspects
         aspects[player-1] = value
-        print(aspects)
         
 #Board Setup Screen
 #Corresponds to kivy main
