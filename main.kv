@@ -294,7 +294,7 @@ MainManager:
 			CheckBox:
 				size_hint_x: 10
 				id: jaggedearth
-				active: False
+				active: root.je
 				on_active: root.je_clicked(self.active)
 		BoxLayout:
 			orientation: "horizontal"
@@ -307,7 +307,7 @@ MainManager:
 			CheckBox:
 				size_hint_x: 10
 				id: promo1
-				active: False
+				active: root.pp1
 				on_active: root.promo1_clicked(self.active)	
 		#BoxLayout:
 			#orientation: "horizontal"
@@ -320,7 +320,7 @@ MainManager:
 			CheckBox:
 				size_hint_x: 10
 				id: promo2
-				active: False
+				active: root.pp2
 				on_active: root.promo2_clicked(self.active)			
 		BoxLayout:
 			orientation: "horizontal"
@@ -333,7 +333,7 @@ MainManager:
 			CheckBox:
 				size_hint_x: 10
 				id: thematicmap
-				active: False
+				active: root.theme
 				on_active: root.thematic_clicked(self.active)		
 			Label:
 				size_hint_x: 40
