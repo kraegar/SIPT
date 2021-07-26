@@ -1392,6 +1392,7 @@ class PhaseScreen(Screen):
             self.time = ''
     def on_back(self):
         global previousPhase
+        global level
         self.start_clock()
         prev = previousPhase[-1]
         self.title = screenTitles[prev]
@@ -1510,6 +1511,8 @@ class PhaseScreen(Screen):
         #currentPhase=(store.get('currentPhase')['value'])
         #previousPhase.append(currentPhase)
         currentPhase = previousPhase[-1]
+        self.lvl = level
+        self.calc_health_damage()
         if blight != 'Healthy':
             self.blighted = True
         else:
@@ -1597,9 +1600,11 @@ class PhaseScreen(Screen):
 class MainScreen(Screen):
     bc = BooleanProperty(False)
     je  = BooleanProperty(False)
+    pp1 = BooleanProperty(False)
     pp2 = BooleanProperty(False)
+    theme = BooleanProperty(False)
     opp = StringProperty('None')
-    lvl = StringProperty('0')
+    lvl = StringProperty('')
     play = StringProperty('1')
     max_play = ListProperty(['1','2','3','4'])
     max_levels = ListProperty(['0'])
@@ -1625,8 +1630,9 @@ class MainScreen(Screen):
         self.pp1 = promopack1
         self.pp2 = promopack2
         self.opp = opponent
-        self.lvl = level
         self.play = str(players)
+        self.lvl = level
+        self.theme = thematic
     def bc_clicked(self, value):
         global branchandclaw
         if value == True:
@@ -1656,8 +1662,12 @@ class MainScreen(Screen):
         if value == True:
             promopack1 = True
         else:
-            promopack2 = False
+            promopack1 = False
+        self.build_expansions()
         self.build_spirits()
+        self.build_scenarios()
+        if self.opp not in self.opp_list:
+            self.opponent_clicked('None')
     def promo2_clicked(self, value):
         global promopack2
         if value == True:
@@ -1677,9 +1687,11 @@ class MainScreen(Screen):
             thematic = False
     def opponent_clicked(self, value):
         global opponent
+        global level
         opponent = value
         self.opp = value
         self.build_levels()
+        self.lvl = level
         if self.opp != 'None' and self.lvl == '0':
             self.level_clicked('1')
         if self.opp == 'None':
@@ -1687,7 +1699,7 @@ class MainScreen(Screen):
     def level_clicked(self, value):
         global level
         level = value
-        self.lvl = value
+        self.lvl = level
     def players_clicked(self, value):
         global players
         players = value
