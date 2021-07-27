@@ -8,7 +8,7 @@ To run this, you must install python 3 and kivy.
 
 Follow the guide for installing kivy here: https://kivy.org/doc/stable/gettingstarted/installation.html#installation-canonical
 
-For those on windows wanting the brief version, install python3 from the windows 'store', then run the following.  This will create a virtual environment in the root of your C drive.
+For those on windows wanting the brief version, install python3 from python.org, then run the following.  This will create a virtual environment in the root of your C drive.
 
 python -m pip install --upgrade pip setuptools virtualenv
 
