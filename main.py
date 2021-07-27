@@ -14,41 +14,18 @@ from kivy.storage.jsonstore import JsonStore
 from settings_json import settings_json
 import datetime
 Config.set('graphics', 'resizable', True)
-branchandclaw = False
-jaggedearth = False
-promopack1 = False
-promopack2 = False
-expansion = 'None'          #global variable for expansion
-opponent = 'None'           #global variable for opponent
-thematic = False
-spirits = ['None', 'None', 'None', 'None', 'None', 'None']
-aspects = ['None', 'None', 'None', 'None', 'None', 'None']
-scenario = 'None'
-level = '0'              #global variable for opponent level
-stage = 'I'             #global variable for current stage
-blight = 'Healthy'      #global variable for current blight (Healthy, Blighted)
-players = 1             #global variable for player count
-fear_tokens = 4         #global variable for fear token count
-turn = 0
-previousPhase = []
-#current ='Main'
-currentPhase = 'FirstExplore'
-use_timer = True
-timer_seconds = 180
-displayopts = {}
 
 base_opp = ['None', 'Brandenburg-Prussia', 'England', 'Sweden']
 bc_opp = ['France']
 je_opp = ['Russia', "Habsburg"]
 pp2_opp = ['Scotland']
-opponent_list = base_opp
 
 base_spirits = ['Lightnings Swift Strike','River Surges in Sunlight', 'Vital Strength of the Earth', 'Shadows Flicker Like Flame', 'Thunderspeaker', 'A Spread of Rampant Green', 'Oceans Hungry Grasp', 'Bringer of Dreams and Nightmares']
 bc_spirits = ['Sharp Fangs Behind the Leaves', 'Keeper of the Forbidden Wilds']
 je_spirits = ['Stones Unyielding Defiance', 'Shifting Memory of Ages', 'Grinning Trickster Stirs up Trouble', 'Lure of the Deep Wilderness', 'Many minds Move as One', 'Volcano Looming High', 'Shroud of Silent Mist', 'Vengeance as a Burning Plague', 'Starlight Seeks Its Form', 'Fractured Days Split the Sky']
 pp1_spirits = ['Heart of Wildfire', 'Serpent Slumbering Beneath the Island']
 pp2_spirits = ['Downpour Drenches the World', 'Finder of Paths Unseen']
-spirit_list = base_spirits
+
 spirit_aspects = {  'Lightnings Swift Strike': ['pp2:Immense', 'je:Pandemonium', 'je:Wind'],
                     'River Surges in Sunlight': ['je:Sunshine', 'pp2:Travel'],
                     'Vital Strength of the Earth': ['pp2:Might', 'je:Resilience'],
@@ -132,10 +109,10 @@ bc_scenarios = ['Second Wave', 'Powers Long Forgotten', 'Ward the Shores', 'Ritu
 je_scenarios = ['Elemental Invocation', 'Despicable Theft', 'The Great River']
 pp1_scenarios = []
 pp2_scenarios = ['A Diversity of Spirits', 'Varied Terrains']
-scenarios_list = base_scenarios
+
 
 #Fear Card counts, taken from Opponent cards
-#Dictionary accessed with fear_cards[opponent][level]
+#Dictionary accessed with fear_cards[opponent][app.level]
 fear_cards = {'None':                ['9(3/3/3)',
                                       '9(3/3/3)',
                                       '9(3/3/3)',
@@ -187,7 +164,7 @@ fear_cards = {'None':                ['9(3/3/3)',
               }
 
 #Dictionary of changes made during game setup based on opponent
-#Accessed with setup_changes[opponent][level]
+#Accessed with setup_changes[opponent][app.level]
 setup_changes = { 'None':                ['',
                                           '',
                                           '',
@@ -306,7 +283,7 @@ stage2_flag = { 'None': '',
                 'England': 'If the invader card has a flag:\nOn each board with towns or cities: Build in the land with the most towns/cities.\n',
                 'France': 'If the invader card has a flag:\nAfter exploring, on each board, pick a land of the shown terrain. If it has towns/cities, add one blight. Otherwise add one town.',
                 'Sweden': 'If the invader card has a flag:\nAfter invaders explore into each land this phase, if that land has at least as many invaders as dahan, replace one dahan with one town.\n',
-                'Scotland': 'If the invader card has a flag:\nOn the single board with the most coastal towns/cities add one town to the '+ str(players) +' lands with the fewest towns.\n',
+                'Scotland': 'If the invader card has a flag:\nOn the single board with the most coastal towns/cities add one town to the (number of players) lands with the fewest towns.\n',
                 'Russia': 'If the invader card has a flag: On each board:\nAdd 2 explorers (total) among lands with beasts. If you can\'t, instead add 2 explorers among lands with beasts on a different board.\n',
                 'Habsburg': 'If the invader card has a flag:\nAfter exploring: On each board with 4 or fewer blight, add one town to a land without towns/blight. On each board with 2 or fewer blight, do so again.\n'
                 }
@@ -1282,11 +1259,11 @@ class PhaseScreen(Screen):
     dhealth = StringProperty('2')
     ddamage = StringProperty('2')
     def on_enter(self):
-        global currentPhase 
-        currentPhase = 'Main'
+        app = App.get_running_app() 
+        app.currentPhase = 'Main'
         self.next_button_value = 'Start'
-        if use_timer:
-            self.seconds = timer_seconds
+        if app.use_timer:
+            self.seconds = app.timer_seconds
             self.time = ''
             self.time = ':'.join(str(datetime.timedelta(seconds=self.seconds)).split(':')[1:])
             self.clock = Clock.schedule_interval(self.timer, 1)
@@ -1294,73 +1271,65 @@ class PhaseScreen(Screen):
             self.time = ''
         self.calc_health_damage()
     def on_next_Phase(self):
-        global turn
-        global previousPhase
-        global opponent
-        global currentPhase
-        global use_timer
-        global expansion
-        global blight
-        global level
-        global stage
+        app = App.get_running_app()
         self.calc_health_damage()
-        previousPhase.append(currentPhase)
-        if currentPhase == 'Main':
+        app.previousPhase.append(app.currentPhase)
+        if app.currentPhase == 'Main':
             nextP = 'SpiritSelect'
-        if currentPhase == 'SpiritSelect':
+        if app.currentPhase == 'SpiritSelect':
             nextP = 'BoardSetup'
-        if currentPhase == 'BoardSetup':
+        if app.currentPhase == 'BoardSetup':
             nextP = 'SpiritSetup'
-        if currentPhase == 'SpiritSetup':
+        if app.currentPhase == 'SpiritSetup':
             nextP = 'FirstExplore'
-        if currentPhase == 'FirstExplore':
+        if app.currentPhase == 'FirstExplore':
             nextP = 'Growth'
-        if currentPhase == 'Growth':
+        if app.currentPhase == 'Growth':
             nextP = 'Energy'
-        if currentPhase == 'Energy':
+        if app.currentPhase == 'Energy':
             nextP = 'PowerCards'
-        if currentPhase == 'PowerCards':
+        if app.currentPhase == 'PowerCards':
             nextP = 'FastPower'
-        if currentPhase == 'FastPower':
-            if blight != 'Healthy':
+        if app.currentPhase == 'FastPower':
+            if app.blight != 'Healthy':
                 nextP = 'BlightedIsland'
-            elif expansion == 'None':
+            elif app.expansion == 'None':
                 nextP = 'Fear'
             else:
                 nextP = 'Event'
-        if currentPhase == 'BlightedIsland':
-            if expansion == 'None':
+        if app.currentPhase == 'BlightedIsland':
+            if app.expansion == 'None':
                 nextP = 'Fear'
             else:
                 nextP = 'Event'
-        if currentPhase == 'Event':
+        if app.currentPhase == 'Event':
             nextP = 'Fear'
-        if currentPhase == 'Fear':
-            if opponent == 'England' and int(level) == 3  and stage != "III" and turn > 1:
+        if app.currentPhase == 'Fear':
+            if app.opponent == 'England' and int(app.level) == 3  and app.stage != "III" and app.turn > 1:
                 nextP = 'HighImmigration'
-            elif opponent == 'England' and int(level) >= 4 and turn > 1:
+            elif app.opponent == 'England' and int(app.level) >= 4 and app.turn > 1:
                 nextP = 'HighImmigration'
             else:
-                if turn > 1:
+                if app.turn > 1:
                     nextP = 'Ravage'
                 else:
                     nextP = 'Build'
-        if currentPhase == 'HighImmigration':
-            if turn > 1:
+        if app.currentPhase == 'HighImmigration':
+            if app.turn > 1:
                 nextP = 'Ravage'
             else:
                 nextP = 'Build'
-        if currentPhase == 'Ravage':
+        if app.currentPhase == 'Ravage':
             nextP = 'Build'
-        if currentPhase == 'Build':
+        if app.currentPhase == 'Build':
             nextP = 'Explore'
-        if currentPhase == 'Explore':
+        if app.currentPhase == 'Explore':
             nextP = 'AdvanceCards'
-        if currentPhase == 'AdvanceCards':
+        if app.currentPhase == 'AdvanceCards':
             nextP = 'SlowPower'
-        if currentPhase == 'SlowPower':
+        if app.currentPhase == 'SlowPower':
             nextP = 'TimePasses'
-        if currentPhase == 'TimePasses':
+        if app.currentPhase == 'TimePasses':
             nextP = 'Growth'
         self.title = screenTitles[nextP]
         self.currentP = nextP
@@ -1383,21 +1352,21 @@ class PhaseScreen(Screen):
         return nextP
         
     def start_clock(self):
-        if use_timer:
+        app = App.get_running_app()
+        if app.use_timer:
             Clock.unschedule(self.clock)
-            self.seconds = timer_seconds
+            self.seconds = app.timer_seconds
             self.time = ':'.join(str(datetime.timedelta(seconds=self.seconds)).split(':')[1:])
             self.clock = Clock.schedule_interval(self.timer, 1)
         else:
             self.time = ''
     def on_back(self):
-        global previousPhase
-        global level
+        app = App.get_running_app()
         self.start_clock()
-        prev = previousPhase[-1]
+        prev = app.previousPhase[-1]
         self.title = screenTitles[prev]
         if prev != 'Main':
-            previousPhase.pop()
+            app.previousPhase.pop()
         self.currentP = prev
         if prev == 'Main':
             self.next_button_value = 'Start'
@@ -1416,27 +1385,29 @@ class PhaseScreen(Screen):
             self.setupScreens = False
         return prev
     def blight_checkbox(self, value):
-        global blight
+        app = App.get_running_app()
         if value:
-            blight = 'Blighted'
+            app.blight = 'Blighted'
             self.blighted = True
             write_state()
             return True
         else:
-            blight = 'Healthy'
+            app.blight = 'Healthy'
             self.blighted = False
             write_state()
             return False
     def calc_health_damage(self):
-        self.ehealth = str(opponentmod_rules[opponent][int(level)][0])
-        self.edamage = str(opponentmod_rules[opponent][int(level)][3])
-        self.thealth = str(opponentmod_rules[opponent][int(level)][1])
-        self.tdamage = str(opponentmod_rules[opponent][int(level)][4])
-        self.chealth = str(opponentmod_rules[opponent][int(level)][2])
-        self.cdamage = str(opponentmod_rules[opponent][int(level)][5])      
+        app = App.get_running_app()
+        self.ehealth = str(opponentmod_rules[app.opponent][int(app.level)][0])
+        self.edamage = str(opponentmod_rules[app.opponent][int(app.level)][3])
+        self.thealth = str(opponentmod_rules[app.opponent][int(app.level)][1])
+        self.tdamage = str(opponentmod_rules[app.opponent][int(app.level)][4])
+        self.chealth = str(opponentmod_rules[app.opponent][int(app.level)][2])
+        self.cdamage = str(opponentmod_rules[app.opponent][int(app.level)][5])      
     time = StringProperty()
     def timer(self, *args):
-        if use_timer:
+        app = App.get_running_app()
+        if app.use_timer:
             if self.seconds == 0:
                 self.time = '0'
                 self.time_disp = "0"
@@ -1447,133 +1418,109 @@ class PhaseScreen(Screen):
         else:
             self.time = ''
     def on_stage_toggle(self, value):
-        global stage
-        global opponent
-        global stage2_flag
-        stage = value    
         app = App.get_running_app()
-        if stage == 'I':
+        app.stage = value    
+        app = App.get_running_app()
+        if app.stage == 'I':
             self.I = True
             self.II = False
             self.III = False
-        elif stage == 'II':
+        elif app.stage == 'II':
             self.II = True
             self.I = False
             self.III = False
-        elif stage == 'III':
+        elif app.stage == 'III':
             self.III = True
             self.I = False
             self.II = False
-        app.on_stage_toggle(stage)
+        app.on_stage_toggle(app.stage)
         write_state()
     def read_state(self):
-        global branchandclaw
-        global jaggedearth
-        global promopack1
-        global promopack2
-        global expansion
-        global opponent
-        global thematic
-        global spirits
-        global aspects
-        global scenario
-        global level
-        global stage
-        global blight
-        global players
-        global fear_tokens
-        global turn
-        global previousPhase
-        global oppnent_list
-        global spirit_list
-        global scenarios_list
-        global currentPhase
-        branchandclaw = (store.get('branchandclaw')['value'])
-        jaggedearth = (store.get('jaggedearth')['value'])
-        promopack1 = (store.get('promopack1')['value'])
-        promopack2 = (store.get('promopack2')['value'])
-        expansion = (store.get('expansion')['value'])
-        opponent = (store.get('opponent')['value'])
-        thematic = (store.get('thematic')['value'])
-        spirits = (store.get('spirits')['value'])
-        aspects = (store.get('aspects')['value'])
-        scenario = (store.get('scenario')['value'])
-        level = (store.get('level')['value'])
-        stage = (store.get('stage')['value'])
-        blight = (store.get('blight')['value'])
-        players = (store.get('players')['value'])
-        fear_tokens = (store.get('fear_tokens')['value'])
-        turn = (store.get('turn')['value'])
-        previousPhase = (store.get('previousPhase')['value'])
-        opponent_list = (store.get('opponent_list')['value'])
-        spirit_list = (store.get('spirit_list')['value'])
-        scenarios_list = (store.get('scenarios_list')['value'])
-        #currentPhase=(store.get('currentPhase')['value'])
-        #previousPhase.append(currentPhase)
-        currentPhase = previousPhase[-1]
-        self.lvl = level
+        app = App.get_running_app()
+        app.branchandclaw = (store.get('branchandclaw')['value'])
+        app.jaggedearth = (store.get('jaggedearth')['value'])
+        app.promopack1 = (store.get('promopack1')['value'])
+        app.promopack2 = (store.get('promopack2')['value'])
+        app.expansion = (store.get('expansion')['value'])
+        app.opponent = (store.get('opponent')['value'])
+        app.thematic = (store.get('thematic')['value'])
+        app.spirits = (store.get('spirits')['value'])
+        app.aspects = (store.get('aspects')['value'])
+        app.scenario = (store.get('scenario')['value'])
+        app.level = (store.get('level')['value'])
+        app.stage = (store.get('stage')['value'])
+        app.blight = (store.get('blight')['value'])
+        app.players = (store.get('players')['value'])
+        app.fear_tokens = (store.get('fear_tokens')['value'])
+        app.turn = (store.get('turn')['value'])
+        app.previousPhase = (store.get('previousPhase')['value'])
+        app.opponent_list = (store.get('opponent_list')['value'])
+        app.spirit_list = (store.get('spirit_list')['value'])
+        app.scenarios_list = (store.get('scenarios_list')['value'])
+        app.currentPhase = app.previousPhase[-1]
+        self.lvl = app.level
         self.calc_health_damage()
-        if blight != 'Healthy':
+        if app.blight != 'Healthy':
             self.blighted = True
         else:
             self.blighted = False
-        self.on_stage_toggle(stage)
-        if currentPhase == 'Main':
+        self.on_stage_toggle(app.stage)
+        if app.currentPhase == 'Main':
             nextP = 'SpiritSelect'
-        if currentPhase == 'SpiritSelect':
+        if app.currentPhase == 'SpiritSelect':
             nextP = 'BoardSetup'
-        if currentPhase == 'BoardSetup':
+        if app.currentPhase == 'BoardSetup':
             nextP = 'SpiritSetup'
-        if currentPhase == 'SpiritSetup':
+        if app.currentPhase == 'SpiritSetup':
             nextP = 'FirstExplore'
-        if currentPhase == 'FirstExplore':
+        if app.currentPhase == 'FirstExplore':
             nextP = 'Growth'
-        if currentPhase == 'Growth':
+        if app.currentPhase == 'Growth':
             nextP = 'Energy'
-        if currentPhase == 'Energy':
+        if app.currentPhase == 'Energy':
             nextP = 'PowerCards'
-        if currentPhase == 'PowerCards':
+        if app.currentPhase == 'PowerCards':
             nextP = 'FastPower'
-        if currentPhase == 'FastPower':
-            if blight != 'Healthy':
+        if app.currentPhase == 'FastPower':
+            if app.blight != 'Healthy':
                 nextP = 'BlightedIsland'
-            elif expansion == 'None':
+            elif app.expansion == 'None':
                 nextP = 'Fear'
             else:
                 nextP = 'Event'
-        if currentPhase == 'BlightedIsland':
-            if expansion == 'None':
+        if app.currentPhase == 'BlightedIsland':
+            if app.expansion == 'None':
                 nextP = 'Fear'
             else:
                 nextP = 'Event'
-        if currentPhase == 'Event':
+        if app.currentPhase == 'Event':
             nextP = 'Fear'
-        if currentPhase == 'Fear':
-            if opponent == 'England' and int(level) == 3  and stage != "III" and turn > 1:
+        if app.currentPhase == 'Fear':
+            if app.opponent == 'England' and int(app.level) == 3  and app.stage != "III" and app.turn > 1:
                 nextP = 'HighImmigration'
-            elif opponent == 'England' and int(level) >= 4 and turn > 1:
+            elif app.opponent == 'England' and int(app.level) >= 4 and app.turn > 1:
                 nextP = 'HighImmigration'
             else:
-                if turn > 1:
+                if app.turn > 1:
                     nextP = 'Ravage'
                 else:
                     nextP = 'Build'
-        if currentPhase == 'HighImmigration':
-            if turn > 1:
+        if app.currentPhase == 'HighImmigration':
+            if app.turn > 1:
                 nextP = 'Ravage'
             else:
                 nextP == 'Build'
-        if currentPhase == 'Ravage':
+        if app.currentPhase == 'Ravage':
             nextP = 'Build'
-        if currentPhase == 'Build':
+        if app.currentPhase == 'Build':
             nextP = 'Explore'
-        if currentPhase == 'Explore':
+        if app.currentPhase == 'Explore':
             nextP = 'AdvanceCards'
-        if currentPhase == 'AdvanceCards':
+        if app.currentPhase == 'AdvanceCards':
             nextP = 'SlowPower'
-        if currentPhase == 'SlowPower':
+        if app.currentPhase == 'SlowPower':
             nextP = 'TimePasses'
-        if currentPhase == 'TimePasses':
+        if app.currentPhase == 'TimePasses':
             nextP = 'Growth'
         self.title = screenTitles[nextP]
         self.currentP = nextP
@@ -1612,44 +1559,35 @@ class MainScreen(Screen):
     opp_list = ListProperty(base_opp)
     scen_list = ListProperty(base_scenarios)
     def on_enter(self):
-        global branchandclaw
-        global jaggedearth
-        global promopack1
-        global promopack2
-        global opponent
-        global level
-        global players
-        global stage2_flag
-        global currentPhase
-        global scenarios_list
-        self.scen_list = scenarios_list
-        currentPhase = 'Main'
-        if branchandclaw:
+        app = App.get_running_app()
+        self.scen_list = app.scenarios_list
+        app.currentPhase = 'Main'
+        if app.branchandclaw:
             self.bc = True
-        self.je = jaggedearth
-        self.pp1 = promopack1
-        self.pp2 = promopack2
-        self.opp = opponent
-        self.play = str(players)
-        self.lvl = level
-        self.theme = thematic
+        self.je = app.jaggedearth
+        self.pp1 = app.promopack1
+        self.pp2 = app.promopack2
+        self.opp = app.opponent
+        self.play = str(app.players)
+        self.lvl = app.level
+        self.theme = app.thematic
     def bc_clicked(self, value):
-        global branchandclaw
+        app = App.get_running_app()
         if value == True:
-            branchandclaw = True
+            app.branchandclaw = True
         else:
-            branchandclaw = False
+            app.branchandclaw = False
         self.build_expansions()
         self.build_spirits()
         self.build_scenarios()
         if self.opp not in self.opp_list:
             self.opponent_clicked('None')
     def je_clicked(self, value):
-        global jaggedearth
+        app = App.get_running_app()
         if value == True:
-            jaggedearth = True
+            app.jaggedearth = True
         else:
-            jaggedearth = False
+            app.jaggedearth = False
         self.build_expansions()
         self.build_spirits()
         self.build_scenarios()
@@ -1658,116 +1596,102 @@ class MainScreen(Screen):
         if self.play not in self.max_play:
             self.players_clicked('0')
     def promo1_clicked(self, value):
-        global promopack1
+        app = App.get_running_app()
         if value == True:
-            promopack1 = True
+            app.promopack1 = True
         else:
-            promopack1 = False
+            app.promopack1 = False
         self.build_expansions()
         self.build_spirits()
         self.build_scenarios()
         if self.opp not in self.opp_list:
             self.opponent_clicked('None')
     def promo2_clicked(self, value):
-        global promopack2
+        app = App.get_running_app()
         if value == True:
-            promopack2 = True
+            app.promopack2 = True
         else:
-            promopack2 = False
+            app.promopack2 = False
         self.build_expansions()
         self.build_spirits()
         self.build_scenarios()
         if self.opp not in self.opp_list:
             self.opponent_clicked('None')
     def thematic_clicked(self, value):
-        global thematic
+        app = App.get_running_app()
         if value == True:
-            thematic = True
+            app.thematic = True
         else:
-            thematic = False
+            app.thematic = False
     def opponent_clicked(self, value):
-        global opponent
-        global level
-        opponent = value
+        app = App.get_running_app()
+        app.opponent = value
         self.opp = value
         self.build_levels()
-        self.lvl = level
+        self.lvl = app.level
         if self.opp != 'None' and self.lvl == '0':
             self.level_clicked('1')
         if self.opp == 'None':
             self.level_clicked('0')
     def level_clicked(self, value):
-        global level
-        level = value
-        self.lvl = level
+        app = App.get_running_app()
+        app.level = value
+        self.lvl = app.level
     def players_clicked(self, value):
-        global players
-        players = value
-        self.play = players
-        stage2_flag['Scotland'] = 'If the invader card has a flag:\nOn the single board with the most coastal towns/cities add one town to the '+ str(players) +' lands with the fewest towns.\n'
+        global stage2_flag
+        app = App.get_running_app()
+        app.players = value
+        self.play = app.players
+        stage2_flag['Scotland'] = 'If the invader card has a flag:\nOn the single board with the most coastal towns/cities add one town to the '+ str(app.players) +' lands with the fewest towns.\n'
     def build_expansions(self):
-        global branchandclaw
-        global jaggedearth
-        global promopack2
-        global expansion
+        app = App.get_running_app()
         self.max_play = ['1','2','3','4']
-        opponent_list = base_opp
-        if branchandclaw:
-            opponent_list = opponent_list + bc_opp
-        if jaggedearth:
-            opponent_list = opponent_list + je_opp
+        app.opponent_list = base_opp
+        if app.branchandclaw:
+            app.opponent_list = app.opponent_list + bc_opp
+        if app.jaggedearth:
+            app.opponent_list = app.opponent_list + je_opp
             self.max_play = ['1','2','3','4','5','6']
-        if promopack2:
-            opponent_list = opponent_list + pp2_opp
-        self.opp_list = sorted(opponent_list)
-        if branchandclaw and jaggedearth:
-            expansion = "BC and JE"
-        elif branchandclaw and not jaggedearth:
-            expansion = "Branch and Claw"
-        elif jaggedearth and not branchandclaw:
-            expansion = "Jagged Earth"
+        if app.promopack2:
+            app.opponent_list = app.opponent_list + pp2_opp
+        self.opp_list = sorted(app.opponent_list)
+        if app.branchandclaw and app.jaggedearth:
+            app.expansion = "BC and JE"
+        elif app.branchandclaw and not app.jaggedearth:
+            app.expansion = "Branch and Claw"
+        elif app.jaggedearth and not app.branchandclaw:
+            app.expansion = "Jagged Earth"
         else:
-            expansion = 'None'
+            app.expansion = 'None'
     def build_spirits(self):
-        global base_spirits
-        global branchandclaw
-        global jaggedearth
-        global promopack1
-        global promopack2
- #       global spirits
-        global spirit_list
-        spirit_list = base_spirits
-        if branchandclaw:
-            spirit_list = spirit_list + bc_spirits
-        if jaggedearth:
-            spirit_list = spirit_list + je_spirits
-        if promopack1:
-            spirit_list = spirit_list + pp1_spirits
-        if promopack2:
-            spirit_list = spirit_list + pp2_spirits
-        spirit_list = sorted(spirit_list)
+        app = App.get_running_app()
+        app.spirit_list = base_spirits
+        if app.branchandclaw:
+            app.spirit_list = app.spirit_list + bc_spirits
+        if app.jaggedearth:
+            app.spirit_list = app.spirit_list + je_spirits
+        if app.promopack1:
+            app.spirit_list = app.spirit_list + pp1_spirits
+        if app.promopack2:
+            app.spirit_list = app.spirit_list + pp2_spirits
+        app.spirit_list = sorted(app.spirit_list)
     def build_scenarios(self):
-        global branchandclaw
-        global jaggedearth
-        global promopack1
-        global promopack2
-        global scenarios
-        global scenarios_list
+        app = App.get_running_app()
         scenario_list = base_scenarios
-        scenarios_list = base_scenarios
-        if branchandclaw:
-            scenarios_list = scenarios_list + bc_scenarios
-        if jaggedearth:
-            scenarios_list = scenarios_list + je_scenarios
-        if promopack1:
-            scenarios_list = scenarios_list + pp1_scenarios
-        if promopack2:
-            scenarios_list = scenarios_list + pp2_scenarios
-        self.scen_list = sorted(scenarios_list)   
+        app.scenarios_list = base_scenarios
+        if app.branchandclaw:
+            app.scenarios_list = app.scenarios_list + bc_scenarios
+        if app.jaggedearth:
+            app.scenarios_list = app.scenarios_list + je_scenarios
+        if app.promopack1:
+            app.scenarios_list = app.scenarios_list + pp1_scenarios
+        if app.promopack2:
+            app.scenarios_list = app.scenarios_list + pp2_scenarios
+        self.scen_list = sorted(app.scenarios_list)   
     def build_levels(self):
+        app = App.get_running_app()
         self.max_levels = ['0']
-        global levels
-        if opponent != 'None':
+        if app.opponent != 'None':
             self.max_levels = ['1','2','3','4','5','6']
 
 class SpiritSelectScreen(Screen):
@@ -1798,48 +1722,40 @@ class SpiritSelectScreen(Screen):
     spirit6_aspects = ListProperty([])
     spirit6_has_aspect = BooleanProperty(False)
     def on_enter(self):
-        global currentPhase
-        global spirit_list
-        global players
-        global aspects
-        self.spirit_values = spirit_list
-        currentPhase = 'SpiritSelect'
+        app = App.get_running_app()
+        self.spirit_values = app.spirit_list
+        app.currentPhase = 'SpiritSelect'
         write_state()
-        self.play = int(players)
-        self.spirit1 = spirits[0]
-        self.spirit2 = spirits[1]
-        self.spirit3 = spirits[2]
-        self.spirit4 = spirits[3]
-        self.spirit5 = spirits[4]
-        self.spirit6 = spirits[5]
-        self.aspect1 = aspects[0]
-        self.aspect2 = aspects[1]
-        self.aspect3 = aspects[2]
-        self.aspect4 = aspects[3]
-        self.aspect5 = aspects[4]
-        self.aspect6 = aspects[5]
+        self.play = int(app.players)
+        self.spirit1 = app.spirits[0]
+        self.spirit2 = app.spirits[1]
+        self.spirit3 = app.spirits[2]
+        self.spirit4 = app.spirits[3]
+        self.spirit5 = app.spirits[4]
+        self.spirit6 = app.spirits[5]
+        self.aspect1 = app.aspects[0]
+        self.aspect2 = app.aspects[1]
+        self.aspect3 = app.aspects[2]
+        self.aspect4 = app.aspects[3]
+        self.aspect5 = app.aspects[4]
+        self.aspect6 = app.aspects[5]
     def on_select_spirit(self, player, value):
-        global spirit_aspects
-        global jaggedearth
-        global branchandclaw
-        global promopack1
-        global promopack2
-        global spirits
+        app = App.get_running_app()
         if player == 1:
             if len(spirit_aspects[value]) == 0:
                 self.spirit1_has_aspect = False
             else:
                 for item in spirit_aspects[value]:
-                    if branchandclaw:
+                    if app.branchandclaw:
                         if item.split(':')[0] == 'bc':
                             self.spirit1_aspects.append(item.split(':')[1])
-                    if jaggedearth:
+                    if app.jaggedearth:
                         if item.split(':')[0] == 'je':
                             self.spirit1_aspects.append(item.split(':')[1])
-                    if promopack1:
+                    if app.promopack1:
                         if item.split(':')[0] == 'pp1':
                             self.spirit1_aspects.append(item.split(':')[1])
-                    if promopack2:
+                    if app.promopack2:
                         if item.split(':')[0] == 'pp2':
                             self.spirit1_aspects.append(item.split(':')[1])
                 if len(self.spirit1_aspects) == 0:
@@ -1847,22 +1763,22 @@ class SpiritSelectScreen(Screen):
                 else:
                     self.spirit1_has_aspect = True
                     self.spirit1_aspects = ['None'] + self.spirit1_aspects
-            spirits[0] = value
+            app.spirits[0] = value
         if player == 2:
             if len(spirit_aspects[value]) == 0:
                 self.spirit2_has_aspect = False
             else:
                 for item in spirit_aspects[value]:
-                    if branchandclaw:
+                    if app.branchandclaw:
                         if item.split(':')[0] == 'bc':
                             self.spirit2_aspects.append(item.split(':')[1])
-                    if jaggedearth:
+                    if app.jaggedearth:
                         if item.split(':')[0] == 'je':
                             self.spirit2_aspects.append(item.split(':')[1])
-                    if promopack1:
+                    if app.promopack1:
                         if item.split(':')[0] == 'pp1':
                             self.spirit2_aspects.append(item.split(':')[1])
-                    if promopack2:
+                    if app.promopack2:
                         if item.split(':')[0] == 'pp2':
                             self.spirit2_aspects.append(item.split(':')[1])
                 if len(self.spirit2_aspects) == 0:
@@ -1870,22 +1786,22 @@ class SpiritSelectScreen(Screen):
                 else:
                     self.spirit2_has_aspect = True
                     self.spirit2_aspects = ['None'] + self.spirit2_aspects
-            spirits[1] = value
+            app.spirits[1] = value
         if player == 3:
             if len(spirit_aspects[value]) == 0:
                 self.spirit3_has_aspect = False
             else:
                 for item in spirit_aspects[value]:
-                    if branchandclaw:
+                    if app.branchandclaw:
                         if item.split(':')[0] == 'bc':
                             self.spirit3_aspects.append(item.split(':')[1])
-                    if jaggedearth:
+                    if app.jaggedearth:
                         if item.split(':')[0] == 'je':
                             self.spirit3_aspects.append(item.split(':')[1])
-                    if promopack1:
+                    if app.promopack1:
                         if item.split(':')[0] == 'pp1':
                             self.spirit3_aspects.append(item.split(':')[1])
-                    if promopack2:
+                    if app.promopack2:
                         if item.split(':')[0] == 'pp2':
                             self.spirit3_aspects.append(item.split(':')[1])
                 if len(self.spirit3_aspects) == 0:
@@ -1893,22 +1809,22 @@ class SpiritSelectScreen(Screen):
                 else:
                     self.spirit3_has_aspect = True
                     self.spirit3_aspects = ['None'] + self.spirit3_aspects                        
-            spirits[2] = value
+            app.spirits[2] = value
         if player == 4:
             if len(spirit_aspects[value]) == 0:
                 self.spirit4_has_aspect = False
             else:
                 for item in spirit_aspects[value]:
-                    if branchandclaw:
+                    if app.branchandclaw:
                         if item.split(':')[0] == 'bc':
                             self.spirit4_aspects.append(item.split(':')[1])
-                    if jaggedearth:
+                    if app.jaggedearth:
                         if item.split(':')[0] == 'je':
                             self.spirit4_aspects.append(item.split(':')[1])
-                    if promopack1:
+                    if app.promopack1:
                         if item.split(':')[0] == 'pp1':
                             self.spirit4_aspects.append(item.split(':')[1])
-                    if promopack2:
+                    if app.promopack2:
                         if item.split(':')[0] == 'pp2':
                             self.spirit4_aspects.append(item.split(':')[1])
                 if len(self.spirit4_aspects) == 0:
@@ -1916,22 +1832,22 @@ class SpiritSelectScreen(Screen):
                 else:
                     self.spirit4_has_aspect = True
                     self.spirit4_aspects = ['None'] + self.spirit4_aspects
-            spirits[3] = value
+            app.spirits[3] = value
         if player == 5:
             if len(spirit_aspects[value]) == 0:
                 self.spirit5_has_aspect = False
             else:
                 for item in spirit_aspects[value]:
-                    if branchandclaw:
+                    if app.branchandclaw:
                         if item.split(':')[0] == 'bc':
                             self.spirit5_aspects.append(item.split(':')[1])
-                    if jaggedearth:
+                    if app.jaggedearth:
                         if item.split(':')[0] == 'je':
                             self.spirit5_aspects.append(item.split(':')[1])
-                    if promopack1:
+                    if app.promopack1:
                         if item.split(':')[0] == 'pp1':
                             self.spirit5_aspects.append(item.split(':')[1])
-                    if promopack2:
+                    if app.promopack2:
                         if item.split(':')[0] == 'pp2':
                             self.spirit5_aspects.append(item.split(':')[1])
                 if len(self.spirit5_aspects) == 0:
@@ -1939,22 +1855,22 @@ class SpiritSelectScreen(Screen):
                 else:
                     self.spirit5_has_aspect = True
                     self.spirit5_aspects = ['None'] + self.spirit5_aspects
-            spirits[4] = value
+            app.spirits[4] = value
         if player == 6:
             if len(spirit_aspects[value]) == 0:
                 self.spirit6_has_aspect = False
             else:
                 for item in spirit_aspects[value]:
-                    if branchandclaw:
+                    if app.branchandclaw:
                         if item.split(':')[0] == 'bc':
                             self.spirit6_aspects.append(item.split(':')[1])
-                    if jaggedearth:
+                    if app.jaggedearth:
                         if item.split(':')[0] == 'je':
                             self.spirit6_aspects.append(item.split(':')[1])
-                    if promopack1:
+                    if app.promopack1:
                         if item.split(':')[0] == 'pp1':
                             self.spirit6_aspects.append(item.split(':')[1])
-                    if promopack2:
+                    if app.promopack2:
                         if item.split(':')[0] == 'pp2':
                             self.spirit6_aspects.append(item.split(':')[1])
                 if len(self.spirit6_aspects) == 0:
@@ -1962,24 +1878,19 @@ class SpiritSelectScreen(Screen):
                 else:
                     self.spirit6_has_aspect = True
                     self.spirit6_aspects = ['None'] + self.spirit6_aspects
-            spirits[5] = value
+            app.spirits[5] = value
+
     def on_select_aspect(self, player, value):
-        global aspects
-        aspects[player-1] = value
+        app = App.get_running_app()
+        app.aspects[player-1] = value
         
 #Board Setup Screen
 #Corresponds to kivy main
 class BoardSetupScreen(Screen):
     text = StringProperty('')
     def on_enter(self):                 #override of on_enter, runs when screen is constructed
-        #pull in global variables needed to access or update on this screen
-        global expansion
-        global fear_cards
-        global fear_tokens
-        global players
-        global currentPhase
-        global thematic
-        currentPhase = 'BoardSetup'
+        app = App.get_running_app()
+        app.currentPhase = 'BoardSetup'
         write_state()
         start = ''
         fear = ''
@@ -1988,55 +1899,51 @@ class BoardSetupScreen(Screen):
         ft = ''
         bt = ''
         
-        if fear_cards[opponent][int(level)-1] != '':
-            fear = 'Fear Cards ' + fear_cards[opponent][int(level)-1] + '\n'  #calculate fear cards into local fear
+        if fear_cards[app.opponent][int(app.level)-1] != '':
+            fear = 'Fear Cards ' + fear_cards[app.opponent][int(app.level)-1] + '\n'  #calculate fear cards into local fear
         
         #loop to add all setup changes together (cumulative) from setup_changes up to opponent level into local start
-        for x in range(int(level)):
-            start += setup_changes[opponent][x]
+        for x in range(int(app.level)):
+            start += setup_changes[app.opponent][x]
             
-        invaders = 'Invader Deck: ' + invader_deck[opponent][int(level)-1]  + '\n' #set local invaders to invader deck based on opponent & level
-        if thematic:
+        invaders = 'Invader Deck: ' + invader_deck[app.opponent][int(app.level)-1]  + '\n' #set local invaders to invader deck based on opponent & level
+        if app.thematic:
             exsetup = 'Follow the icons on the thematic map for all invaders and tokens.'
         else:
-            exsetup = expansion_setup[expansion]     #copy expansion_setup into local exsetup
-        if opponent == 'England' and int(level) == 6:
+            exsetup = expansion_setup[app.expansion]     #copy expansion_setup into local exsetup
+        if app.opponent == 'England' and int(app.level) == 6:
             fear_per = 5
         else:
             fear_per = 4
-        fear_tokens = fear_per * int(players)    #calculate number of fear tokens into global fear_tokens
-        ft = 'Fear Tokens: ' + str(fear_tokens) + '\n'   #copy global fear_tokens into local ft
-        blight_tokens = (2 * int(players)) + 1
+        app.fear_tokens = fear_per * int(app.players)    #calculate number of fear tokens into global fear_tokens
+        ft = 'Fear Tokens: ' + str(app.fear_tokens) + '\n'   #copy global fear_tokens into local ft
+        blight_tokens = (2 * int(app.players)) + 1
         bt = 'Blight Tokens: ' + str(blight_tokens)+ '\n'
         self.text = '\n'.join([start, fear, invaders, exsetup, ft, bt])
         
 class SpiritSetupScreen(Screen):
     spirits_text = StringProperty('')
     def on_enter(self):
-        global currentPhase
-        global spirits
-        global spirits_setup
-        currentPhase = 'SpiritSetup'
+        app = App.get_running_app()
+        app.currentPhase = 'SpiritSetup'
         self.spirits_text = ''
-        for x in spirits:
+        for x in app.spirits:
             if x != 'None':
                 self.spirits_text = self.spirits_text + x + ': ' + spirit_setup[x] + '\n'
                 
 class FirstExploreScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
-        global currentPhase
-        currentPhase = 'FirstExplore'
+        app = App.get_running_app()
+        app.currentPhase = 'FirstExplore'
         write_state()
-        global firstexplorescreen_rules
-        global screenDescriptions
         description = ''
         rules = ''
-        if displayopts[currentPhase]['phase']:
-            description = screenDescriptions[currentPhase]
-        if displayopts[currentPhase]['rules']:
-            for x in range(int(level)):
-                rules += firstexplorescreen_rules[opponent][x]
+        if app.displayopts[app.currentPhase]['phase']:
+            description = screenDescriptions[app.currentPhase]
+        if app.displayopts[app.currentPhase]['rules']:
+            for x in range(int(app.level)):
+                rules += firstexplorescreen_rules[app.opponent][x]
         self.text = '\n'.join([description + rules])
         
 #Growth Phase Screen
@@ -2049,172 +1956,155 @@ class FirstExploreScreen(Screen):
 class GrowthScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
-        global currentPhase
-        currentPhase = 'Growth'
+        app = App.get_running_app()
+        app.currentPhase = 'Growth'
         write_state()
-        global turn
-        turn = turn +1
-        global growthscreen_rules
-        global expansion
-        global spirits
-        global spirit_growth_count
-        global screenDescriptions
+        app.turn = app.turn +1
         self.text = ''
         description = ''
-        if displayopts[currentPhase]['phase']:
-            description = screenDescriptions[currentPhase]
+        if app.displayopts[app.currentPhase]['phase']:
+            description = screenDescriptions[app.currentPhase]
         spirits_text = ''
-        if displayopts[currentPhase]['spirits']:
-            for x in spirits:
+        if app.displayopts[app.currentPhase]['spirits']:
+            for x in app.spirits:
                 if spirit_growth_count[x] > 1:
                     self.spirits_text = 'Spirits with more than one Growth action can use energy gained from one action to pay for another.\n'
         opprules = ""
         allrules = ""
         badlands = ""
-        if expansion == "BC and JE" or expansion == "Jagged Earth":
-            if displayopts[currentPhase]['badlands']:
+        if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
+            if app.displayopts[app.currentPhase]['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
-        if displayopts[currentPhase]['opponent']:
-            for x in range(int(level)):
-                opprules += growthscreen_rules[opponent][x]
-        if displayopts[currentPhase]['all']:
-            for x in range(int(level)):
-                allrules += allscreen_rules[opponent][x]
+        if app.displayopts[app.currentPhase]['opponent']:
+            for x in range(int(app.level)):
+                opprules += growthscreen_rules[app.opponent][x]
+        if app.displayopts[app.currentPhase]['all']:
+            for x in range(int(app.level)):
+                allrules += allscreen_rules[app.opponent][x]
         self.text = '\n'.join([description, spirits_text, opprules, badlands, allrules])
         
 class EnergyScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
-        global currentPhase
-        currentPhase = 'Energy'
+        app = App.get_running_app()
+        app.currentPhase = 'Energy'
         write_state()
-        global energyscreen_rules
-        global expansion
         description = ''
-        if displayopts[currentPhase]['phase']:
-            description = screenDescriptions[currentPhase]
+        if app.displayopts[app.currentPhase]['phase']:
+            description = screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
-        if expansion == "BC and JE" or expansion == "Jagged Earth":
-            if displayopts[currentPhase]['badlands']:
+        if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
+            if app.displayopts[app.currentPhase]['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
-        if displayopts[currentPhase]['opponent']:
-            for x in range(int(level)):
-                opprules += energyscreen_rules[opponent][x]
-        if displayopts[currentPhase]['all']:
-            for x in range(int(level)):
-                allrules += allscreen_rules[opponent][x]
+        if app.displayopts[app.currentPhase]['opponent']:
+            for x in range(int(app.level)):
+                opprules += energyscreen_rules[app.opponent][x]
+        if app.displayopts[app.currentPhase]['all']:
+            for x in range(int(app.level)):
+                allrules += allscreen_rules[app.opponent][x]
         self.text = '\n'.join([description,opprules, badlands, allrules])
             
 class PowerCardsScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
-        global currentPhase
-        currentPhase = 'PowerCards'
+        app = App.get_running_app()
+        app.currentPhase = 'PowerCards'
         write_state()
-        global powercardscreen_rules
-        global expansion
         description = ''
-        if displayopts[currentPhase]['phase']:
-            description = screenDescriptions[currentPhase]
+        if app.displayopts[app.currentPhase]['phase']:
+            description = screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
-        if expansion == "BC and JE" or expansion == "Jagged Earth":
-            if displayopts[currentPhase]['badlands']:
+        if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
+            if app.displayopts[app.currentPhase]['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
-        if displayopts[currentPhase]['opponent']:
-            for x in range(int(level)):
-                opprules += powercardscreen_rules[opponent][x]
-        if displayopts[currentPhase]['all']:
-            for x in range(int(level)):
-                allrules += allscreen_rules[opponent][x]
+        if app.displayopts[app.currentPhase]['opponent']:
+            for x in range(int(app.level)):
+                opprules += powercardscreen_rules[app.opponent][x]
+        if app.displayopts[app.currentPhase]['all']:
+            for x in range(int(app.level)):
+                allrules += allscreen_rules[app.opponent][x]
         self.text = '\n'.join([description,opprules, badlands, allrules])
             
 class FastPowerScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
-        global currentPhase
-        currentPhase = 'FastPower'
+        app = App.get_running_app()
+        app.currentPhase = 'FastPower'
         write_state()
-        global fastpowerscreen_rules
-        global expansion
         description = ''
-        if displayopts[currentPhase]['phase']:
-            description = screenDescriptions[currentPhase]
+        if app.displayopts[app.currentPhase]['phase']:
+            description = screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
-        if expansion == "BC and JE" or expansion == "Jagged Earth":
-            if displayopts[currentPhase]['badlands']:
+        if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
+            if app.displayopts[app.currentPhase]['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
-        if displayopts[currentPhase]['opponent']:
-            for x in range(int(level)):
-                opprules += fastpowerscreen_rules[opponent][x]
-        if displayopts[currentPhase]['all']:
-            for x in range(int(level)):
-                allrules += allscreen_rules[opponent][x]
+        if app.displayopts[app.currentPhase]['opponent']:
+            for x in range(int(app.level)):
+                opprules += fastpowerscreen_rules[app.opponent][x]
+        if app.displayopts[app.currentPhase]['all']:
+            for x in range(int(app.level)):
+                allrules += allscreen_rules[app.opponent][x]
         self.text = '\n'.join([description,opprules, badlands, allrules])
         
 class BlightedIslandScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
-        global currentPhase
-        currentPhase = 'BlightedIsland'
+        app = App.get_running_app()
+        app.currentPhase = 'BlightedIsland'
         write_state()
-        global blightedislandscreen_rules
-        global expansion
         description = ''
-        if displayopts[currentPhase]['phase']:
-            description = screenDescriptions[currentPhase]
+        if app.displayopts[app.currentPhase]['phase']:
+            description = screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
-        if expansion == "BC and JE" or expansion == "Jagged Earth":
-            if displayopts[currentPhase]['badlands']:
+        if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
+            if app.displayopts[app.currentPhase]['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
-        if displayopts[currentPhase]['opponent']:
-            for x in range(int(level)):
-                opprules += blightedislandscreen_rules[opponent][x]
-        if displayopts[currentPhase]['all']:
-            for x in range(int(level)):
-                allrules += allscreen_rules[opponent][x]
+        if app.displayopts[app.currentPhase]['opponent']:
+            for x in range(int(app.level)):
+                opprules += blightedislandscreen_rules[app.opponent][x]
+        if app.displayopts[app.currentPhase]['all']:
+            for x in range(int(app.level)):
+                allrules += allscreen_rules[app.opponent][x]
         self.text = '\n'.join([description,opprules, badlands, allrules])
             
 class EventScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
-        global currentPhase
-        currentPhase = 'Event'
+        app = App.get_running_app()
+        app.currentPhase = 'Event'
         write_state()
-        global turn
-        global eventscreen_rules
-        global expansion
         description = ''
-        if displayopts[currentPhase]['phase']:
-            description = screenDescriptions[currentPhase]
+        if app.displayopts[app.currentPhase]['phase']:
+            description = screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
         discard = ""
-        if expansion == "BC and JE" or expansion == "Jagged Earth":
-            if displayopts[currentPhase]['badlands']:
+        if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
+            if app.displayopts[app.currentPhase]['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
-        if displayopts[currentPhase]['opponent']:
-            for x in range(int(level)):
-                opprules += eventscreen_rules[opponent][x]
-        if displayopts[currentPhase]['all']:
-            for x in range(int(level)):
-                allrules += allscreen_rules[opponent][x]
-        if displayopts[currentPhase]['discard']:
-            if turn == 1:
+        if app.displayopts[app.currentPhase]['opponent']:
+            for x in range(int(app.level)):
+                opprules += eventscreen_rules[app.opponent][x]
+        if app.displayopts[app.currentPhase]['all']:
+            for x in range(int(app.level)):
+                allrules += allscreen_rules[app.opponent][x]
+        if app.displayopts[app.currentPhase]['discard']:
+            if app.turn == 1:
                 discard += 'Turn over the first event card, but discard it with no action. (Optional rule for Branch and Claw)\n'
         self.text = '\n'.join([description, opprules, badlands, allrules, discard])
 
@@ -2222,117 +2112,107 @@ class EventScreen(Screen):
 class FearScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
-        global currentPhase
-        currentPhase = 'Fear'
+        app = App.get_running_app()
+        app.currentPhase = 'Fear'
         write_state()
-        global fearscreen_rules
-        global opponent
-        global level
-        global expansion
         description = ''
-        if displayopts[currentPhase]['phase']:
-            description = screenDescriptions[currentPhase]
+        if app.displayopts[app.currentPhase]['phase']:
+            description = screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
-        if expansion == "BC and JE" or expansion == "Jagged Earth":
-            if displayopts[currentPhase]['badlands']:
+        if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
+            if app.displayopts[app.currentPhase]['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
-        if displayopts[currentPhase]['opponent']:
-            for x in range(int(level)):
-                opprules += fearscreen_rules[opponent][x]
-        if displayopts[currentPhase]['all']:
-            for x in range(int(level)):
-                allrules += allscreen_rules[opponent][x]
+        if app.displayopts[app.currentPhase]['opponent']:
+            for x in range(int(app.level)):
+                opprules += fearscreen_rules[app.opponent][x]
+        if app.displayopts[app.currentPhase]['all']:
+            for x in range(int(app.level)):
+                allrules += allscreen_rules[app.opponent][x]
         self.text = '\n'.join([description,opprules, badlands, allrules])
             
 class HighImmigrationScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
-        global currentPhase
-        currentPhase = 'HighImmigration'
+        app = App.get_running_app()
+        app.currentPhase = 'HighImmigration'
         write_state()
-        global highimmigrationscreen_rules
-        global expansion
         description = ''
-        if displayopts[currentPhase]['phase']:
-            description = screenDescriptions[currentPhase]
+        if app.displayopts[app.currentPhase]['phase']:
+            description = screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
-        if expansion == "BC and JE" or expansion == "Jagged Earth":
-            if displayopts[currentPhase]['badlands']:
+        if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
+            if app.displayopts[app.currentPhase]['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
-        if displayopts[currentPhase]['opponent']:
-            for x in range(int(level)):
-                opprules += highimmigrationscreen_rules[opponent][x]
-        if displayopts[currentPhase]['all']:
-            for x in range(int(level)):
-                allrules += allscreen_rules[opponent][x]
+        if app.displayopts[app.currentPhase]['opponent']:
+            for x in range(int(app.level)):
+                opprules += highimmigrationscreen_rules[app.opponent][x]
+        if app.displayopts[app.currentPhase]['all']:
+            for x in range(int(app.level)):
+                allrules += allscreen_rules[app.opponent][x]
         self.text = '\n'.join([description,opprules, badlands, allrules])
             
 class RavageScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
-        global currentPhase
-        currentPhase = 'Ravage'
+        app = App.get_running_app()
+        app.currentPhase = 'Ravage'
         write_state()
-        global ravagescreen_rules
-        global expansion
         description = ''
-        if displayopts[currentPhase]['phase']:
-            description = screenDescriptions[currentPhase]
+        if app.displayopts[app.currentPhase]['phase']:
+            description = screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
         strife = ""
-        if displayopts[currentPhase]['strife']:
-            if expansion != 'None':
+        if app.displayopts[app.currentPhase]['strife']:
+            if app.expansion != 'None':
                 strife = 'If present, Strife Tokens block specific invaders from doing damage. Remove the token.\n'
-        if opponent == 'Russia' and int(level) ==6  and turn > 1:
+        if app.opponent == 'Russia' and int(app.level) ==6  and app.turn > 1:
             opprules += "After the ravage step, on each board where it added no blight: in the land with the most explorers (min 1) add one explorer and one town.\n"
-        if expansion == "BC and JE" or expansion == "Jagged Earth":
-            if displayopts[currentPhase]['badlands']:
+        if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
+            if app.displayopts[app.currentPhase]['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
-        if displayopts[currentPhase]['opponent']:
-            for x in range(int(level)):
-                opprules += ravagescreen_rules[opponent][x]
-        if displayopts[currentPhase]['all']:
-            for x in range(int(level)):
-                allrules += allscreen_rules[opponent][x]
+        if app.displayopts[app.currentPhase]['opponent']:
+            for x in range(int(app.level)):
+                opprules += ravagescreen_rules[app.opponent][x]
+        if app.displayopts[app.currentPhase]['all']:
+            for x in range(int(app.level)):
+                allrules += allscreen_rules[app.opponent][x]
         self.text = '\n'.join([description,strife,opprules, badlands, allrules])            
             
 class BuildScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
-        global currentPhase
-        currentPhase = 'Build'
+        app = App.get_running_app()
+        app.currentPhase = 'Build'
         write_state()
-        global buildscreen_rules
-        global expansion
         description = ''
-        if displayopts[currentPhase]['phase']:
-            description = screenDescriptions[currentPhase]
+        if app.displayopts[app.currentPhase]['phase']:
+            description = screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
         disease = ""
-        if displayopts[currentPhase]['disease']:
-            if expansion != 'None':
+        if app.displayopts[app.currentPhase]['disease']:
+            if app.expansion != 'None':
                 disease = 'If present, Disease tokens prevent this build. Remove the token.\n'
-        if expansion == "BC and JE" or expansion == "Jagged Earth":
-            if displayopts[currentPhase]['badlands']:
+        if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
+            if app.displayopts[app.currentPhase]['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
-        if displayopts[currentPhase]['opponent']:
-            for x in range(int(level)):
-                opprules += buildscreen_rules[opponent][x]
-        if displayopts[currentPhase]['all']:
-            for x in range(int(level)):
-                allrules += allscreen_rules[opponent][x]
+        if app.displayopts[app.currentPhase]['opponent']:
+            for x in range(int(app.level)):
+                opprules += buildscreen_rules[app.opponent][x]
+        if app.displayopts[app.currentPhase]['all']:
+            for x in range(int(app.level)):
+                allrules += allscreen_rules[app.opponent][x]
         self.text = '\n'.join([description,disease,opprules, badlands, allrules])
       
 #Explore Screen
@@ -2341,148 +2221,124 @@ class BuildScreen(Screen):
 class ExploreScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
-        global currentPhase
-        currentPhase = 'Explore'
+        app = App.get_running_app()
+        app.currentPhase = 'Explore'
         write_state()
-        global explorescreen_rules
-        global expansion
-        global opponent
         description = ''
-        if displayopts[currentPhase]['phase']:
-            description = screenDescriptions[currentPhase]
+        if app.displayopts[app.currentPhase]['phase']:
+            description = screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
         wilds = ""
-        if displayopts[currentPhase]['wilds']:
-            if expansion != 'None':
+        if app.displayopts[app.currentPhase]['wilds']:
+            if app.expansion != 'None':
                 wilds = 'If a wilds token is present, skip that exploration and discard one wilds token.\n'
-        if expansion == "BC and JE" or expansion == "Jagged Earth":
-            if displayopts[currentPhase]['badlands']:
+        if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
+            if app.displayopts[app.currentPhase]['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
-        if displayopts[currentPhase]['opponent']:
-            for x in range(int(level)):
-                opprules += explorescreen_rules[opponent][x]
-        if displayopts[currentPhase]['all']:
-            for x in range(int(level)):
-                allrules += allscreen_rules[opponent][x]
+        if app.displayopts[app.currentPhase]['opponent']:
+            for x in range(int(app.level)):
+                opprules += explorescreen_rules[app.opponent][x]
+        if app.displayopts[app.currentPhase]['all']:
+            for x in range(int(app.level)):
+                allrules += allscreen_rules[app.opponent][x]
         self.text = '\n'.join([description,wilds,opprules, badlands, allrules])       
 
         
 class AdvanceCardsScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
-        global currentPhase
-        currentPhase = 'AdvanceCards'
+        app = App.get_running_app()
+        app.currentPhase = 'AdvanceCards'
         write_state()
-        global advancecardsscreen_rules
-        global opponent
-        global level
-        global expansion
         description = ''
-        if displayopts[currentPhase]['phase']:
-            description = screenDescriptions[currentPhase]
+        if app.displayopts[app.currentPhase]['phase']:
+            description = screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
-        if expansion == "BC and JE" or expansion == "Jagged Earth":
-            if displayopts[currentPhase]['badlands']:
+        if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
+            if app.displayopts[app.currentPhase]['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
-        if displayopts[currentPhase]['opponent']:
-            for x in range(int(level)):
-                opprules += advancecardsscreen_rules[opponent][x]
-        if displayopts[currentPhase]['all']:
-            for x in range(int(level)):
-                allrules += allscreen_rules[opponent][x]
+        if app.displayopts[app.currentPhase]['opponent']:
+            for x in range(int(app.level)):
+                opprules += advancecardsscreen_rules[app.opponent][x]
+        if app.displayopts[app.currentPhase]['all']:
+            for x in range(int(app.level)):
+                allrules += allscreen_rules[app.opponent][x]
         self.text = '\n'.join([description,opprules, badlands, allrules])
             
 class SlowPowerScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
-        global currentPhase
-        currentPhase = 'SlowPower'
+        app = App.get_running_app()
+        app.currentPhase = 'SlowPower'
         write_state()
-        global slowpowerscreen_rules
-        global expansion
         description = ''
-        if displayopts[currentPhase]['phase']:
-            description = screenDescriptions[currentPhase]
+        if app.displayopts[app.currentPhase]['phase']:
+            description = screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
-        if expansion == "BC and JE" or expansion == "Jagged Earth":
-            if displayopts[currentPhase]['badlands']:
+        if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
+            if app.displayopts[app.currentPhase]['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
-        if displayopts[currentPhase]['opponent']:
-            for x in range(int(level)):
-                opprules += slowpowerscreen_rules[opponent][x]
-        if displayopts[currentPhase]['all']:
-            for x in range(int(level)):
-                allrules += allscreen_rules[opponent][x]
+        if app.displayopts[app.currentPhase]['opponent']:
+            for x in range(int(app.level)):
+                opprules += slowpowerscreen_rules[app.opponent][x]
+        if app.displayopts[app.currentPhase]['all']:
+            for x in range(int(app.level)):
+                allrules += allscreen_rules[app.opponent][x]
         self.text = '\n'.join([description,opprules, badlands, allrules])
             
 class TimePassesScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
-        global currentPhase
-        currentPhase = 'TimePasses'
+        app = App.get_running_app()
+        app.currentPhase = 'TimePasses'
         write_state()
-        global timepassesscreen_rules
         description = ''
-        if displayopts[currentPhase]['phase']:
-            description = screenDescriptions[currentPhase]
+        if app.displayopts[app.currentPhase]['phase']:
+            description = screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
-        if displayopts[currentPhase]['opponent']:
-            for x in range(int(level)):
-                opprules += timepassesscreen_rules[opponent][x]
-        if displayopts[currentPhase]['all']:
-            for x in range(int(level)):
-                allrules += allscreen_rules[opponent][x]
+        if app.displayopts[app.currentPhase]['opponent']:
+            for x in range(int(app.level)):
+                opprules += timepassesscreen_rules[app.opponent][x]
+        if app.displayopts[app.currentPhase]['all']:
+            for x in range(int(app.level)):
+                allrules += allscreen_rules[app.opponent][x]
         self.text = '\n'.join([description,opprules, allrules])
     
 store = JsonStore('sipt.json')
 def write_state():
-    global branchandclaw
-    global jaggedearth
-    global promopack2
-    global expansion
-    global opponent
-    global thematic
-    global level
-    global stage
-    global blight
-    global players
-    global fear_tokens
-    global turn
-    global previousPhase
-    global oppnent_list
-    global currentPhase
-    store.put('branchandclaw', value=branchandclaw)
-    store.put('jaggedearth', value=jaggedearth)
-    store.put('promopack1', value=promopack1)
-    store.put('promopack2', value=promopack2)
-    store.put('expansion', value=expansion)
-    store.put('opponent', value=opponent)
-    store.put('thematic', value=thematic)
-    store.put('spirits', value=spirits)
-    store.put('aspects', value=aspects)
-    store.put('scenario', value=scenario)
-    store.put('level', value=level)
-    store.put('stage', value=stage)
-    store.put('blight', value=blight)
-    store.put('players', value=players)
-    store.put('fear_tokens', value=fear_tokens)
-    store.put('turn', value=turn)
-    store.put('previousPhase', value=previousPhase)
-    store.put('opponent_list', value=opponent_list)
-    store.put('currentPhase', value=currentPhase)
-    store.put('spirit_list', value=spirit_list)
-    store.put('scenarios_list', value=scenarios_list)
+    app = App.get_running_app()
+    store.put('branchandclaw', value=app.branchandclaw)
+    store.put('jaggedearth', value=app.jaggedearth)
+    store.put('promopack1', value=app.promopack1)
+    store.put('promopack2', value=app.promopack2)
+    store.put('expansion', value=app.expansion)
+    store.put('opponent', value=app.opponent)
+    store.put('thematic', value=app.thematic)
+    store.put('spirits', value=app.spirits)
+    store.put('aspects', value=app.aspects)
+    store.put('scenario', value=app.scenario)
+    store.put('level', value=app.level)
+    store.put('stage', value=app.stage)
+    store.put('blight', value=app.blight)
+    store.put('players', value=app.players)
+    store.put('fear_tokens', value=app.fear_tokens)
+    store.put('turn', value=app.turn)
+    store.put('previousPhase', value=app.previousPhase)
+    store.put('opponent_list', value=app.opponent_list)
+    store.put('currentPhase', value=app.currentPhase)
+    store.put('spirit_list', value=app.spirit_list)
+    store.put('scenarios_list', value=app.scenarios_list)
 
 
 
@@ -2504,61 +2360,85 @@ class MainApp(App):
     fastpowernext = StringProperty('Event')
     flagicon = BooleanProperty(False)
     stage2flag = StringProperty('')
-    blah = 0
+    
+    ##
+    branchandclaw = False
+    jaggedearth = False
+    promopack1 = False
+    promopack2 = False
+    expansion = 'None'          #global variable for expansion
+    opponent = 'None'           #global variable for opponent
+    thematic = False
+    spirits = ['None', 'None', 'None', 'None', 'None', 'None']
+    aspects = ['None', 'None', 'None', 'None', 'None', 'None']
+    scenario = 'None'
+    level = '0'              #global variable for opponent level
+    stage = 'I'             #global variable for current stage
+    blight = 'Healthy'      #global variable for current blight (Healthy, Blighted)
+    players = 1             #global variable for player count
+    fear_tokens = 4         #global variable for fear token count
+    turn = 0
+    previousPhase = []
+    currentPhase = 'FirstExplore'
+    use_timer = True
+    timer_seconds = 180
+    displayopts = {}
+    spirit_list = base_spirits
+    scenarios_list = base_scenarios
+    opponent_list = base_opp
+    ##
+
     def build(self):
-        global use_timer
-        global timer_seconds
         if int(self.config.get('timeroptions', 'usetimer')) == 0:
-            use_timer = False
+            self.use_timer = False
         else:
-            use_timer = True
-        timer_seconds = int(self.config.get('timeroptions', 'timerseconds'))
-        global displayopts
-        displayopts['FirstExplore'] = {}
+            self.use_timer = True
+        self.timer_seconds = int(self.config.get('timeroptions', 'timerseconds'))
+        self.displayopts['FirstExplore'] = {}
         for item in ['phase', 'rules']:
-            displayopts['FirstExplore'][item] = int(self.config.get('FirstExplore', item))
-        displayopts['Growth'] = {}
+            self.displayopts['FirstExplore'][item] = int(self.config.get('FirstExplore', item))
+        self.displayopts['Growth'] = {}
         for item in ['phase', 'badlands', 'opponent', 'all', 'spirits']:
-            displayopts['Growth'][item] = int(self.config.get('Growth', item))
-        displayopts['Energy'] = {}
+            self.displayopts['Growth'][item] = int(self.config.get('Growth', item))
+        self.displayopts['Energy'] = {}
         for item in ['phase', 'badlands', 'opponent', 'all']:
-            displayopts['Energy'][item] = int(self.config.get('Energy', item))
-        displayopts['PowerCards'] = {}
+            self.displayopts['Energy'][item] = int(self.config.get('Energy', item))
+        self.displayopts['PowerCards'] = {}
         for item in ['phase', 'badlands', 'opponent', 'all']:
-            displayopts['PowerCards'][item] = int(self.config.get('PowerCards', item))
-        displayopts['FastPower'] = {}
+            self.displayopts['PowerCards'][item] = int(self.config.get('PowerCards', item))
+        self.displayopts['FastPower'] = {}
         for item in ['phase', 'badlands', 'opponent', 'all']:
-            displayopts['FastPower'][item] = int(self.config.get('FastPower', item))
-        displayopts['BlightedIsland'] = {}
+            self.displayopts['FastPower'][item] = int(self.config.get('FastPower', item))
+        self.displayopts['BlightedIsland'] = {}
         for item in ['phase', 'badlands', 'opponent', 'all']:
-            displayopts['BlightedIsland'][item] = int(self.config.get('BlightedIsland', item))
-        displayopts['Event'] = {}
+            self.displayopts['BlightedIsland'][item] = int(self.config.get('BlightedIsland', item))
+        self.displayopts['Event'] = {}
         for item in ['phase', 'badlands', 'opponent', 'all', 'discard']:
-            displayopts['Event'][item] = int(self.config.get('Event', item))
-        displayopts['Fear'] = {}
+            self.displayopts['Event'][item] = int(self.config.get('Event', item))
+        self.displayopts['Fear'] = {}
         for item in ['phase', 'badlands', 'opponent', 'all']:
-            displayopts['Fear'][item] = int(self.config.get('Fear', item))
-        displayopts['HighImmigration'] = {}
+            self.displayopts['Fear'][item] = int(self.config.get('Fear', item))
+        self.displayopts['HighImmigration'] = {}
         for item in ['phase', 'badlands', 'opponent', 'all']:
-            displayopts['HighImmigration'][item] = int(self.config.get('HighImmigration', item))
-        displayopts['Ravage'] = {}
+            self.displayopts['HighImmigration'][item] = int(self.config.get('HighImmigration', item))
+        self.displayopts['Ravage'] = {}
         for item in ['phase', 'badlands', 'opponent', 'all', 'strife']:
-            displayopts['Ravage'][item] = int(self.config.get('Ravage', item))
-        displayopts['Build'] = {}
+            self.displayopts['Ravage'][item] = int(self.config.get('Ravage', item))
+        self.displayopts['Build'] = {}
         for item in ['phase', 'badlands', 'opponent', 'all', 'disease']:
-            displayopts['Build'][item] = int(self.config.get('Build', item))
-        displayopts['Explore'] = {}
+            self.displayopts['Build'][item] = int(self.config.get('Build', item))
+        self.displayopts['Explore'] = {}
         for item in ['phase', 'badlands', 'opponent', 'all', 'wilds']:
-            displayopts['Explore'][item] = int(self.config.get('Explore', item))
-        displayopts['AdvanceCards'] = {}
+            self.displayopts['Explore'][item] = int(self.config.get('Explore', item))
+        self.displayopts['AdvanceCards'] = {}
         for item in ['phase', 'badlands', 'opponent', 'all']:
-            displayopts['AdvanceCards'][item] = int(self.config.get('AdvanceCards', item))
-        displayopts['SlowPower'] = {}
+            self.displayopts['AdvanceCards'][item] = int(self.config.get('AdvanceCards', item))
+        self.displayopts['SlowPower'] = {}
         for item in ['phase', 'badlands', 'opponent', 'all']:
-            displayopts['SlowPower'][item] = int(self.config.get('SlowPower', item))        
-        displayopts['TimePasses'] = {}
+            self.displayopts['SlowPower'][item] = int(self.config.get('SlowPower', item))        
+        self.displayopts['TimePasses'] = {}
         for item in ['phase', 'opponent', 'all']:
-            displayopts['TimePasses'][item] = int(self.config.get('TimePasses', item))  
+            self.displayopts['TimePasses'][item] = int(self.config.get('TimePasses', item))  
     def on_stop(self):
         return True
 
@@ -2684,27 +2564,23 @@ class MainApp(App):
         
     #on_config_change method - called when a user changes anything in settings screen, similar to the build.                            
     def on_config_change(self, config, section, key, value):
-        global use_timer
-        global timer_seconds
-        global displayopts
         if section == 'timeroptions':
             if int(self.config.get('timeroptions', 'usetimer')) == 0:
-                use_timer = False
+                self.use_timer = False
             else:
-                use_timer = True
-            timer_seconds = int(self.config.get('timeroptions', 'timerseconds'))
+                self.use_timer = True
+            self.timer_seconds = int(self.config.get('timeroptions', 'timerseconds'))
         else:
             #displayopts[section]={}
-            displayopts[section][key]=int(value)
+            self.displayopts[section][key]=int(value)
             
     def on_stage_toggle(self, value):
-        global opponent
         self.blah = 1
         if value == 'II':
-            if opponent != 'None':
+            if self.opponent != 'None':
                 self.flagicon = True
-                self.stage2flag = stage2_flag[opponent]
-                self.stage2flag = stage2_flag[opponent]
+                self.stage2flag = stage2_flag[self.opponent]
+                self.stage2flag = stage2_flag[self.opponent]
             else:
                 self.flagicon = False
                 self.stage2flag = ''
