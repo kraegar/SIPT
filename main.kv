@@ -86,7 +86,25 @@ MainManager:
             pos: int(self.center_x - self.texture_size[0] / 2.), int(self.center_y - self.texture_size[1] / 2.)
         PopMatrix
 
-
+<MyViewClass@BoxLayout>:
+    # define the properties that appear in the data
+    text: ''
+    image: ''
+    
+    # define how the data is displayed
+    Image:
+        size_hint_x: 7.5
+		#size_hint_y: 10
+		valign: 'center'
+        source: root.image
+    Label:
+        size_hint_x: 90
+        text_size: self.size
+		#text_size: self.width, self.height
+		height: self.texture_size[1]
+        valign: 'center'
+        halign: 'left'
+        text: root.text
 
 <PhaseScreen>:
 	name: 'Phase'
@@ -129,8 +147,8 @@ MainManager:
 					on_release: Factory.HelpPopup().open()
 		BoxLayout:
 			size_hint_y: .75 if root.setupScreens else .60
-			PhaseManager:
-				id: Phase_Manager
+			PhaseManager: 
+				id: PhaseManager
 				MainScreen:
 				SpiritSelectScreen:
 				BoardSetupScreen:
@@ -253,14 +271,14 @@ MainManager:
 			size_hint_y: .075
 			ScaleButton:
 				#on_release: root.read_state() if root.currentP == 'Main' else app.root.current = root.on_back()
-				#on_release: Phase_Manager.current = root.on_back()
-				on_release: Phase_Manager.current = root.read_state() if root.currentP == 'Main' else root.on_back()
+				#on_release: PhaseManager.current = root.on_back()
+				on_release: PhaseManager.current = root.read_state() if root.currentP == 'Main' else root.on_back()
 				text: 'Load Previous\nSession' if root.currentP == 'Main' else 'Back'
 				font_size: self.height*0.4
 				size_hint_x: .3
 				height: 55
 			ScaleButton:
-				on_release: Phase_Manager.current = root.on_next_Phase()
+				on_release: PhaseManager.current = root.on_next_Phase()
 				#text: root.next_button_text() + root.time
 				text: root.next_button_value if root.setupScreens else "Next Phase  " + root.time
 				font_size: self.height*0.8
@@ -583,38 +601,60 @@ MainManager:
 		
 <FirstExploreScreen>:
     name: 'FirstExplore'
+	id: 'FirstExplore'
 	BoxLayout:
 		size_hint_y: 1
 		cols: 1
-		ScrollView:
-			do_scroll_x: False
-			do_scroll_y: True
-			bar_width: 4
-			Label:
-				size_hint_y: None
-				text: root.text
-				font_size: 15
-				text_size: self.width, None
-				height: self.texture_size[1]
-
+#		ScrollView:
+#			do_scroll_x: False
+#			do_scroll_y: True
+#			bar_width: 4
+#			Label:
+#				size_hint_y: None
+#				text: root.text
+#				font_size: 15
+#				text_size: self.width, None
+#				height: self.texture_size[1]
+        RV:
+			id: RV
+            viewclass: 'MyViewClass'
+            RecycleBoxLayout:
+                padding: 10, 0, 10, 0
+                size_hint_y: None
+                height: self.minimum_height
+                #default_size: None, 40
+                default_size_hint: 1, None
+                orientation: 'vertical'
+                spacing: 3
             
 <GrowthScreen>:
     name: 'Growth'
+	id: 'Growth'
 	BoxLayout:
 		#size_hint_y: None
 		size_hint_y: 1
 		cols: 1
-		ScrollView:
-			do_scroll_x: False
-			do_scroll_y: True
-			bar_width: 4
-			Label:
-				size_hint_y: None
-				text: root.text
-				font_size: 15
-				text_size: self.width, None
-				height: self.texture_size[1]
-
+#		ScrollView:
+#			do_scroll_x: False
+#			do_scroll_y: True
+#			bar_width: 4
+#			Label:
+#				size_hint_y: None
+#				text: root.text
+#				font_size: 15
+#				text_size: self.width, None
+#				height: self.texture_size[1]
+        RV:
+			id: RV
+            viewclass: 'MyViewClass'
+            RecycleBoxLayout:
+                #padding: 1, 0, 1, 0
+                size_hint_y: None
+                height: self.minimum_height
+                #default_size: None, 40
+                default_size_hint: 1, None
+                orientation: 'vertical'
+                #spacing: 1
 <EnergyScreen>:
     name: 'Energy'
 	BoxLayout:

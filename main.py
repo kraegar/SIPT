@@ -7,6 +7,7 @@ from kivy.uix.label import Label
 from kivy.properties import ObjectProperty, StringProperty, NumericProperty, BooleanProperty, ListProperty
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.spinner import Spinner
+from kivy.uix.recycleview import RecycleView
 from kivy.config import Config 
 from kivy.clock import Clock
 from kivy.metrics import dp, sp
@@ -57,7 +58,11 @@ class PhaseScreen(Screen):
     def on_next_Phase(self):
         app = App.get_running_app()
         self.calc_health_damage()
-        app.previousPhase.append(app.currentPhase)
+        if app.currentPhase == 'Main':
+            app.previousPhase.append(app.currentPhase)
+        elif app.previousPhase[-1] != app.currentPhase:
+            app.previousPhase.append(app.currentPhase)
+        print(app.previousPhase)
         if app.currentPhase == 'Main':
             nextP = 'SpiritSelect'
         if app.currentPhase == 'SpiritSelect':
@@ -205,7 +210,6 @@ class PhaseScreen(Screen):
     def on_stage_toggle(self, value):
         app = App.get_running_app()
         app.stage = value    
-        app = App.get_running_app()
         if app.stage == 'I':
             self.I = True
             self.II = False
@@ -719,16 +723,24 @@ class FirstExploreScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
         app = App.get_running_app()
+        #rvobj = app.root.get_screen('Phase')
         app.currentPhase = 'FirstExplore'
         write_state()
         description = ''
         rules = ''
+        list = []
         if app.displayopts[app.currentPhase]['phase']:
             description = app.screenDescriptions[app.currentPhase]
+            list.append({'image': 'resources/icon.png', 'text': description})
         if app.displayopts[app.currentPhase]['rules']:
             for x in range(int(app.level)):
                 rules += app.firstexplorescreen_rules[app.opponent][x]
-        self.text = '\n'.join([description + rules])
+                if rules != '':
+                    list.append({'image': 'resources/icon.png', 'text': rules})
+        #self.text = '\n'.join([description + rules])
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen('FirstExplore').ids.RV
+        rv.data = list
+        rv.refresh_from_data(app.data)
         
 #Growth Phase Screen
 #Corresponds to Kivy Growth
@@ -746,27 +758,41 @@ class GrowthScreen(Screen):
         app.turn = app.turn +1
         self.text = ''
         description = ''
+        opprules = ""
+        allrules = ""
+        badlands = ""
+        list = []
         if app.displayopts[app.currentPhase]['phase']:
             description = app.screenDescriptions[app.currentPhase]
+            list.append({'image': 'resources/icon.png', 'text': description})
         spirits_text = ''
         if app.displayopts[app.currentPhase]['spirits']:
             for x in app.spirits:
                 if app.spirit_growth_count[x] > 1:
-                    self.spirits_text = 'Spirits with more than one Growth action can use energy gained from one action to pay for another.\n'
-        opprules = ""
-        allrules = ""
-        badlands = ""
+                    spirits_text = 'Spirits with more than one Growth action can use energy gained from one action to pay for another.\n'
+        if spirits_text != '':
+            list.append({'image': 'resources/icon.png', 'text': spirits_text})
+
+        
         if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
             if app.displayopts[app.currentPhase]['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
+                list.append({'image': 'resources/icon.png', 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
             for x in range(int(app.level)):
                 opprules += app.growthscreen_rules[app.opponent][x]
+                if opprules != '':
+                    list.append({'image': 'resources/icon.png', 'text': opprules})
         if app.displayopts[app.currentPhase]['all']:
             for x in range(int(app.level)):
                 allrules += app.allscreen_rules[app.opponent][x]
-        self.text = '\n'.join([description, spirits_text, opprules, badlands, allrules])
+                if opprules != '':
+                    list.append({'image': 'resources/icon.png', 'text': allrules})
+        #self.text = '\n'.join([description, spirits_text, opprules, badlands, allrules])
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen('Growth').ids.RV
+        rv.data = list
+        rv.refresh_from_data(app.data)
         
 class EnergyScreen(Screen):
     text = StringProperty('')
@@ -820,6 +846,7 @@ class FastPowerScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
         app = App.get_running_app()
+        
         app.currentPhase = 'FastPower'
         write_state()
         description = ''
@@ -1125,6 +1152,15 @@ def write_state():
     store.put('scenarios_list', value=app.scenarios_list)
 
 
+class RV(RecycleView):
+    def __init__(self, **kwargs):
+        super(RV, self).__init__(**kwargs)
+        app = App.get_running_app()
+        self.data = app.data
+        # self.data = [
+            # {'text': 'more text', 'image': 'resources/icon.png'},
+            # {'text': 'more text', 'image': 'resources/icon.png'}
+            # ]
 
    
 #Screen manager that controls which screen is which
@@ -1145,6 +1181,7 @@ class MainApp(App):
     flagicon = BooleanProperty(False)
     stage2flag = StringProperty('')
     
+    ## Imports from data.py
     base_opp = data.base_opp
     bc_opp = data.bc_opp
     je_opp = data.je_opp
@@ -1186,11 +1223,10 @@ class MainApp(App):
     timepassesscreen_rules = data.timepassesscreen_rules
     screenTitles = data.screenTitles
     screenDescriptions = data.screenDescriptions
-    
-    
-    
-    
     ##
+    
+    
+    ## Global variables
     branchandclaw = False
     jaggedearth = False
     promopack1 = False
@@ -1216,8 +1252,13 @@ class MainApp(App):
     scenarios_list = base_scenarios
     opponent_list = base_opp
     ##
-
-
+    
+    data = ListProperty()
+    data = [
+        {'text': 'more text', 'image': 'resources/icon.png'},
+        {'text': 'more text', 'image': 'resources/icon.png'}
+        ]
+        
     def build(self):
         if int(self.config.get('timeroptions', 'usetimer')) == 0:
             self.use_timer = False
@@ -1405,7 +1446,6 @@ class MainApp(App):
             self.displayopts[section][key]=int(value)
             
     def on_stage_toggle(self, value):
-        self.blah = 1
         if value == 'II':
             if self.opponent != 'None':
                 self.flagicon = True
