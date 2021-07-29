@@ -710,9 +710,10 @@ class BoardSetupScreen(Screen):
             fear_per = 4
 
         app.fear_tokens = fear_per * int(app.players)    #calculate number of fear tokens into global fear_tokens
+        
+        ft = 'Fear Tokens: ' + str(app.fear_tokens) + '\n'   #copy global fear_tokens into local ft
         if ft != '':
-            ft = 'Fear Tokens: ' + str(app.fear_tokens) + '\n'   #copy global fear_tokens into local ft
-        list.append({'image': app.icons['fear tokens'], 'text': ft})
+            list.append({'image': app.icons['fear tokens'], 'text': ft})
         blight_tokens = (2 * int(app.players)) + 1
         bt = 'Blight Tokens: ' + str(blight_tokens)+ '\n'
         if bt != '':
