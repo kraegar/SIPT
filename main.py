@@ -359,6 +359,7 @@ class MainScreen(Screen):
         self.play = str(app.players)
         self.lvl = app.level
         self.theme = app.thematic
+        self.opp_list = sorted(app.opponent_list)
     def bc_clicked(self, value):
         app = App.get_running_app()
         if value == True:
