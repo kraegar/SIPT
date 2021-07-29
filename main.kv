@@ -39,6 +39,9 @@ MainManager:
 	GridLayout:
 		cols: 1
 		id: BlightPopup
+		Image:
+			size_hint: .1, 1
+			source: 'resources/tokens/Icon Blight.png'
 		Label: 
 			text: 'The island is blighted, flip over the blight card and follow the instructions on the back of the card.'
 			text_size: self.width, None
@@ -90,21 +93,22 @@ MainManager:
     # define the properties that appear in the data
     text: ''
     image: ''
-    
     # define how the data is displayed
+	height: label.height
     Image:
-        size_hint_x: 7.5
-		#size_hint_y: 10
-		valign: 'center'
+		id: image
+        size_hint: 0.07, 1
+		width: self.height
         source: root.image
+	Label:
+		size_hint: 0.007, 1
     Label:
-        size_hint_x: 90
-        text_size: self.size
-		#text_size: self.width, self.height
-		height: self.texture_size[1]
-        valign: 'center'
-        halign: 'left'
-        text: root.text
+		id: label
+		size_hint_y: None
+		text: root.text
+		height: max(self.texture_size[1], image.width)
+		text_size: self.width, None
+
 
 <PhaseScreen>:
 	name: 'Phase'
@@ -174,7 +178,7 @@ MainManager:
 			opacity: 0 if root.setupScreens else 1
 			cols:8
 			Image:
-				source: "resources/si_explorer_icon.png"
+				source: "resources/tokens/Icon Explorer.png"
 				height: 55
 			BoxLayout:
 				orientation: "vertical"
@@ -186,7 +190,7 @@ MainManager:
 					text: root.edamage + " D"
 					font_size: self.height*0.7
 			Image:
-				source: "resources/si_town_icon.png"
+				source: "resources/tokens/Icon Town.png"
 				height: 55
 			BoxLayout:
 				orientation: "vertical"
@@ -198,7 +202,7 @@ MainManager:
 					text: root.tdamage + " D"
 					font_size: self.height*0.7
 			Image:
-				source: "resources/si_city_icon.png"
+				source: "resources/tokens/Icon City.png"
 				height: 55
 			BoxLayout:
 				orientation: "vertical"
@@ -210,7 +214,7 @@ MainManager:
 					text: root.cdamage + " D"
 					font_size: self.height*0.7
 			Image:
-				source: "resources/si_dahan_icon.png"
+				source: "resources/tokens/Icon Dahan.png"
 				height: 55
 			BoxLayout:
 				orientation: "vertical"
@@ -568,320 +572,191 @@ MainManager:
 				
 <BoardSetupScreen>:
     name: 'BoardSetup'
-	GridLayout:
-		size_hint_y: 1
-		cols: 1
-		ScrollView:
-			do_scroll_x: False
-			do_scroll_y: True
-			bar_width: 4
-			Label:
-				size_hint_y: None
-				text: root.text
-				font_size: 15
-				text_size: self.width, None
-				height: self.texture_size[1]
-
+	RV:
+		id: RV
+		viewclass: 'MyViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height
 
 <SpiritSetupScreen>:
 	name: 'SpiritSetup'
-	BoxLayout:
-		size_hint_y: 1
-		ScrollView:
-			do_scroll_x: False
-			do_scroll_y: True
-			bar_width: 4
-			Label:
-				size_hint_y: None
-				text: root.spirits_text
-				font_size: 15
-				text_size: self.width, None
-				height: self.texture_size[1]
-
+	RV:
+		id: RV
+		viewclass: 'MyViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height
 		
 <FirstExploreScreen>:
     name: 'FirstExplore'
 	id: 'FirstExplore'
-	BoxLayout:
-		size_hint_y: 1
-		cols: 1
-#		ScrollView:
-#			do_scroll_x: False
-#			do_scroll_y: True
-#			bar_width: 4
-#			Label:
-#				size_hint_y: None
-#				text: root.text
-#				font_size: 15
-#				text_size: self.width, None
-#				height: self.texture_size[1]
-        RV:
-			id: RV
-            viewclass: 'MyViewClass'
-            RecycleBoxLayout:
-                padding: 10, 0, 10, 0
-                size_hint_y: None
-                height: self.minimum_height
-                #default_size: None, 40
-                default_size_hint: 1, None
-                orientation: 'vertical'
-                spacing: 3
+	RV:
+		id: RV
+		viewclass: 'MyViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height
             
 <GrowthScreen>:
     name: 'Growth'
 	id: 'Growth'
-	BoxLayout:
-		#size_hint_y: None
-		size_hint_y: 1
-		cols: 1
-#		ScrollView:
-#			do_scroll_x: False
-#			do_scroll_y: True
-#			bar_width: 4
-#			Label:
-#				size_hint_y: None
-#				text: root.text
-#				font_size: 15
-#				text_size: self.width, None
-#				height: self.texture_size[1]
-        RV:
-			id: RV
-            viewclass: 'MyViewClass'
-            RecycleBoxLayout:
-                #padding: 1, 0, 1, 0
-                size_hint_y: None
-                height: self.minimum_height
-                #default_size: None, 40
-                default_size_hint: 1, None
-                orientation: 'vertical'
-                #spacing: 1
+	RV:
+		id: RV
+		viewclass: 'MyViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height
+
+			
 <EnergyScreen>:
     name: 'Energy'
-	BoxLayout:
-		cols: 1
-		size_hint_y: 1
-		ScrollView:
-			do_scroll_x: False
-			do_scroll_y: True
-			bar_width: 4
-			Label:
-				size_hint_y: None
-				text: root.text
-				font_size: 15
-				text_size: self.width, None
-				height: self.texture_size[1]
-
+	RV:
+		id: RV
+		viewclass: 'MyViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height
 			
 <PowerCardsScreen>:
     name: 'PowerCards'
-	BoxLayout:
-		cols: 1
-		size_hint_y: 1
-		ScrollView:
-			do_scroll_x: False
-			do_scroll_y: True
-			bar_width: 4
-			Label:
-				size_hint_y: None
-				text: root.text
-				font_size: 15
-				text_size: self.width, None
-				height: self.texture_size[1]
+	RV:
+		id: RV
+		viewclass: 'MyViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height
 			
 <FastPowerScreen>:
     name: 'FastPower'
-	BoxLayout:
-		cols: 1
-		size_hint_y: 1
-		ScrollView:
-			do_scroll_x: False
-			do_scroll_y: True
-			bar_width: 4
-			Label:
-				size_hint_y: None
-				text: root.text
-				font_size: 15
-				text_size: self.width, None
-				height: self.texture_size[1]
+	RV:
+		id: RV
+		viewclass: 'MyViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height
 			
 <BlightedIslandScreen>:
     name: 'BlightedIsland'
-	BoxLayout:
-		cols: 1
-		size_hint_y: 1
-		ScrollView:
-			do_scroll_x: False
-			do_scroll_y: True
-			bar_width: 4
-			Label:
-				size_hint_y: None
-				text: root.text
-				font_size: 15
-				text_size: self.width, None
-				height: self.texture_size[1]
-
+	RV:
+		id: RV
+		viewclass: 'MyViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height
 			
 <EventScreen>:
     name: 'Event'
-	BoxLayout:
-		cols: 1
-		size_hint_y: 1
-		ScrollView:
-			do_scroll_x: False
-			do_scroll_y: True
-			bar_width: 4
-			Label:
-				size_hint_y: None
-				text: root.text
-				font_size: 15
-				text_size: self.width, None
-				height: self.texture_size[1]
+	RV:
+		id: RV
+		viewclass: 'MyViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height
 			
 <FearScreen>:
     name: 'Fear'
-	BoxLayout:
-		cols: 1
-		size_hint_y: 1
-		ScrollView:
-			do_scroll_x: False
-			do_scroll_y: True
-			bar_width: 4
-			Label:
-				size_hint_y: None
-				text: root.text
-				font_size: 15
-				text_size: self.width, None
-				height: self.texture_size[1]
-
+	RV:
+		id: RV
+		viewclass: 'MyViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height
 				
 <HighImmigrationScreen>:
     name: 'HighImmigration'
-	BoxLayout:
-		cols: 1
-		size_hint_y: 1
-		ScrollView:
-			do_scroll_x: False
-			do_scroll_y: True
-			bar_width: 4
-			Label:
-				size_hint_y: None
-				text: root.text
-				font_size: 15
-				text_size: self.width, None
-				height: self.texture_size[1]
-
+	RV:
+		id: RV
+		viewclass: 'MyViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height
 			
 <RavageScreen>:
     name: 'Ravage'
-	BoxLayout:
-		cols: 1
-		size_hint_y: 1
-		ScrollView:
-			do_scroll_x: False
-			do_scroll_y: True
-			bar_width: 4
-			Label:
-				size_hint_y: None
-				text: root.text
-				font_size: 15
-				text_size: self.width, None
-				height: self.texture_size[1]
+	RV:
+		id: RV
+		viewclass: 'MyViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height
 			
 <BuildScreen>:
     name: 'Build'
-	BoxLayout:
-		cols: 1
-		size_hint_y: 1
-		ScrollView:
-			do_scroll_x: False
-			do_scroll_y: True
-			bar_width: 4
-			Label:
-				size_hint_y: None
-				text: root.text
-				font_size: 15
-				text_size: self.width, None
-				height: self.texture_size[1]
-				
+	RV:
+		id: RV
+		viewclass: 'MyViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height
+			
 <ExploreScreen>:
     name: 'Explore'
-	GridLayout:
-		cols: 1
-		size_hint_y: 1
-		BoxLayout:
-			cols: 3
-			size_hint_y: .4
-			Label:
-				size_hint_x: .02
-			Image:
-				size_hint_x: .04
-				source: "resources/flag.jpg" 
-				opacity: 100 if app.flagicon else 0
-			Label:
-				text: app.stage2flag
-				size_hint_x: 0.94
-				font_size: 15
-				text_size: self.width*0.97, None
-				height: self.texture_size[1]
-				valign: 'bottom'
-		BoxLayout:
-			cols: 1
-			size_hint_y: .60
-			ScrollView:
-				do_scroll_x: False
-				do_scroll_y: True
-				bar_width: 4
-				Label:
-					size_hint_y: None
-					text: root.text
-					font_size: 15
-					text_size: self.width, None
-					height: self.texture_size[1]
+	RV:
+		id: RV
+		viewclass: 'MyViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height
+
 			
 <AdvanceCardsScreen>:
     name: 'AdvanceCards'
-	BoxLayout:
-		cols: 1
-		size_hint_y: 1
-		ScrollView:
-			do_scroll_x: False
-			do_scroll_y: True
-			bar_width: 4
-			Label:
-				size_hint_y: None
-				text: root.text
-				font_size: 15
-				text_size: self.width, None
-				height: self.texture_size[1]
+	RV:
+		id: RV
+		viewclass: 'MyViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height
 			
 <SlowPowerScreen>:
     name: 'SlowPower'
-	BoxLayout:
-		cols: 1
-		size_hint_y: 1
-		ScrollView:
-			do_scroll_x: False
-			do_scroll_y: True
-			bar_width: 4
-			Label:
-				size_hint_y: None
-				text: root.text
-				font_size: 15
-				text_size: self.width, None
-				height: self.texture_size[1]
+	RV:
+		id: RV
+		viewclass: 'MyViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height
 			
 <TimePassesScreen>:
     name: 'TimePasses'
-	BoxLayout:
-		cols: 1
-		size_hint_y: 1
-		ScrollView:
-			do_scroll_x: False
-			do_scroll_y: True
-			bar_width: 4
-			Label:
-				size_hint_y: None
-				text: root.text
-				font_size: 15
-				text_size: self.width, None
-				height: self.texture_size[1]
+	RV:
+		id: RV
+		viewclass: 'MyViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height

@@ -62,7 +62,6 @@ class PhaseScreen(Screen):
             app.previousPhase.append(app.currentPhase)
         elif app.previousPhase[-1] != app.currentPhase:
             app.previousPhase.append(app.currentPhase)
-        print(app.previousPhase)
         if app.currentPhase == 'Main':
             nextP = 'SpiritSelect'
         if app.currentPhase == 'SpiritSelect':
@@ -686,28 +685,41 @@ class BoardSetupScreen(Screen):
         exsetup = ''
         ft = ''
         bt = ''
-        
+        list = []
         if app.fear_cards[app.opponent][int(app.level)-1] != '':
             fear = 'Fear Cards ' + app.fear_cards[app.opponent][int(app.level)-1] + '\n'  #calculate fear cards into local fear
-        
+        if fear != '':
+            list.append({'image': app.icons['Fear Cards'], 'text': fear})
         #loop to add all setup changes together (cumulative) from app.setup_changes up to opponent level into local start
         for x in range(int(app.level)):
             start += app.setup_changes[app.opponent][x]
-            
+        if start != '':
+            list.append({'image': app.icons[app.opponent], 'text': start})    
         invaders = 'Invader Deck: ' + app.invader_deck[app.opponent][int(app.level)-1]  + '\n' #set local invaders to invader deck based on opponent & level
+        if invaders != '':
+            list.append({'image': app.icons['Invader Cards'], 'text': invaders})
         if app.thematic:
             exsetup = 'Follow the icons on the thematic map for all invaders and tokens.'
         else:
             exsetup = app.expansion_setup[app.expansion]     #copy app.expansion_setup into local exsetup
+        if exsetup != '':
+            list.append({'image': app.icons['Land'], 'text': exsetup})
         if app.opponent == 'England' and int(app.level) == 6:
             fear_per = 5
         else:
             fear_per = 4
+
         app.fear_tokens = fear_per * int(app.players)    #calculate number of fear tokens into global fear_tokens
-        ft = 'Fear Tokens: ' + str(app.fear_tokens) + '\n'   #copy global fear_tokens into local ft
+        if ft != '':
+            ft = 'Fear Tokens: ' + str(app.fear_tokens) + '\n'   #copy global fear_tokens into local ft
+        list.append({'image': app.icons['fear tokens'], 'text': ft})
         blight_tokens = (2 * int(app.players)) + 1
         bt = 'Blight Tokens: ' + str(blight_tokens)+ '\n'
-        self.text = '\n'.join([start, fear, invaders, exsetup, ft, bt])
+        if bt != '':
+            list.append({'image': app.icons['blight tokens'], 'text': bt})
+        #self.text = '\n'.join([start, fear, invaders, exsetup, ft, bt])
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = list
         
 class SpiritSetupScreen(Screen):
     spirits_text = StringProperty('')
@@ -715,32 +727,35 @@ class SpiritSetupScreen(Screen):
         app = App.get_running_app()
         app.currentPhase = 'SpiritSetup'
         self.spirits_text = ''
-        for x in app.spirits:
-            if x != 'None':
-                self.spirits_text = self.spirits_text + x + ': ' + app.spirit_setup[x] + '\n'
-                
+        list = []
+        for spirit in app.spirits:
+            if spirit != 'None':
+                #self.spirits_text = self.spirits_text + x + ': ' + app.spirit_setup[x] + '\n'
+                list.append({'image': app.icons[spirit], 'text': app.spirit_setup[spirit]})
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = list
+        
 class FirstExploreScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
         app = App.get_running_app()
-        #rvobj = app.root.get_screen('Phase')
         app.currentPhase = 'FirstExplore'
         write_state()
         description = ''
         rules = ''
         list = []
-        if app.displayopts[app.currentPhase]['phase']:
+        if app.displayopts['All']['phase']:
             description = app.screenDescriptions[app.currentPhase]
-            list.append({'image': 'resources/icon.png', 'text': description})
+        if description != '':
+            list.append({'image': app.icons[app.currentPhase], 'text': description})
         if app.displayopts[app.currentPhase]['rules']:
             for x in range(int(app.level)):
                 rules += app.firstexplorescreen_rules[app.opponent][x]
-                if rules != '':
-                    list.append({'image': 'resources/icon.png', 'text': rules})
+        if rules != '':
+            list.append({'image': 'resources/icon.png', 'text': rules})
         #self.text = '\n'.join([description + rules])
-        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen('FirstExplore').ids.RV
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list
-        rv.refresh_from_data(app.data)
         
 #Growth Phase Screen
 #Corresponds to Kivy Growth
@@ -762,37 +777,38 @@ class GrowthScreen(Screen):
         allrules = ""
         badlands = ""
         list = []
-        if app.displayopts[app.currentPhase]['phase']:
+        if app.displayopts['All']['phase']:
             description = app.screenDescriptions[app.currentPhase]
-            list.append({'image': 'resources/icon.png', 'text': description})
+        if description != '':
+            list.append({'image': app.icons[app.currentPhase], 'text': description})
         spirits_text = ''
         if app.displayopts[app.currentPhase]['spirits']:
             for x in app.spirits:
                 if app.spirit_growth_count[x] > 1:
                     spirits_text = 'Spirits with more than one Growth action can use energy gained from one action to pay for another.\n'
         if spirits_text != '':
-            list.append({'image': 'resources/icon.png', 'text': spirits_text})
+            list.append({'image': app.icons['spirits text'], 'text': spirits_text})
 
         
         if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
-            if app.displayopts[app.currentPhase]['badlands']:
+            if app.displayopts['All']['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
-                list.append({'image': 'resources/icon.png', 'text': badlands})
+                list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
             for x in range(int(app.level)):
                 opprules += app.growthscreen_rules[app.opponent][x]
-                if opprules != '':
-                    list.append({'image': 'resources/icon.png', 'text': opprules})
+        if opprules != '':
+            list.append({'image': app.icons[app.opponent], 'text': opprules})
         if app.displayopts[app.currentPhase]['all']:
             for x in range(int(app.level)):
                 allrules += app.allscreen_rules[app.opponent][x]
-                if opprules != '':
-                    list.append({'image': 'resources/icon.png', 'text': allrules})
+        if allrules != '':
+            list.append({'image': app.icons[app.opponent], 'text': allrules})
         #self.text = '\n'.join([description, spirits_text, opprules, badlands, allrules])
-        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen('Growth').ids.RV
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list
-        rv.refresh_from_data(app.data)
+        
         
 class EnergyScreen(Screen):
     text = StringProperty('')
@@ -801,23 +817,19 @@ class EnergyScreen(Screen):
         app.currentPhase = 'Energy'
         write_state()
         description = ''
-        if app.displayopts[app.currentPhase]['phase']:
-            description = app.screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
-        if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
-            if app.displayopts[app.currentPhase]['badlands']:
-                badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
-        #loop to add all phase changes together (cumulative) up to opponent level into local opprules
-        if app.displayopts[app.currentPhase]['opponent']:
-            for x in range(int(app.level)):
-                opprules += app.energyscreen_rules[app.opponent][x]
-        if app.displayopts[app.currentPhase]['all']:
-            for x in range(int(app.level)):
-                allrules += app.allscreen_rules[app.opponent][x]
-        self.text = '\n'.join([description,opprules, badlands, allrules])
-            
+        list = []
+        if app.displayopts['All']['phase']:
+            description = app.screenDescriptions[app.currentPhase]
+        if description != '':
+            list.append({'image': app.icons[app.currentPhase], 'text': description})
+
+        #self.text = '\n'.join([description,opprules, badlands, allrules])
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = list
+        
 class PowerCardsScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
@@ -825,23 +837,34 @@ class PowerCardsScreen(Screen):
         app.currentPhase = 'PowerCards'
         write_state()
         description = ''
-        if app.displayopts[app.currentPhase]['phase']:
-            description = app.screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
+        list = []
+        if app.displayopts['All']['phase']:
+            description = app.screenDescriptions[app.currentPhase]
+        if description != '':
+            list.append({'image': app.icons[app.currentPhase], 'text': description})
+
         if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
-            if app.displayopts[app.currentPhase]['badlands']:
+            if app.displayopts['All']['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
+                list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
             for x in range(int(app.level)):
                 opprules += app.powercardscreen_rules[app.opponent][x]
+        if opprules != '':
+            list.append({'image': app.icons[app.opponent], 'text': opprules}) 
         if app.displayopts[app.currentPhase]['all']:
             for x in range(int(app.level)):
                 allrules += app.allscreen_rules[app.opponent][x]
-        self.text = '\n'.join([description,opprules, badlands, allrules])
-            
+        if allrules != '':
+            list.append({'image': app.icons[app.opponent], 'text': allrules})
+        #self.text = '\n'.join([description,opprules, badlands, allrules])
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = list
+        
 class FastPowerScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
@@ -850,22 +873,32 @@ class FastPowerScreen(Screen):
         app.currentPhase = 'FastPower'
         write_state()
         description = ''
-        if app.displayopts[app.currentPhase]['phase']:
-            description = app.screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
+        list = []
+        if app.displayopts['All']['phase']:
+            description = app.screenDescriptions[app.currentPhase]
+        if description != '':
+            list.append({'image': app.icons[app.currentPhase], 'text': description})
         if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
-            if app.displayopts[app.currentPhase]['badlands']:
+            if app.displayopts['All']['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
+                list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
             for x in range(int(app.level)):
                 opprules += app.fastpowerscreen_rules[app.opponent][x]
+        if opprules != '':
+            list.append({'image': app.icons[app.opponent], 'text': opprules}) 
         if app.displayopts[app.currentPhase]['all']:
             for x in range(int(app.level)):
                 allrules += app.allscreen_rules[app.opponent][x]
-        self.text = '\n'.join([description,opprules, badlands, allrules])
+        if allrules != '':
+            list.append({'image': app.icons[app.opponent], 'text': allrules})
+        #self.text = '\n'.join([description,opprules, badlands, allrules])
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = list
         
 class BlightedIslandScreen(Screen):
     text = StringProperty('')
@@ -873,24 +906,34 @@ class BlightedIslandScreen(Screen):
         app = App.get_running_app()
         app.currentPhase = 'BlightedIsland'
         write_state()
-        description = ''
-        if app.displayopts[app.currentPhase]['phase']:
-            description = app.screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
+        description = ''
+        list = []
+        if app.displayopts['All']['phase']:
+            description = app.screenDescriptions[app.currentPhase]
+        if description != '':
+            list.append({'image': app.icons[app.currentPhase], 'text': description})            
         if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
-            if app.displayopts[app.currentPhase]['badlands']:
+            if app.displayopts['All']['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
+                list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
             for x in range(int(app.level)):
                 opprules += app.blightedislandscreen_rules[app.opponent][x]
+        if opprules != '':
+            list.append({'image': app.icons[app.opponent], 'text': opprules}) 
         if app.displayopts[app.currentPhase]['all']:
             for x in range(int(app.level)):
                 allrules += app.allscreen_rules[app.opponent][x]
-        self.text = '\n'.join([description,opprules, badlands, allrules])
-            
+        if allrules != '':
+            list.append({'image': app.icons[app.opponent], 'text': allrules})
+        #self.text = '\n'.join([description,opprules, badlands, allrules])
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = list
+        
 class EventScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
@@ -898,27 +941,38 @@ class EventScreen(Screen):
         app.currentPhase = 'Event'
         write_state()
         description = ''
-        if app.displayopts[app.currentPhase]['phase']:
-            description = app.screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
         discard = ""
+        list = []
+        if app.displayopts['All']['phase']:
+            description = app.screenDescriptions[app.currentPhase]
+        if description != '':
+            list.append({'image': app.icons[app.currentPhase], 'text': description}) 
         if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
-            if app.displayopts[app.currentPhase]['badlands']:
+            if app.displayopts['All']['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
+                list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
             for x in range(int(app.level)):
                 opprules += app.eventscreen_rules[app.opponent][x]
+        if opprules != '':
+            list.append({'image': app.icons[app.opponent], 'text': opprules})                
         if app.displayopts[app.currentPhase]['all']:
             for x in range(int(app.level)):
                 allrules += app.allscreen_rules[app.opponent][x]
+        if allrules != '':
+            list.append({'image': app.icons[app.opponent], 'text': allrules})                
         if app.displayopts[app.currentPhase]['discard']:
             if app.turn == 1:
-                discard += 'Turn over the first event card, but discard it with no action. (Optional rule for Branch and Claw)\n'
-        self.text = '\n'.join([description, opprules, badlands, allrules, discard])
-
+                discard += 'Turn over the first event card, but discard it with no action.\n'
+        if discard != '':
+            list.append({'image': app.icons['discard'], 'text': discard})
+        #self.text = '\n'.join([description, opprules, badlands, allrules, discard])
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = list
             
 class FearScreen(Screen):
     text = StringProperty('')
@@ -927,23 +981,33 @@ class FearScreen(Screen):
         app.currentPhase = 'Fear'
         write_state()
         description = ''
-        if app.displayopts[app.currentPhase]['phase']:
-            description = app.screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
+        list = []
+        if app.displayopts['All']['phase']:
+            description = app.screenDescriptions[app.currentPhase]
+        if description != '':
+            list.append({'image': app.icons[app.currentPhase], 'text': description}) 
         if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
-            if app.displayopts[app.currentPhase]['badlands']:
+            if app.displayopts['All']['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
+                list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
             for x in range(int(app.level)):
                 opprules += app.fearscreen_rules[app.opponent][x]
+        if opprules != '':
+            list.append({'image': app.icons[app.opponent], 'text': opprules})                     
         if app.displayopts[app.currentPhase]['all']:
             for x in range(int(app.level)):
                 allrules += app.allscreen_rules[app.opponent][x]
-        self.text = '\n'.join([description,opprules, badlands, allrules])
-            
+        if allrules != '':
+            list.append({'image': app.icons[app.opponent], 'text': allrules})   
+        #self.text = '\n'.join([description,opprules, badlands, allrules])
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = list          
+        
 class HighImmigrationScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
@@ -951,23 +1015,33 @@ class HighImmigrationScreen(Screen):
         app.currentPhase = 'HighImmigration'
         write_state()
         description = ''
-        if app.displayopts[app.currentPhase]['phase']:
-            description = app.screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
+        list = []
+        if app.displayopts['All']['phase']:
+            description = app.screenDescriptions[app.currentPhase]
+        if description != '':
+            list.append({'image': app.icons[app.currentPhase], 'text': description})            
         if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
-            if app.displayopts[app.currentPhase]['badlands']:
+            if app.displayopts['All']['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
+                list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
             for x in range(int(app.level)):
                 opprules += app.highimmigrationscreen_rules[app.opponent][x]
+        if opprules != '':
+            list.append({'image': app.icons[app.opponent], 'text': opprules})
         if app.displayopts[app.currentPhase]['all']:
             for x in range(int(app.level)):
                 allrules += app.allscreen_rules[app.opponent][x]
-        self.text = '\n'.join([description,opprules, badlands, allrules])
-            
+        if allrules != '':
+            list.append({'image': app.icons[app.opponent], 'text': allrules})
+        #self.text = '\n'.join([description,opprules, badlands, allrules])
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = list   
+        
 class RavageScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
@@ -975,29 +1049,43 @@ class RavageScreen(Screen):
         app.currentPhase = 'Ravage'
         write_state()
         description = ''
-        if app.displayopts[app.currentPhase]['phase']:
-            description = app.screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
         strife = ""
+        list = []
+        if app.displayopts['All']['phase']:
+            description = app.screenDescriptions[app.currentPhase]
+        if description != '':
+            list.append({'image': app.icons[app.currentPhase], 'text': description})  
         if app.displayopts[app.currentPhase]['strife']:
             if app.expansion != 'None':
                 strife = 'If present, Strife Tokens block specific invaders from doing damage. Remove the token.\n'
+        if strife != '':
+            list.append({'image': app.icons['strife'], 'text': strife})
         if app.opponent == 'Russia' and int(app.level) ==6  and app.turn > 1:
             opprules += "After the ravage step, on each board where it added no blight: in the land with the most explorers (min 1) add one explorer and one town.\n"
+        if opprules != '':
+            list.append({'image': app.icons[app.opponent], 'text': opprules})
         if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
-            if app.displayopts[app.currentPhase]['badlands']:
+            if app.displayopts['All']['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
+                list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
             for x in range(int(app.level)):
                 opprules += app.ravagescreen_rules[app.opponent][x]
+        if opprules != '':
+            list.append({'image': app.icons[app.opponent], 'text': opprules})
         if app.displayopts[app.currentPhase]['all']:
             for x in range(int(app.level)):
                 allrules += app.allscreen_rules[app.opponent][x]
-        self.text = '\n'.join([description,strife,opprules, badlands, allrules])            
-            
+        if allrules != '':
+            list.append({'image': app.icons[app.opponent], 'text': allrules})
+        #self.text = '\n'.join([description,strife,opprules, badlands, allrules])            
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = list   
+        
 class BuildScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
@@ -1005,58 +1093,96 @@ class BuildScreen(Screen):
         app.currentPhase = 'Build'
         write_state()
         description = ''
-        if app.displayopts[app.currentPhase]['phase']:
-            description = app.screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
         disease = ""
+        list = []
+        if app.displayopts['All']['phase']:
+            description = app.screenDescriptions[app.currentPhase]
+        if description != '':
+            list.append({'image': app.icons[app.currentPhase], 'text': description}) 
         if app.displayopts[app.currentPhase]['disease']:
             if app.expansion != 'None':
                 disease = 'If present, Disease tokens prevent this build. Remove the token.\n'
+        if disease != '':
+            list.append({'image': app.icons['disease'], 'text': disease})
         if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
-            if app.displayopts[app.currentPhase]['badlands']:
+            if app.displayopts['All']['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
+                list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
             for x in range(int(app.level)):
                 opprules += app.buildscreen_rules[app.opponent][x]
+        if opprules != '':
+            list.append({'image': app.icons[app.opponent], 'text': opprules})
         if app.displayopts[app.currentPhase]['all']:
             for x in range(int(app.level)):
                 allrules += app.allscreen_rules[app.opponent][x]
-        self.text = '\n'.join([description,disease,opprules, badlands, allrules])
-      
+        if allrules != '':
+            list.append({'image': app.icons[app.opponent], 'text': allrules})
+        #self.text = '\n'.join([description,disease,opprules, badlands, allrules])
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = list   
+        
 #Explore Screen
 #Corresponds to Kivy Explore
 #Note extra local variable flag, and update to the on_stage_toggle method
 class ExploreScreen(Screen):
     text = StringProperty('')
+    list = ListProperty([])
+    s2list = ListProperty([])
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'Explore'
         write_state()
         description = ''
-        if app.displayopts[app.currentPhase]['phase']:
-            description = app.screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
         wilds = ""
+        self.list = []
+        if app.flagicon == True:
+            self.s2list = [{'image': app.icons['stage2flag'], 'text': app.stage2_flag[app.opponent]}]
+        else:
+            self.s2list = []
+        if app.displayopts['All']['phase']:
+            description = app.screenDescriptions[app.currentPhase]
+        if description != '':
+            self.list.append({'image': app.icons[app.currentPhase], 'text': description}) 
         if app.displayopts[app.currentPhase]['wilds']:
             if app.expansion != 'None':
                 wilds = 'If a wilds token is present, skip that exploration and discard one wilds token.\n'
+        if wilds != '':
+            self.list.append({'image': app.icons['wilds'], 'text': wilds})
         if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
-            if app.displayopts[app.currentPhase]['badlands']:
+            if app.displayopts['All']['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
+                self.list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
             for x in range(int(app.level)):
                 opprules += app.explorescreen_rules[app.opponent][x]
+        if opprules != '':
+            self.list.append({'image': app.icons[app.opponent], 'text': opprules})
         if app.displayopts[app.currentPhase]['all']:
             for x in range(int(app.level)):
                 allrules += app.allscreen_rules[app.opponent][x]
-        self.text = '\n'.join([description,wilds,opprules, badlands, allrules])       
-
+        if allrules != '':
+            self.list.append({'image': app.icons[app.opponent], 'text': allrules})
+        #self.text = '\n'.join([description,wilds,opprules, badlands, allrules])
+        
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = self.list + self.s2list
+    def on_stage_toggle(self):
+        app = App.get_running_app()
+        if app.flagicon == True:
+            self.s2list = [{'image': app.icons['stage2flag'], 'text': app.stage2_flag[app.opponent]}]
+        else:
+            self.s2list = []
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = self.list + self.s2list
         
 class AdvanceCardsScreen(Screen):
     text = StringProperty('')
@@ -1064,47 +1190,61 @@ class AdvanceCardsScreen(Screen):
         app = App.get_running_app()
         app.currentPhase = 'AdvanceCards'
         write_state()
-        description = ''
-        if app.displayopts[app.currentPhase]['phase']:
-            description = app.screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
-        badlands = ""
-        if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
-            if app.displayopts[app.currentPhase]['badlands']:
-                badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
+        description = ''
+        list = []
+        if app.displayopts['All']['phase']:
+            description = app.screenDescriptions[app.currentPhase]
+
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
             for x in range(int(app.level)):
                 opprules += app.advancecardsscreen_rules[app.opponent][x]
+        if opprules != '':
+            list.append({'image': app.icons[app.opponent], 'text': opprules})
         if app.displayopts[app.currentPhase]['all']:
             for x in range(int(app.level)):
                 allrules += app.allscreen_rules[app.opponent][x]
-        self.text = '\n'.join([description,opprules, badlands, allrules])
-            
+        if allrules != '':
+            list.append({'image': app.icons[app.opponent], 'text': allrules})
+        #self.text = '\n'.join([description,opprules, badlands, allrules])
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = list
+        
 class SlowPowerScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'SlowPower'
         write_state()
-        description = ''
-        if app.displayopts[app.currentPhase]['phase']:
-            description = app.screenDescriptions[app.currentPhase]
         opprules = ""
         allrules = ""
         badlands = ""
+        description = ''
+        list = []
+        if app.displayopts['All']['phase']:
+            description = app.screenDescriptions[app.currentPhase]
+        if description != '':
+            list.append({'image': app.icons[app.currentPhase], 'text': description})
         if app.expansion == "BC and JE" or app.expansion == "Jagged Earth":
-            if app.displayopts[app.currentPhase]['badlands']:
+            if app.displayopts['All']['badlands']:
                 badlands = 'Badlands token increases damage to Invaders/Dahan by 1. (Once per action.)\n'
+                list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
             for x in range(int(app.level)):
                 opprules += app.slowpowerscreen_rules[app.opponent][x]
+        if opprules != '':
+            list.append({'image': app.icons[app.opponent], 'text': opprules})
         if app.displayopts[app.currentPhase]['all']:
             for x in range(int(app.level)):
                 allrules += app.allscreen_rules[app.opponent][x]
-        self.text = '\n'.join([description,opprules, badlands, allrules])
+        if allrules != '':
+            list.append({'image': app.icons[app.opponent], 'text': allrules})
+        #self.text = '\n'.join([description,opprules, badlands, allrules])
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = list
             
 class TimePassesScreen(Screen):
     text = StringProperty('')
@@ -1113,19 +1253,16 @@ class TimePassesScreen(Screen):
         app.currentPhase = 'TimePasses'
         write_state()
         description = ''
-        if app.displayopts[app.currentPhase]['phase']:
+        list = []
+        if app.displayopts['All']['phase']:
             description = app.screenDescriptions[app.currentPhase]
-        opprules = ""
-        allrules = ""
+        if description != '':
+            list.append({'image': app.icons[app.currentPhase], 'text': description})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
-        if app.displayopts[app.currentPhase]['opponent']:
-            for x in range(int(app.level)):
-                opprules += app.timepassesscreen_rules[app.opponent][x]
-        if app.displayopts[app.currentPhase]['all']:
-            for x in range(int(app.level)):
-                allrules += app.allscreen_rules[app.opponent][x]
-        self.text = '\n'.join([description,opprules, allrules])
-    
+        #self.text = '\n'.join([description,opprules, allrules])
+        rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = list
+        
 store = JsonStore('sipt.json')
 def write_state():
     app = App.get_running_app()
@@ -1156,13 +1293,9 @@ class RV(RecycleView):
     def __init__(self, **kwargs):
         super(RV, self).__init__(**kwargs)
         app = App.get_running_app()
-        self.data = app.data
-        # self.data = [
-            # {'text': 'more text', 'image': 'resources/icon.png'},
-            # {'text': 'more text', 'image': 'resources/icon.png'}
-            # ]
+        self.data = []
 
-   
+  
 #Screen manager that controls which screen is which
 class MainManager(ScreenManager):
     pass
@@ -1180,7 +1313,7 @@ class MainApp(App):
     fastpowernext = StringProperty('Event')
     flagicon = BooleanProperty(False)
     stage2flag = StringProperty('')
-    
+    s2list = ListProperty([])
     ## Imports from data.py
     base_opp = data.base_opp
     bc_opp = data.bc_opp
@@ -1223,8 +1356,9 @@ class MainApp(App):
     timepassesscreen_rules = data.timepassesscreen_rules
     screenTitles = data.screenTitles
     screenDescriptions = data.screenDescriptions
+    icons = data.icons
     ##
-    
+    data = ListProperty([])
     
     ## Global variables
     branchandclaw = False
@@ -1253,12 +1387,7 @@ class MainApp(App):
     opponent_list = base_opp
     ##
     
-    data = ListProperty()
-    data = [
-        {'text': 'more text', 'image': 'resources/icon.png'},
-        {'text': 'more text', 'image': 'resources/icon.png'}
-        ]
-        
+       
     def build(self):
         if int(self.config.get('timeroptions', 'usetimer')) == 0:
             self.use_timer = False
@@ -1266,50 +1395,48 @@ class MainApp(App):
             self.use_timer = True
         self.timer_seconds = int(self.config.get('timeroptions', 'timerseconds'))
         self.displayopts['FirstExplore'] = {}
-        for item in ['phase', 'rules']:
+        self.displayopts['All'] = {}
+        for item in ['phase', 'badlands']:
+            self.displayopts['All'][item] = int(self.config.get('All', item))
+        self.displayopts['FirstExplore'] = {}
+        for item in ['rules']:
             self.displayopts['FirstExplore'][item] = int(self.config.get('FirstExplore', item))
         self.displayopts['Growth'] = {}
-        for item in ['phase', 'badlands', 'opponent', 'all', 'spirits']:
+        for item in ['opponent', 'all', 'spirits']:
             self.displayopts['Growth'][item] = int(self.config.get('Growth', item))
-        self.displayopts['Energy'] = {}
-        for item in ['phase', 'badlands', 'opponent', 'all']:
-            self.displayopts['Energy'][item] = int(self.config.get('Energy', item))
         self.displayopts['PowerCards'] = {}
-        for item in ['phase', 'badlands', 'opponent', 'all']:
+        for item in ['opponent', 'all']:
             self.displayopts['PowerCards'][item] = int(self.config.get('PowerCards', item))
         self.displayopts['FastPower'] = {}
-        for item in ['phase', 'badlands', 'opponent', 'all']:
+        for item in ['opponent', 'all']:
             self.displayopts['FastPower'][item] = int(self.config.get('FastPower', item))
         self.displayopts['BlightedIsland'] = {}
-        for item in ['phase', 'badlands', 'opponent', 'all']:
+        for item in ['opponent', 'all']:
             self.displayopts['BlightedIsland'][item] = int(self.config.get('BlightedIsland', item))
         self.displayopts['Event'] = {}
-        for item in ['phase', 'badlands', 'opponent', 'all', 'discard']:
+        for item in ['opponent', 'all', 'discard']:
             self.displayopts['Event'][item] = int(self.config.get('Event', item))
         self.displayopts['Fear'] = {}
-        for item in ['phase', 'badlands', 'opponent', 'all']:
+        for item in ['opponent', 'all']:
             self.displayopts['Fear'][item] = int(self.config.get('Fear', item))
         self.displayopts['HighImmigration'] = {}
-        for item in ['phase', 'badlands', 'opponent', 'all']:
+        for item in ['opponent', 'all']:
             self.displayopts['HighImmigration'][item] = int(self.config.get('HighImmigration', item))
         self.displayopts['Ravage'] = {}
-        for item in ['phase', 'badlands', 'opponent', 'all', 'strife']:
+        for item in ['opponent', 'all', 'strife']:
             self.displayopts['Ravage'][item] = int(self.config.get('Ravage', item))
         self.displayopts['Build'] = {}
-        for item in ['phase', 'badlands', 'opponent', 'all', 'disease']:
+        for item in ['opponent', 'all', 'disease']:
             self.displayopts['Build'][item] = int(self.config.get('Build', item))
         self.displayopts['Explore'] = {}
-        for item in ['phase', 'badlands', 'opponent', 'all', 'wilds']:
+        for item in ['opponent', 'all', 'wilds']:
             self.displayopts['Explore'][item] = int(self.config.get('Explore', item))
         self.displayopts['AdvanceCards'] = {}
-        for item in ['phase', 'badlands', 'opponent', 'all']:
+        for item in ['opponent', 'all']:
             self.displayopts['AdvanceCards'][item] = int(self.config.get('AdvanceCards', item))
         self.displayopts['SlowPower'] = {}
-        for item in ['phase', 'badlands', 'opponent', 'all']:
-            self.displayopts['SlowPower'][item] = int(self.config.get('SlowPower', item))        
-        self.displayopts['TimePasses'] = {}
-        for item in ['phase', 'opponent', 'all']:
-            self.displayopts['TimePasses'][item] = int(self.config.get('TimePasses', item))  
+        for item in ['opponent', 'all']:
+            self.displayopts['SlowPower'][item] = int(self.config.get('SlowPower', item))          
     def on_stop(self):
         return True
 
@@ -1320,113 +1447,67 @@ class MainApp(App):
                                 'timerseconds': '180'
                             }
                         )
+        config.setdefaults('All', {
+                                'phase': 1,
+                                'badlands': 1
+                            })
         config.setdefaults('FirstExplore', {
-                                'phase': 1,
                                 'rules': 1
-                            }
-                        )
+                            })
         config.setdefaults('Growth', {
-                                'phase': 1,
                                 'spirits': 1,
-                                'badlands': 1,
                                 'opponent': 1,
                                 'all': 1,
-                            }
-                        )
-        config.setdefaults('Energy', {
-                                'phase': 1,
-                                'badlands': 1,
-                                'opponent': 1,
-                                'all': 1,
-                            }
-                        )
+                            })
         config.setdefaults('PowerCards', {
-                                'phase': 1,
-                                'badlands': 1,
                                 'opponent': 1,
                                 'all': 1,
-                            }
-                        )
+                            })
         config.setdefaults('FastPower', {
-                                'phase': 1,
-                                'badlands': 1,
                                 'opponent': 1,
                                 'all': 1,
-                            }
-                        )
+                            })
         config.setdefaults('BlightedIsland', {
-                                'phase': 1,
-                                'badlands': 1,
                                 'opponent': 1,
                                 'all': 1,
-                            }
-                        )  
+                            })  
         config.setdefaults('Event', {
-                                'phase': 1,
-                                'badlands': 1,
                                 'opponent': 1,
                                 'all': 1,
 								'discard': 1
-                            }
-                        )
+                            })
         config.setdefaults('Fear', {
-                                'phase': 1,
-                                'badlands': 1,
                                 'opponent': 1,
                                 'all': 1,
-                            }
-                        )
+                            })
         config.setdefaults('HighImmigration', {
-                                'phase': 1,
-                                'badlands': 1,
                                 'opponent': 1,
                                 'all': 1,
-                            }
-                        )
+                            })
         config.setdefaults('Ravage', {
-                                'phase': 1,
-                                'badlands': 1,
                                 'opponent': 1,
                                 'all': 1,
                                 'strife': 1
-                            }
-                        )
+                            })
         config.setdefaults('Build', {
-                                'phase': 1,
-                                'badlands': 1,
                                 'opponent': 1,
                                 'all': 1,
                                 'disease': 1
-                            }
-                        )
+                            })
         config.setdefaults('Explore', {
-                                'phase': 1,
-                                'badlands': 1,
                                 'opponent': 1,
                                 'all': 1,
                                 'wilds': 1
-                            }
-                        )
+                            })
         config.setdefaults('AdvanceCards', {
-                                'phase': 1,
-                                'badlands': 1,
                                 'opponent': 1,
                                 'all': 1,
-                            }
-                        )
+                            })
         config.setdefaults('SlowPower', {
-                                'phase': 1,
-                                'badlands': 1,
                                 'opponent': 1,
                                 'all': 1,
-                            }
-                        )
-        config.setdefaults('TimePasses', {
-                                'phase': 1,
-                                'opponent': 1,
-                                'all': 1,
-                            }
-                        )                        
+                            })
+                     
     #build_settigns loads the json file, and  defines the name for the panel in the settings screen
     def build_settings(self, settings):
         settings.add_json_panel('Spirit Island',
@@ -1457,6 +1538,8 @@ class MainApp(App):
         else:
             self.flagicon = False
             self.stage2flag = ''
+        if self.currentPhase == 'Explore':
+            self.root.get_screen('Phase').ids.PhaseManager.get_screen(self.currentPhase).on_stage_toggle()
         return self
 
         
