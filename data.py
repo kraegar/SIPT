@@ -272,6 +272,16 @@ stage2_flag = { 'None': '',
                 }
 
 #allscreen rules has 7 entries instead of the usual 6.  The first entry is for any additional loss condition.
+loss_rules = {
+    'Brandenburg-Prussia':  '',
+    'England': 'Loss condition: If 7 or more towns/cities are ever in a single land, the invaders win.\n',
+    'France': 'Loss condition: Invaders win if you ever cannot place a town.\n',
+    'Sweden': '',
+    'Scotland': 'Loss condition: If the number of coastal lands with cities is ever greater than (2x # of boards) the invaders win.\n',
+    'Russia': 'Loss condition: Put beasts destroyed by adversary rules on the adversary panel. If there are ever more beasts on that panel than the island, the invaders win.\n',
+    'Habsburg': 'Loss condition: Track how many blight come off the blight cards during ravages that do 8+ damage to the land. If that number ever exceeds players, the invaders win.\n',
+    }
+                
 allscreen_rules = {
     'Brandenburg-Prussia':  [
                             '',
@@ -282,7 +292,6 @@ allscreen_rules = {
                             '',
                             ''],
     'England': [             
-                            'Loss condition: If 7 or more towns/cities are ever in a single land, the invaders win.\n',
                             '',
                             '',
                             '',
@@ -290,7 +299,6 @@ allscreen_rules = {
                             'Towns and Cities have +1 health\n',
                             ''],
     'France': [
-                            'Loss condition: Invaders win if you ever cannot place a town.\n',
                             '',
                             '',
                             '',
@@ -300,13 +308,11 @@ allscreen_rules = {
     'Sweden': [             
                             '',
                             '',
-                            '',
                             'Towns deal 3 damage. Cities deal 5 damage.\n',
                             '',
                             '',
                             ''],
     'Scotland': [            
-                            'Loss condition: If the number of coastal lands with cities is ever greater than (2x # of boards) the invaders win.\n',
                             '',
                             '',
                             '',
@@ -314,15 +320,13 @@ allscreen_rules = {
                             '',
                             ''],
     'Russia': [              
-                            'Loss condition: Put beasts destroyed by adversary rules on the adversary panel. If there are ever more beasts on that panel than the island, the invaders win.\n',
                             'Explorers do +1 damage.\n',
-                            '',
+                            'The first time each Action would Destroy explorers: If possible, 1 of those explorers is pushed; 1 fear when you do so.',
                             '',
                             '',
                             '',
                             ''],
     'Habsburg': [            
-                            'Loss condition: Track how many blight come off the blight cards during ravages that do 8+ damage to the land. If that number ever exceeds players, the invaders win.\n',
                             '',
                             '',
                             '',

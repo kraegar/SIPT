@@ -778,12 +778,14 @@ class GrowthScreen(Screen):
         opprules = ""
         allrules = ""
         badlands = ""
+        loss = ''
         list = []
         if app.displayopts['All']['phase']:
             description = app.screenDescriptions[app.currentPhase]
         if description != '':
             list.append({'image': app.icons[app.currentPhase], 'text': description})
         spirits_text = ''
+
         if app.displayopts[app.currentPhase]['spirits']:
             for x in app.spirits:
                 if app.spirit_growth_count[x] > 1:
@@ -808,6 +810,10 @@ class GrowthScreen(Screen):
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
         #self.text = '\n'.join([description, spirits_text, opprules, badlands, allrules])
+        if app.displayopts['All']['loss']:
+            loss = app.loss_rules[app.opponent]
+        if loss != '':
+            list.append({'image': app.icons[app.opponent], 'text': loss})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list
         
@@ -864,6 +870,10 @@ class PowerCardsScreen(Screen):
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
         #self.text = '\n'.join([description,opprules, badlands, allrules])
+        if app.displayopts['All']['loss']:
+            loss = app.loss_rules[app.opponent]
+        if loss != '':
+            list.append({'image': app.icons[app.opponent], 'text': loss})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list
         
@@ -899,6 +909,10 @@ class FastPowerScreen(Screen):
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
         #self.text = '\n'.join([description,opprules, badlands, allrules])
+        if app.displayopts['All']['loss']:
+            loss = app.loss_rules[app.opponent]
+        if loss != '':
+            list.append({'image': app.icons[app.opponent], 'text': loss})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list
         
@@ -933,6 +947,10 @@ class BlightedIslandScreen(Screen):
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
         #self.text = '\n'.join([description,opprules, badlands, allrules])
+        if app.displayopts['All']['loss']:
+            loss = app.loss_rules[app.opponent]
+        if loss != '':
+            list.append({'image': app.icons[app.opponent], 'text': loss})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list
         
@@ -973,6 +991,10 @@ class EventScreen(Screen):
         if discard != '':
             list.append({'image': app.icons['discard'], 'text': discard})
         #self.text = '\n'.join([description, opprules, badlands, allrules, discard])
+        if app.displayopts['All']['loss']:
+            loss = app.loss_rules[app.opponent]
+        if loss != '':
+            list.append({'image': app.icons[app.opponent], 'text': loss})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list
             
@@ -1007,6 +1029,10 @@ class FearScreen(Screen):
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})   
         #self.text = '\n'.join([description,opprules, badlands, allrules])
+        if app.displayopts['All']['loss']:
+            loss = app.loss_rules[app.opponent]
+        if loss != '':
+            list.append({'image': app.icons[app.opponent], 'text': loss})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list          
         
@@ -1041,6 +1067,10 @@ class HighImmigrationScreen(Screen):
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
         #self.text = '\n'.join([description,opprules, badlands, allrules])
+        if app.displayopts['All']['loss']:
+            loss = app.loss_rules[app.opponent]
+        if loss != '':
+            list.append({'image': app.icons[app.opponent], 'text': loss})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list   
         
@@ -1085,6 +1115,10 @@ class RavageScreen(Screen):
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
         #self.text = '\n'.join([description,strife,opprules, badlands, allrules])            
+        if app.displayopts['All']['loss']:
+            loss = app.loss_rules[app.opponent]
+        if loss != '':
+            list.append({'image': app.icons[app.opponent], 'text': loss})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list   
         
@@ -1125,6 +1159,10 @@ class BuildScreen(Screen):
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
         #self.text = '\n'.join([description,disease,opprules, badlands, allrules])
+        if app.displayopts['All']['loss']:
+            loss = app.loss_rules[app.opponent]
+        if loss != '':
+            list.append({'image': app.icons[app.opponent], 'text': loss})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list   
         
@@ -1174,7 +1212,10 @@ class ExploreScreen(Screen):
         if allrules != '':
             self.list.append({'image': app.icons[app.opponent], 'text': allrules})
         #self.text = '\n'.join([description,wilds,opprules, badlands, allrules])
-        
+        if app.displayopts['All']['loss']:
+            loss = app.loss_rules[app.opponent]
+        if loss != '':
+            self.list.append({'image': app.icons[app.opponent], 'text': loss})        
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = self.list + self.s2list
     def on_stage_toggle(self):
@@ -1211,6 +1252,10 @@ class AdvanceCardsScreen(Screen):
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
         #self.text = '\n'.join([description,opprules, badlands, allrules])
+        if app.displayopts['All']['loss']:
+            loss = app.loss_rules[app.opponent]
+        if loss != '':
+            list.append({'image': app.icons[app.opponent], 'text': loss})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list
         
@@ -1245,6 +1290,10 @@ class SlowPowerScreen(Screen):
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
         #self.text = '\n'.join([description,opprules, badlands, allrules])
+        if app.displayopts['All']['loss']:
+            loss = app.loss_rules[app.opponent]
+        if loss != '':
+            list.append({'image': app.icons[app.opponent], 'text': loss})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list
             
@@ -1339,6 +1388,7 @@ class MainApp(App):
     expansion_setup = data.expansion_setup
     invader_deck = data.invader_deck
     stage2_flag = data.stage2_flag
+    loss_rules = data.loss_rules
     allscreen_rules = data.allscreen_rules
     opponentmod_rules = data.opponentmod_rules
     firstexplorescreen_rules = data.firstexplorescreen_rules
@@ -1398,7 +1448,7 @@ class MainApp(App):
         self.timer_seconds = int(self.config.get('timeroptions', 'timerseconds'))
         self.displayopts['FirstExplore'] = {}
         self.displayopts['All'] = {}
-        for item in ['phase', 'badlands']:
+        for item in ['phase', 'badlands', 'loss']:
             self.displayopts['All'][item] = int(self.config.get('All', item))
         self.displayopts['FirstExplore'] = {}
         for item in ['rules']:
@@ -1453,6 +1503,10 @@ class MainApp(App):
                                 'phase': 1,
                                 'badlands': 1
                             })
+        config.setdefaults('All', {
+                                'phase': 1,
+                                'loss': 1
+                            })                        
         config.setdefaults('FirstExplore', {
                                 'rules': 1
                             })

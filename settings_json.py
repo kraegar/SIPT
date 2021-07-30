@@ -31,6 +31,12 @@ settings_json = json.dumps([
     'section': 'All',
     'key': 'badlands'}, 
 
+    {'type': 'bool',
+    'title': 'Loss Condition',
+    'desc': 'Display adversary loss conditions',
+    'section': 'All',
+    'key': 'loss'}, 
+
     {'type': 'title',
      'title': 'First Exploration'},
 
