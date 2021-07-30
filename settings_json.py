@@ -15,31 +15,40 @@ settings_json = json.dumps([
      'desc': 'How Many Seconds to Count Down',
      'section': 'timeroptions',
      'key': 'timerseconds'},  
-     
+    
     {'type': 'title',
-     'title': 'First Exploration Screen'},
+     'title': 'All Screens'},
 
     {'type': 'bool',
     'title': 'Phase Description',
     'desc': 'Enable Phase Description Text',
-    'section': 'FirstExplore',
-    'key': 'phase'},
+    'section': 'All',
+    'key': 'phase'}, 
     
     {'type': 'bool',
-    'title': 'Phase Rules',
-    'desc': 'Enable Phase Rules Text',
+    'title': 'Badlands Token',
+    'desc': 'Enable Badlands Token Reminder',
+    'section': 'All',
+    'key': 'badlands'}, 
+
+    {'type': 'bool',
+    'title': 'Loss Condition',
+    'desc': 'Display adversary loss conditions',
+    'section': 'All',
+    'key': 'loss'}, 
+
+    {'type': 'title',
+     'title': 'First Exploration'},
+
+    {'type': 'bool',
+    'title': 'First Explore Rules',
+    'desc': 'Enable First Explore Rules Text',
     'section': 'FirstExplore',
-    'key': 'rules'},
-    
+    'key': 'rules'}, 
+      
     {'type': 'title',
      'title': 'Growth Screen'},
      
-    {'type': 'bool',
-    'title': 'Phase Description',
-    'desc': 'Enable Phase Description Text',
-    'section': 'Growth',
-    'key': 'phase'},
-    
     {'type': 'bool',
     'title': 'Spirits Reminders',
     'desc': 'Enable Spirits Reminder text',
@@ -47,12 +56,6 @@ settings_json = json.dumps([
     'key': 'spirits'},
     
     {'type': 'bool',
-    'title': 'Badlands',
-    'desc': 'Enable Badlands Text',
-    'section': 'Growth',
-    'key': 'badlands'},
-    
-    {'type': 'bool',
     'title': 'Adversary Phase Rules',
     'desc': 'Enable Adversary Rules Text',
     'section': 'Growth',
@@ -62,50 +65,11 @@ settings_json = json.dumps([
     'title': 'Adversary Loss Condition',
     'desc': 'Enable Adversary Loss Condition (and other text that might affect all stages)',
     'section': 'Growth',
-    'key': 'all'},
-    
-    {'type': 'title',
-     'title': 'Energy Screen'},
-     
-    {'type': 'bool',
-    'title': 'Phase Description',
-    'desc': 'Enable Phase Description Text',
-    'section': 'Energy',
-    'key': 'phase'},
-
-    {'type': 'bool',
-    'title': 'Badlands',
-    'desc': 'Enable Badlands Text',
-    'section': 'Energy',
-    'key': 'badlands'},
-    
-    {'type': 'bool',
-    'title': 'Adversary Phase Rules',
-    'desc': 'Enable Adversary Rules Text',
-    'section': 'Energy',
-    'key': 'opponent'},
-    
-    {'type': 'bool',
-    'title': 'Adversary Loss Condition',
-    'desc': 'Enable Adversary Loss Condition (and other text that might affect all stages)',
-    'section': 'Energy',
     'key': 'all'},
     
     {'type': 'title',
      'title': 'Power Cards Screen'},
-     
-    {'type': 'bool',
-    'title': 'Phase Description',
-    'desc': 'Enable Phase Description Text',
-    'section': 'PowerCards',
-    'key': 'phase'},
-
-    {'type': 'bool',
-    'title': 'Badlands',
-    'desc': 'Enable Badlands Text',
-    'section': 'PowerCards',
-    'key': 'badlands'},
-    
+  
     {'type': 'bool',
     'title': 'Adversary Phase Rules',
     'desc': 'Enable Adversary Rules Text',
@@ -120,18 +84,6 @@ settings_json = json.dumps([
     
     {'type': 'title',
      'title': 'Fast Power Screen'},
-     
-    {'type': 'bool',
-    'title': 'Phase Description',
-    'desc': 'Enable Phase Description Text',
-    'section': 'FastPower',
-    'key': 'phase'},
-
-    {'type': 'bool',
-    'title': 'Badlands',
-    'desc': 'Enable Badlands Text',
-    'section': 'FastPower',
-    'key': 'badlands'},
     
     {'type': 'bool',
     'title': 'Adversary Phase Rules',
@@ -147,18 +99,6 @@ settings_json = json.dumps([
     
     {'type': 'title',
      'title': 'Blighted Island Screen'},
-     
-    {'type': 'bool',
-    'title': 'Phase Description',
-    'desc': 'Enable Phase Description Text',
-    'section': 'BlightedIsland',
-    'key': 'phase'},
-
-    {'type': 'bool',
-    'title': 'Badlands',
-    'desc': 'Enable Badlands Text',
-    'section': 'BlightedIsland',
-    'key': 'badlands'},
     
     {'type': 'bool',
     'title': 'Adversary Phase Rules',
@@ -174,18 +114,6 @@ settings_json = json.dumps([
 
     {'type': 'title',
      'title': 'Event Screen'},
-     
-    {'type': 'bool',
-    'title': 'Phase Description',
-    'desc': 'Enable Phase Description Text',
-    'section': 'Event',
-    'key': 'phase'},
-
-    {'type': 'bool',
-    'title': 'Badlands',
-    'desc': 'Enable Badlands Text',
-    'section': 'Event',
-    'key': 'badlands'},
     
     {'type': 'bool',
     'title': 'Adversary Phase Rules',
@@ -207,18 +135,6 @@ settings_json = json.dumps([
 
     {'type': 'title',
      'title': 'Fear Screen'},
-     
-    {'type': 'bool',
-    'title': 'Phase Description',
-    'desc': 'Enable Phase Description Text',
-    'section': 'Fear',
-    'key': 'phase'},
-
-    {'type': 'bool',
-    'title': 'Badlands',
-    'desc': 'Enable Badlands Text',
-    'section': 'Fear',
-    'key': 'badlands'},
     
     {'type': 'bool',
     'title': 'Adversary Phase Rules',
@@ -234,18 +150,6 @@ settings_json = json.dumps([
 
     {'type': 'title',
      'title': 'High Immigration Screen'},
-     
-    {'type': 'bool',
-    'title': 'Phase Description',
-    'desc': 'Enable Phase Description Text',
-    'section': 'HighImmigration',
-    'key': 'phase'},
-
-    {'type': 'bool',
-    'title': 'Badlands',
-    'desc': 'Enable Badlands Text',
-    'section': 'HighImmigration',
-    'key': 'badlands'},
     
     {'type': 'bool',
     'title': 'Adversary Phase Rules',
@@ -261,19 +165,7 @@ settings_json = json.dumps([
 
     {'type': 'title',
      'title': 'Ravage Screen'},
-     
-    {'type': 'bool',
-    'title': 'Phase Description',
-    'desc': 'Enable Phase Description Text',
-    'section': 'Ravage',
-    'key': 'phase'},
 
-    {'type': 'bool',
-    'title': 'Badlands',
-    'desc': 'Enable Badlands Text',
-    'section': 'Ravage',
-    'key': 'badlands'},
-    
     {'type': 'bool',
     'title': 'Adversary Phase Rules',
     'desc': 'Enable Adversary Rules Text',
@@ -294,19 +186,7 @@ settings_json = json.dumps([
 
     {'type': 'title',
      'title': 'Build Screen'},
-     
-    {'type': 'bool',
-    'title': 'Phase Description',
-    'desc': 'Enable Phase Description Text',
-    'section': 'Build',
-    'key': 'phase'},
-
-    {'type': 'bool',
-    'title': 'Badlands',
-    'desc': 'Enable Badlands Text',
-    'section': 'Build',
-    'key': 'badlands'},
-    
+ 
     {'type': 'bool',
     'title': 'Adversary Phase Rules',
     'desc': 'Enable Adversary Rules Text',
@@ -327,19 +207,7 @@ settings_json = json.dumps([
 
     {'type': 'title',
      'title': 'Explore Screen'},
-     
-    {'type': 'bool',
-    'title': 'Phase Description',
-    'desc': 'Enable Phase Description Text',
-    'section': 'Explore',
-    'key': 'phase'},
 
-    {'type': 'bool',
-    'title': 'Badlands',
-    'desc': 'Enable Badlands Text',
-    'section': 'Explore',
-    'key': 'badlands'},
-    
     {'type': 'bool',
     'title': 'Adversary Phase Rules',
     'desc': 'Enable Adversary Rules Text',
@@ -360,19 +228,7 @@ settings_json = json.dumps([
 
     {'type': 'title',
      'title': 'Advance Cards Screen'},
-     
-    {'type': 'bool',
-    'title': 'Phase Description',
-    'desc': 'Enable Phase Description Text',
-    'section': 'AdvanceCards',
-    'key': 'phase'},
-
-    {'type': 'bool',
-    'title': 'Badlands',
-    'desc': 'Enable Badlands Text',
-    'section': 'AdvanceCards',
-    'key': 'badlands'},
-    
+ 
     {'type': 'bool',
     'title': 'Adversary Phase Rules',
     'desc': 'Enable Adversary Rules Text',
@@ -387,19 +243,7 @@ settings_json = json.dumps([
 
     {'type': 'title',
      'title': 'Slow Power Screen'},
-     
-    {'type': 'bool',
-    'title': 'Phase Description',
-    'desc': 'Enable Phase Description Text',
-    'section': 'SlowPower',
-    'key': 'phase'},
 
-    {'type': 'bool',
-    'title': 'Badlands',
-    'desc': 'Enable Badlands Text',
-    'section': 'SlowPower',
-    'key': 'badlands'},
-    
     {'type': 'bool',
     'title': 'Adversary Phase Rules',
     'desc': 'Enable Adversary Rules Text',
@@ -412,25 +256,5 @@ settings_json = json.dumps([
     'section': 'SlowPower',
     'key': 'all'},
 
-    {'type': 'title',
-     'title': 'Time Passes Screen'},
-     
-    {'type': 'bool',
-    'title': 'Phase Description',
-    'desc': 'Enable Phase Description Text',
-    'section': 'TimePasses',
-    'key': 'phase'},
-   
-    {'type': 'bool',
-    'title': 'Adversary Phase Rules',
-    'desc': 'Enable Adversary Rules Text',
-    'section': 'TimePasses',
-    'key': 'opponent'},
-    
-    {'type': 'bool',
-    'title': 'Adversary Loss Condition',
-    'desc': 'Enable Adversary Loss Condition (and other text that might affect all stages)',
-    'section': 'TimePasses',
-    'key': 'all'},	
     ])     
 
