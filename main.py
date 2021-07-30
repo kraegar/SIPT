@@ -754,7 +754,7 @@ class FirstExploreScreen(Screen):
             for x in range(int(app.level)):
                 rules += app.firstexplorescreen_rules[app.opponent][x]
         if rules != '':
-            list.append({'image': 'resources/icon.png', 'text': rules})
+            list.append({'image': app.icons[app.opponent], 'text': rules})
         #self.text = '\n'.join([description + rules])
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list

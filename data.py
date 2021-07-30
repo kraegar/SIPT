@@ -422,7 +422,7 @@ firstexplorescreen_rules = {
                             '',
                             '',
                             '',
-                            ''],
+                            'After the normal explore, on each board add one explorer to a land without any.\n'],
     'Sweden': [             
                             '',
                             '',
