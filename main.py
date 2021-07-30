@@ -14,7 +14,9 @@ from kivy.metrics import dp, sp
 from kivy.storage.jsonstore import JsonStore
 from settings_json import settings_json
 import datetime
-import data
+import random
+import data # this louds our variables from data.py
+
 Config.set('graphics', 'resizable', True)
 
 
@@ -414,6 +416,11 @@ class MainScreen(Screen):
             app.thematic = False
     def opponent_clicked(self, value):
         app = App.get_running_app()
+        if(value == 'Random'):
+            rlist = app.opponent_list[:]
+            rlist.remove('Random')
+            rlist.remove('None')
+            value = random.choice(rlist)
         app.opponent = value
         self.opp = value
         self.build_levels()

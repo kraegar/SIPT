@@ -1,4 +1,4 @@
-base_opp = ['None', 'Brandenburg-Prussia', 'England', 'Sweden']
+base_opp = ['None', 'Brandenburg-Prussia', 'England', 'Sweden', 'Random']
 bc_opp = ['France']
 je_opp = ['Russia', "Habsburg"]
 pp2_opp = ['Scotland']
