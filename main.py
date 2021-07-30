@@ -421,6 +421,8 @@ class MainScreen(Screen):
             rlist.remove('Random')
             rlist.remove('None')
             value = random.choice(rlist)
+            self.opp = ''
+            self.opp = value
         app.opponent = value
         self.opp = value
         self.build_levels()
