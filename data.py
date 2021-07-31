@@ -111,7 +111,7 @@ fear_cards = {'None':                ['9(3/3/3)',
               'England':            ['10(3/4/3)',
                                       '11(4/4/3)',
                                       '13(4/5/4)',
-                                      '14(3/4/5)',
+                                      '14(4/5/5)',
                                       '14(4/5/5)',
                                       '13(4/5/4)'],
               'France':              ['9(3/3/3)',
@@ -817,7 +817,7 @@ fearscreen_rules = {
                             '',
                             '',
                             '',
-                            '',
+                            'When the invader card is revealed, on each board, add one city to a coastal land without cities and one town to the 3 Inland lands with the fewest blight.',
                             '']
     }
     
