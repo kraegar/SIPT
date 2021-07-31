@@ -817,7 +817,7 @@ fearscreen_rules = {
                             '',
                             '',
                             '',
-                            '',
+                            'When the invader card is revealed, on each board, add one city to a coastal land without cities and one town to the 3 Inland lands with the fewest blight.',
                             '']
     }
     
