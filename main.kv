@@ -35,7 +35,7 @@ MainManager:
 <BlightPopup@Popup>:
 	title: 'Blighted Island'
 	size_hint_x: .75
-	size_hint_y: .3
+	size_hint_y: .4
 	GridLayout:
 		cols: 1
 		id: BlightPopup
@@ -46,6 +46,13 @@ MainManager:
 			text: 'The island is blighted, flip over the blight card and follow the instructions on the back of the card.'
 			text_size: self.width, None
 			height: self.texture_size[1]
+		BoxLayout:
+			CheckBox:
+				size_hint_x: .2
+				active: app.blightscreeninactive
+				on_active: app.no_blight_screen(self.active)
+			Label: 
+				text: 'Select if Blighted Island Card has no ongoing effect'
 		Button:
 			text: 'Close'
 			size_hint_y: 0.25
