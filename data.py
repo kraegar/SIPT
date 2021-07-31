@@ -273,6 +273,7 @@ stage2_flag = { 'None': '',
 
 #allscreen rules has 7 entries instead of the usual 6.  The first entry is for any additional loss condition.
 loss_rules = {
+    'None': '',
     'Brandenburg-Prussia':  '',
     'England': 'Loss condition: If 7 or more towns/cities are ever in a single land, the invaders win.\n',
     'France': 'Loss condition: Invaders win if you ever cannot place a town.\n',

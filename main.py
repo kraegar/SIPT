@@ -1458,7 +1458,7 @@ class MainApp(App):
             self.use_timer = True
         self.timer_seconds = int(self.config.get('timeroptions', 'timerseconds'))
         self.fontsize = int(self.config.get('Display', 'fontsize'))
-        self.imagewdith = int(self.config.get('Display', 'imagewidth'))/100
+        self.imagewdith = float(self.config.get('Display', 'imagewidth'))/100
         self.displayopts['All'] = {}
         for item in ['phase', 'badlands', 'loss']:
             self.displayopts['All'][item] = int(self.config.get('All', item))
@@ -1513,7 +1513,7 @@ class MainApp(App):
                         )
         config.setdefaults('Display', {
                                 'fontsize': 15,
-                                'imagewidth': 7
+                                'imagewidth': 7.5
                             })
         config.setdefaults('All', {
                                 'phase': 1,
@@ -1595,7 +1595,7 @@ class MainApp(App):
                 self.use_timer = True
             self.timer_seconds = int(self.config.get('timeroptions', 'timerseconds'))
         elif section == 'Display': 
-            self.imagewidth = int(self.config.get('Display', 'imagewidth'))/100
+            self.imagewidth = float(self.config.get('Display', 'imagewidth'))/100
             self.fontsize = int(self.config.get('Display', 'fontsize'))
         else:
             #displayopts[section]={}
