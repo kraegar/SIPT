@@ -16,6 +16,21 @@ settings_json = json.dumps([
      'section': 'timeroptions',
      'key': 'timerseconds'},  
     
+     {'type': 'title',
+     'title': 'Timer Sttings'},
+     
+     {'type': 'numeric',
+     'title': 'Font Size',
+     'desc': 'Size of the font used in descriptions',
+     'section': 'Display',
+     'key': 'fontsize'},     
+
+     {'type': 'numeric',
+     'title': 'Image Width',
+     'desc': 'Width of icons for descriptions (% of screen width)',
+     'section': 'Display',
+     'key': 'imagewidth'},  
+    
     {'type': 'title',
      'title': 'All Screens'},
 
