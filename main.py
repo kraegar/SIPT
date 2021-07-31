@@ -837,6 +837,7 @@ class EnergyScreen(Screen):
         opprules = ""
         allrules = ""
         badlands = ""
+        loss = ''
         list = []
         if app.displayopts['All']['phase']:
             description = app.screenDescriptions[app.currentPhase]
@@ -857,6 +858,7 @@ class PowerCardsScreen(Screen):
         opprules = ""
         allrules = ""
         badlands = ""
+        loss = ''
         list = []
         if app.displayopts['All']['phase']:
             description = app.screenDescriptions[app.currentPhase]
@@ -897,6 +899,7 @@ class FastPowerScreen(Screen):
         opprules = ""
         allrules = ""
         badlands = ""
+        loss = ''
         list = []
         if app.displayopts['All']['phase']:
             description = app.screenDescriptions[app.currentPhase]
@@ -935,6 +938,7 @@ class BlightedIslandScreen(Screen):
         allrules = ""
         badlands = ""
         description = ''
+        loss = ''
         list = []
         if app.displayopts['All']['phase']:
             description = app.screenDescriptions[app.currentPhase]
@@ -974,6 +978,7 @@ class EventScreen(Screen):
         allrules = ""
         badlands = ""
         discard = ""
+        loss = ''
         list = []
         if app.displayopts['All']['phase']:
             description = app.screenDescriptions[app.currentPhase]
@@ -1017,6 +1022,7 @@ class FearScreen(Screen):
         opprules = ""
         allrules = ""
         badlands = ""
+        loss = ''
         list = []
         if app.displayopts['All']['phase']:
             description = app.screenDescriptions[app.currentPhase]
@@ -1056,6 +1062,7 @@ class HighImmigrationScreen(Screen):
         allrules = ""
         badlands = ""
         disease = ""
+        loss = ''
         list = []
         if app.displayopts['All']['phase']:
             description = app.screenDescriptions[app.currentPhase]
@@ -1100,6 +1107,7 @@ class RavageScreen(Screen):
         allrules = ""
         badlands = ""
         strife = ""
+        loss = ''
         list = []
         if app.displayopts['All']['phase']:
             description = app.screenDescriptions[app.currentPhase]
@@ -1148,6 +1156,7 @@ class BuildScreen(Screen):
         allrules = ""
         badlands = ""
         disease = ""
+        loss = ''
         list = []
         if app.displayopts['All']['phase']:
             description = app.screenDescriptions[app.currentPhase]
@@ -1197,6 +1206,7 @@ class ExploreScreen(Screen):
         allrules = ""
         badlands = ""
         wilds = ""
+        loss = ''
         self.list = []
         if app.flagicon == True:
             self.s2list = [{'image': app.icons['stage2flag'], 'text': app.stage2_flag[app.opponent]}]
@@ -1251,6 +1261,7 @@ class AdvanceCardsScreen(Screen):
         opprules = ""
         allrules = ""
         description = ''
+        loss = ''
         list = []
         if app.displayopts['All']['phase']:
             description = app.screenDescriptions[app.currentPhase]
@@ -1284,6 +1295,7 @@ class SlowPowerScreen(Screen):
         allrules = ""
         badlands = ""
         description = ''
+        loss = ''
         list = []
         if app.displayopts['All']['phase']:
             description = app.screenDescriptions[app.currentPhase]
