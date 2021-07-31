@@ -1055,6 +1055,7 @@ class HighImmigrationScreen(Screen):
         opprules = ""
         allrules = ""
         badlands = ""
+        disease = ""
         list = []
         if app.displayopts['All']['phase']:
             description = app.screenDescriptions[app.currentPhase]
@@ -1070,6 +1071,11 @@ class HighImmigrationScreen(Screen):
                 opprules += app.highimmigrationscreen_rules[app.opponent][x]
         if opprules != '':
             list.append({'image': app.icons[app.opponent], 'text': opprules})
+        if app.displayopts[app.currentPhase]['disease']:
+            if app.expansion != 'None':
+                disease = 'If present, Disease tokens prevent this build. Remove the token.\n'
+        if disease != '':
+            list.append({'image': app.icons['disease'], 'text': disease})
         if app.displayopts[app.currentPhase]['all']:
             for x in range(int(app.level)):
                 allrules += app.allscreen_rules[app.opponent][x]
@@ -1484,7 +1490,7 @@ class MainApp(App):
         for item in ['opponent', 'all']:
             self.displayopts['Fear'][item] = int(self.config.get('Fear', item))
         self.displayopts['HighImmigration'] = {}
-        for item in ['opponent', 'all']:
+        for item in ['opponent', 'all', 'disease']:
             self.displayopts['HighImmigration'][item] = int(self.config.get('HighImmigration', item))
         self.displayopts['Ravage'] = {}
         for item in ['opponent', 'all', 'strife']:
@@ -1555,6 +1561,7 @@ class MainApp(App):
         config.setdefaults('HighImmigration', {
                                 'opponent': 1,
                                 'all': 1,
+                                'disease': 1,
                             })
         config.setdefaults('Ravage', {
                                 'opponent': 1,

@@ -181,6 +181,12 @@ settings_json = json.dumps([
     'section': 'HighImmigration',
     'key': 'all'},
 
+    {'type': 'bool',
+    'title': 'Disease',
+    'desc': 'Enable Disease Text',
+    'section': 'HighImmigration',
+    'key': 'disease'},
+
     {'type': 'title',
      'title': 'Ravage Screen'},
 
