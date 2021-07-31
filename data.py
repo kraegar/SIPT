@@ -3,7 +3,7 @@ bc_opp = ['France']
 je_opp = ['Russia', "Habsburg"]
 pp2_opp = ['Scotland']
 
-base_spirits = ['Lightnings Swift Strike','River Surges in Sunlight', 'Vital Strength of the Earth', 'Shadows Flicker Like Flame', 'Thunderspeaker', 'A Spread of Rampant Green', 'Oceans Hungry Grasp', 'Bringer of Dreams and Nightmares']
+base_spirits = ['Lightnings Swift Strike','River Surges in Sunlight', 'Vital Strength of the Earth', 'Shadows Flicker Like Flame', 'Thunderspeaker', 'Spread of Rampant Green', 'Oceans Hungry Grasp', 'Bringer of Dreams and Nightmares', 'None', 'Random']
 bc_spirits = ['Sharp Fangs Behind the Leaves', 'Keeper of the Forbidden Wilds']
 je_spirits = ['Stones Unyielding Defiance', 'Shifting Memory of Ages', 'Grinning Trickster Stirs up Trouble', 'Lure of the Deep Wilderness', 'Many minds Move as One', 'Volcano Looming High', 'Shroud of Silent Mist', 'Vengeance as a Burning Plague', 'Starlight Seeks Its Form', 'Fractured Days Split the Sky']
 pp1_spirits = ['Heart of Wildfire', 'Serpent Slumbering Beneath the Island']
@@ -14,7 +14,7 @@ spirit_aspects = {  'Lightnings Swift Strike': ['pp2:Immense', 'je:Pandemonium',
                     'Vital Strength of the Earth': ['pp2:Might', 'je:Resilience'],
                     'Shadows Flicker Like Flame': ['pp2:Amorphous', 'pp2:Foreboding', 'je:Madness', 'je:Reach'],
                     'Thunderspeaker': [],
-                    'A Spread of Rampant Green': [],
+                    'Spread of Rampant Green': [],
                     'Oceans Hungry Grasp': [],
                     'Bringer of Dreams and Nightmares': [],
                     'Sharp Fangs Behind the Leaves': [],
@@ -40,7 +40,7 @@ spirit_setup = {    'Lightnings Swift Strike': 'Put 2 presence on your starting 
                     'Vital Strength of the Earth': 'Put 3 presence on your starting board: 2 in the highest-numbered Mountain, 1 in the highest-numbered Jungle.\n',
                     'Shadows Flicker Like Flame': 'Put 3 presence on your starting board: 2 in the highest numbered Jungle, and one in land #5.\n',
                     'Thunderspeaker': 'Put 2 presence on your starting board: 1 in each of the 2 lands with the most Dahan.\n',
-                    'A Spread of Rampant Green': 'Put 2 presence on your starting board: 1 in the highest-numbered Wetland, and 1 in the Jungle without any Dahan. (If there is more than one such jungle, you may choose)\n',
+                    'Spread of Rampant Green': 'Put 2 presence on your starting board: 1 in the highest-numbered Wetland, and 1 in the Jungle without any Dahan. (If there is more than one such jungle, you may choose)\n',
                     'Oceans Hungry Grasp': 'Put 2 presence onto your starting board: 1 in the Ocean, and 1 in a coastal land of your choice.\n',
                     'Bringer of Dreams and Nightmares': 'Put 2 presence on your starting board in the highest-numbered Sands.\n',
                     'Sharp Fangs Behind the Leaves': 'Put 1 presence and 1 beast token on your starting board in the highest-numbered Jungle. Put 1 presence in a land of your choice with a beast token anywhere on the island.\n',
@@ -66,7 +66,7 @@ spirit_growth_count = { 'Lightnings Swift Strike': 1,
                         'Vital Strength of the Earth': 1,
                         'Shadows Flicker Like Flame': 1,
                         'Thunderspeaker': 1,
-                        'A Spread of Rampant Green': 1,
+                        'Spread of Rampant Green': 1,
                         'Oceans Hungry Grasp': 1,
                         'Bringer of Dreams and Nightmares': 1,
                         'Sharp Fangs Behind the Leaves': 2,
@@ -1240,7 +1240,7 @@ icons = {   'explorer': 'resources/tokens/Icon Explorer.png',
             'Vital Strength of the Earth': 'resources/spirits/SpiritVitalStrengthEarth.png',
             'Shadows Flicker Like Flame': 'resources/spirits/SpiritShadowsFlickerFlame.png',
             'Thunderspeaker': 'resources/spirits/SpiritThunderspeaker.png',
-            'A Spread of Rampant Green': 'resources/spirits/SpiritSpreadRampantGreen.png',
+            'Spread of Rampant Green': 'resources/spirits/SpiritSpreadRampantGreen.png',
             'Oceans Hungry Grasp': 'resources/spirits/SpiritOceanHungryGrasp.png',
             'Bringer of Dreams and Nightmares': 'resources/spirits/SpiritBodanBringerDreamsNightmares.png',
             'Sharp Fangs Behind the Leaves': 'resources/spirits/SpiritSharpFangsLeaves.png',
