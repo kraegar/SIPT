@@ -520,7 +520,7 @@ class SpiritSelectScreen(Screen):
     spirit6_has_aspect = BooleanProperty(False)
     def on_enter(self):
         app = App.get_running_app()
-        self.spirit_values = app.spirit_list
+        self.spirit_values = sorted(app.spirit_list)
         app.currentPhase = 'SpiritSelect'
         write_state()
         self.play = int(app.players)
@@ -538,10 +538,18 @@ class SpiritSelectScreen(Screen):
         self.aspect6 = app.aspects[5]
     def on_select_spirit(self, player, value):
         app = App.get_running_app()
+        rselect = False
         if player == 1:
+            if(value == 'Random'):
+                rselect = True
+                rlist = app.spirit_list[:]
+                rlist.remove('Random')
+                rlist.remove('None')
+                value = random.choice(rlist)
             if len(app.spirit_aspects[value]) == 0:
                 self.spirit1_has_aspect = False
             else:
+                self.spirit1_aspects = []
                 for item in app.spirit_aspects[value]:
                     if app.branchandclaw:
                         if item.split(':')[0] == 'bc':
@@ -560,11 +568,27 @@ class SpiritSelectScreen(Screen):
                 else:
                     self.spirit1_has_aspect = True
                     self.spirit1_aspects = ['None'] + self.spirit1_aspects
+                if rselect == True:
+                    alist = self.spirit1_aspects[:]
+                    #alist.remove('None')
+                    aspvalue = random.choice(alist)
+                    self.aspect1 = aspvalue
+                    app.aspects[0] = aspvalue
+                    self.aspect1 = app.aspects[0]
+            self.spirit1 = value
             app.spirits[0] = value
+            self.spirit1 = app.spirits[0]
         if player == 2:
+            if(value == 'Random'):
+                rselect = True
+                rlist = app.spirit_list[:]
+                rlist.remove('Random')
+                rlist.remove('None')
+                value = random.choice(rlist)
             if len(app.spirit_aspects[value]) == 0:
                 self.spirit2_has_aspect = False
             else:
+                self.spirit2_aspects = []
                 for item in app.spirit_aspects[value]:
                     if app.branchandclaw:
                         if item.split(':')[0] == 'bc':
@@ -583,11 +607,27 @@ class SpiritSelectScreen(Screen):
                 else:
                     self.spirit2_has_aspect = True
                     self.spirit2_aspects = ['None'] + self.spirit2_aspects
+                if rselect == True:
+                    alist = self.spirit2_aspects[:]
+                    #alist.remove('None')
+                    aspvalue = random.choice(alist)
+                    self.aspect2 = aspvalue
+                    app.aspects[1] = aspvalue
+                    self.aspect2 = app.aspects[1]
+            self.spirit2 = value
             app.spirits[1] = value
+            self.spirit2 = app.spirits[1]
         if player == 3:
+            if(value == 'Random'):
+                rselect = True
+                rlist = app.spirit_list[:]
+                rlist.remove('Random')
+                rlist.remove('None')
+                value = random.choice(rlist)
             if len(app.spirit_aspects[value]) == 0:
                 self.spirit3_has_aspect = False
             else:
+                self.spirit3_aspects = []
                 for item in app.spirit_aspects[value]:
                     if app.branchandclaw:
                         if item.split(':')[0] == 'bc':
@@ -606,11 +646,27 @@ class SpiritSelectScreen(Screen):
                 else:
                     self.spirit3_has_aspect = True
                     self.spirit3_aspects = ['None'] + self.spirit3_aspects                        
+                if rselect == True:
+                    alist = self.spirit3_aspects[:]
+                    #alist.remove('None')
+                    aspvalue = random.choice(alist)
+                    self.aspect3 = aspvalue
+                    app.aspects[2] = aspvalue
+                    self.aspect3 = app.aspects[2]
+            self.spirit3 = value
             app.spirits[2] = value
+            self.spirit3 = app.spirits[2]
         if player == 4:
+            if(value == 'Random'):
+                rselect = True
+                rlist = app.spirit_list[:]
+                rlist.remove('Random')
+                rlist.remove('None')
+                value = random.choice(rlist)
             if len(app.spirit_aspects[value]) == 0:
                 self.spirit4_has_aspect = False
             else:
+                self.spirit4_aspects = []
                 for item in app.spirit_aspects[value]:
                     if app.branchandclaw:
                         if item.split(':')[0] == 'bc':
@@ -629,11 +685,27 @@ class SpiritSelectScreen(Screen):
                 else:
                     self.spirit4_has_aspect = True
                     self.spirit4_aspects = ['None'] + self.spirit4_aspects
+                if rselect == True:
+                    alist = self.spirit4_aspects[:]
+                    #alist.remove('None')
+                    aspvalue = random.choice(alist)
+                    self.aspect4 = aspvalue
+                    app.aspects[3] = aspvalue
+                    self.aspect4 = app.aspects[3]
+            self.spirit4 = value
             app.spirits[3] = value
+            self.spirit4 = app.spirits[3]
         if player == 5:
+            if(value == 'Random'):
+                rselect = True
+                rlist = app.spirit_list[:]
+                rlist.remove('Random')
+                rlist.remove('None')
+                value = random.choice(rlist)
             if len(app.spirit_aspects[value]) == 0:
                 self.spirit5_has_aspect = False
             else:
+                self.spirit5_aspects = []
                 for item in app.spirit_aspects[value]:
                     if app.branchandclaw:
                         if item.split(':')[0] == 'bc':
@@ -652,11 +724,27 @@ class SpiritSelectScreen(Screen):
                 else:
                     self.spirit5_has_aspect = True
                     self.spirit5_aspects = ['None'] + self.spirit5_aspects
+                if rselect == True:
+                    alist = self.spirit5_aspects[:]
+                    #alist.remove('None')
+                    aspvalue = random.choice(alist)
+                    self.aspect5 = aspvalue
+                    app.aspects[4] = aspvalue
+                    self.aspect5 = app.aspects[4]
+            self.spirit5 = value
             app.spirits[4] = value
+            self.spirit5 = app.spirits[4]
         if player == 6:
+            if(value == 'Random'):
+                rselect = True
+                rlist = app.spirit_list[:]
+                rlist.remove('Random')
+                rlist.remove('None')
+                value = random.choice(rlist)
             if len(app.spirit_aspects[value]) == 0:
                 self.spirit6_has_aspect = False
             else:
+                self.spirit6_aspects = []
                 for item in app.spirit_aspects[value]:
                     if app.branchandclaw:
                         if item.split(':')[0] == 'bc':
@@ -675,7 +763,16 @@ class SpiritSelectScreen(Screen):
                 else:
                     self.spirit6_has_aspect = True
                     self.spirit6_aspects = ['None'] + self.spirit6_aspects
+                if rselect == True:
+                    alist = self.spirit6_aspects[:]
+                    #alist.remove('None')
+                    aspvalue = random.choice(alist)
+                    self.aspect6 = aspvalue
+                    app.aspects[5] = aspvalue
+                    self.aspect6 = app.aspects[5]
+            self.spirit6 = value
             app.spirits[5] = value
+            self.spirit6 = app.spirits[5]
 
     def on_select_aspect(self, player, value):
         app = App.get_running_app()
