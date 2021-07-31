@@ -81,9 +81,7 @@ class PhaseScreen(Screen):
         if app.currentPhase == 'PowerCards':
             nextP = 'FastPower'
         if app.currentPhase == 'FastPower':
-            print(app.blight)
-            print(app.blightscreenactive)
-            if app.blight != 'Healthy' and app.blightscreenactive == True:
+            if app.blight != 'Healthy' and app.blightscreeninactive == False:
                 nextP = 'BlightedIsland'
             elif app.expansion == 'None':
                 nextP = 'Fear'
@@ -274,7 +272,7 @@ class PhaseScreen(Screen):
         if app.currentPhase == 'PowerCards':
             nextP = 'FastPower'
         if app.currentPhase == 'FastPower':
-            if app.blight != 'Healthy':
+            if app.blight != 'Healthy' and app.blightscreeninactive == False:
                 nextP = 'BlightedIsland'
             elif app.expansion == 'None':
                 nextP = 'Fear'
@@ -1438,7 +1436,7 @@ class MainApp(App):
     screenTitles = data.screenTitles
     screenDescriptions = data.screenDescriptions
     icons = data.icons
-    blightscreenactive = True
+    blightscreeninactive = False
     ##
     #data = ListProperty([])
     
@@ -1639,13 +1637,11 @@ class MainApp(App):
             self.root.get_screen('Phase').ids.PhaseManager.get_screen(self.currentPhase).on_stage_toggle()
         return self
     def no_blight_screen(self, value):
-        print(value)
         if value == True:
-            self.blightscreenactive = False
+            self.blightscreeninactive = True
         else:
-            self.blightscreenactive = True
-        print(self.blightscreenactive)
-        
+            self.blightscreeninactive = False
+
 MainApp().run()
 
 
