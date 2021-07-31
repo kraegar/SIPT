@@ -1446,6 +1446,8 @@ class MainApp(App):
     spirit_list = base_spirits
     scenarios_list = base_scenarios
     opponent_list = base_opp
+    fontsize = NumericProperty(15)
+    imagewidth = NumericProperty(0.07)
     ##
     
        
@@ -1455,7 +1457,8 @@ class MainApp(App):
         else:
             self.use_timer = True
         self.timer_seconds = int(self.config.get('timeroptions', 'timerseconds'))
-        self.displayopts['FirstExplore'] = {}
+        self.fontsize = int(self.config.get('Display', 'fontsize'))
+        self.imagewdith = int(self.config.get('Display', 'imagewidth'))/100
         self.displayopts['All'] = {}
         for item in ['phase', 'badlands', 'loss']:
             self.displayopts['All'][item] = int(self.config.get('All', item))
@@ -1508,6 +1511,10 @@ class MainApp(App):
                                 'timerseconds': '180'
                             }
                         )
+        config.setdefaults('Display', {
+                                'fontsize': 15,
+                                'imagewidth': 7
+                            })
         config.setdefaults('All', {
                                 'phase': 1,
                                 'badlands': 1
@@ -1587,6 +1594,9 @@ class MainApp(App):
             else:
                 self.use_timer = True
             self.timer_seconds = int(self.config.get('timeroptions', 'timerseconds'))
+        elif section == 'Display': 
+            self.imagewidth = int(self.config.get('Display', 'imagewidth'))/100
+            self.fontsize = int(self.config.get('Display', 'fontsize'))
         else:
             #displayopts[section]={}
             self.displayopts[section][key]=int(value)
