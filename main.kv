@@ -98,6 +98,28 @@ MainManager:
             pos: int(self.center_x - self.texture_size[0] / 2.), int(self.center_y - self.texture_size[1] / 2.)
         PopMatrix
 
+<MapViewClass@BoxLayout>:
+    # define the properties that appear in the data
+    text: ''
+    image: ''
+	#orientation: 'vertical'
+    # define how the data is displayed
+	#height: label.height
+    Label:
+		id: label
+		size_hint: 1, 1
+		text: root.text
+		height: self.texture_size[1]
+		text_size: self.width, None
+		halign: 'center'
+		font_size: 20
+	Image:
+		id: image
+        size_hint: 1, 1
+		width: self.height
+        source: root.image
+
+
 <MyViewClass@BoxLayout>:
     # define the properties that appear in the data
     text: ''
@@ -165,6 +187,7 @@ MainManager:
 				id: PhaseManager
 				MainScreen:
 				SpiritSelectScreen:
+				MapLayoutScreen:
 				BoardSetupScreen:
 				SpiritSetupScreen:
 				FirstExploreScreen:
@@ -579,6 +602,17 @@ MainManager:
 				text: root.aspect6
 				values: root.spirit6_aspects
 				on_text: root.on_select_aspect (6, self.text)
+
+<MapLayoutScreen>:
+	name: 'MapLayout'
+	MAPRV:
+		id: MAPRV
+		viewclass: 'MapViewClass'
+		RecycleBoxLayout:
+			default_size_hint: 1, None
+			orientation: 'vertical'
+			size_hint_y: None
+			height: self.minimum_height			
 				
 <BoardSetupScreen>:
     name: 'BoardSetup'

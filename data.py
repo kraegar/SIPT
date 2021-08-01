@@ -1188,6 +1188,7 @@ timepassesscreen_rules = {
 
 screenTitles = { 'Main': 'Spirit Island Phase Tracker',
                  'SpiritSelect': 'Select Spirits',
+                 'MapLayout': 'Map Layouts',
                  'BoardSetup': 'Board Setup',
                  'SpiritSetup': 'Spirits Setup',
                  'FirstExplore': 'First Exploration', 
