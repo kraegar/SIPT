@@ -67,6 +67,8 @@ class PhaseScreen(Screen):
         if app.currentPhase == 'Main':
             nextP = 'SpiritSelect'
         if app.currentPhase == 'SpiritSelect':
+            nextP = 'MapLayout'
+        if app.currentPhase == 'MapLayout':        
             nextP = 'BoardSetup'
         if app.currentPhase == 'BoardSetup':
             nextP = 'SpiritSetup'
@@ -130,6 +132,9 @@ class PhaseScreen(Screen):
         elif nextP == 'SpiritSelect':
             self.next_button_value = 'Next'
             self.setupScreens = True
+        elif nextP == 'MapLayout':
+            self.next_button_value = 'Next'
+            self.setupScreens = True
         elif nextP == 'BoardSetup':
             self.next_button_value = 'Next'
             self.setupScreens = True
@@ -164,7 +169,10 @@ class PhaseScreen(Screen):
             self.setupScreens = True
         elif prev == 'SpiritSelect':
             self.next_button_value = 'Next'
-            self.setupScreens = True            
+            self.setupScreens = True    
+        elif prev == 'MapLayout':
+            self.next_button_value = 'Next'
+            self.setupScreens = True
         elif prev == 'BoardSetup':
             self.next_button_value = 'Next'
             self.setupScreens = True
@@ -258,6 +266,8 @@ class PhaseScreen(Screen):
         if app.currentPhase == 'Main':
             nextP = 'SpiritSelect'
         if app.currentPhase == 'SpiritSelect':
+            nextP = 'MapLayout'
+        if app.currentPhase == 'MapLayout':
             nextP = 'BoardSetup'
         if app.currentPhase == 'BoardSetup':
             nextP = 'SpiritSetup'
@@ -321,6 +331,9 @@ class PhaseScreen(Screen):
         elif nextP == 'SpiritSelect':
             self.next_button_value = 'Next'
             self.setupScreens = True            
+        elif nextP == 'MapLayout':
+            self.next_button_value = 'Next'
+            self.setupScreens = True
         elif nextP == 'BoardSetup':
             self.next_button_value = 'Next'
             self.setupScreens = True
@@ -777,6 +790,47 @@ class SpiritSelectScreen(Screen):
     def on_select_aspect(self, player, value):
         app = App.get_running_app()
         app.aspects[player-1] = value
+
+class MapLayoutScreen(Screen):
+    def on_enter(self):
+        app = App.get_running_app()
+        app.currentPhase = 'MapLayout'
+        write_state()  
+        maplist = []
+        if int(app.players) == 1 and app.thematic == False:
+            maplist.append({'text': 'Solo Standard', 'image': 'resources/maps/1player-standard.png'})
+        elif int(app.players) == 1 and app.thematic == True:
+            maplist.append({'text': 'Solo Thematic', 'image': 'resources/maps/1player-thematic.png'})
+        elif int(app.players) == 2 and app.thematic == False:
+            maplist.append({'text': '2 Player Standard', 'image': 'resources/maps/2player-standard.png'})
+            maplist.append({'text': '2 Player Fragmented', 'image': 'resources/maps/2player-fragment.png'})
+            maplist.append({'text': '2 Player Opposite Shores', 'image': 'resources/maps/2player-oppositeshores.png'})
+        elif int(app.players) == 2 and app.thematic == True:
+            maplist.append({'text': '2 Player Thematic', 'image': 'resources/maps/2player-thematic.png'})
+        elif int(app.players) == 3 and app.thematic == False:
+            maplist.append({'text': '3 Player Standard', 'image': 'resources/maps/3player-standard.png'})
+            maplist.append({'text': '3 Player Coastline', 'image': 'resources/maps/3player-coastline.png'})
+        elif int(app.players) == 3 and app.thematic == True:
+            maplist.append({'text': '3 Player Thematic', 'image': 'resources/maps/3player-thematic.png'})
+        elif int(app.players) == 4 and app.thematic == False:
+            maplist.append({'text': '4 Player Standard', 'image': 'resources/maps/4player-standard.png'})
+            maplist.append({'text': '4 Player Leaf', 'image': 'resources/maps/4player-leaf.png'})    
+            maplist.append({'text': '4 Player Snake', 'image': 'resources/maps/4player-snake.png'})    
+        elif int(app.players) == 4 and app.thematic == True:
+            maplist.append({'text': '4 Player Thematic', 'image': 'resources/maps/4player-thematic.png'})
+        elif int(app.players) == 5:
+            maplist.append({'text': '5 Player Standard', 'image': 'resources/maps/5player-standard.png'})
+            maplist.append({'text': '5 Player Peninsula', 'image': 'resources/maps/5player-peninsula.png'})    
+            maplist.append({'text': '5 Player Snail', 'image': 'resources/maps/5player-snail.png'})   
+            maplist.append({'text': '5 Player V', 'image': 'resources/maps/5player-v.png'})
+        elif int(app.players) == 6:
+            maplist.append({'text': '6 Player Standard', 'image': 'resources/maps/6player-standard.png'})
+            maplist.append({'text': '6 Player Caldera', 'image': 'resources/maps/6player-caldera.png'})  
+            maplist.append({'text': '6 Player Flower', 'image': 'resources/maps/6player-flower.png'})
+            maplist.append({'text': '6 Player Star', 'image': 'resources/maps/6player-star.png'})
+            maplist.append({'text': '6 Player Archipelago', 'image': 'resources/maps/6player-archipelagos.png'})
+        maprv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.MAPRV
+        maprv.data = maplist
         
 #Board Setup Screen
 #Corresponds to kivy main
@@ -1467,9 +1521,13 @@ def write_state():
 class RV(RecycleView):
     def __init__(self, **kwargs):
         super(RV, self).__init__(**kwargs)
-        app = App.get_running_app()
         self.data = []
 
+
+class MAPRV(RecycleView):
+    def __init__(self, **kwargs):
+        super(MAPRV, self).__init__(**kwargs)
+        self.data = []#[{'text': '2 Player Standard', 'image': 'resources/maps/2player-standard.png'}] #app.maplist
   
 #Screen manager that controls which screen is which
 class MainManager(ScreenManager):
@@ -1534,6 +1592,7 @@ class MainApp(App):
     screenDescriptions = data.screenDescriptions
     icons = data.icons
     blightscreeninactive = False
+    maplist = ListProperty([])
     ##
     #data = ListProperty([])
     
@@ -1568,6 +1627,7 @@ class MainApp(App):
     
        
     def build(self):
+        self.maplist = []
         if int(self.config.get('timeroptions', 'usetimer')) == 0:
             self.use_timer = False
         else:
