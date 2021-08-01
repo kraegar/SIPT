@@ -533,6 +533,14 @@ class SpiritSelectScreen(Screen):
     spirit6_has_aspect = BooleanProperty(False)
     def on_enter(self):
         app = App.get_running_app()
+        ## Testing Deck Calculator. Uncomment one or two lines to see the invader and fear decks
+        #app.scotland_decks(4)
+        #app.russia_decks(4)
+        #app.england_decks(4)
+        #app.bp_decks(4)
+        #app.sweden_decks(4)
+        #app.france_decks(4)
+        #app.habsburg_decks(4)
         self.spirit_values = sorted(app.spirit_list)
         app.currentPhase = 'SpiritSelect'
         write_state()
@@ -1591,10 +1599,11 @@ class MainApp(App):
     screenTitles = data.screenTitles
     screenDescriptions = data.screenDescriptions
     icons = data.icons
-    blightscreeninactive = False
-    maplist = ListProperty([])
     ##
     #data = ListProperty([])
+
+    ideck = [1,1,1,2,2,2,2,3,3,3,3,3]
+    fdeck = [3,3,3]
     
     ## Global variables
     branchandclaw = False
@@ -1627,6 +1636,8 @@ class MainApp(App):
     
        
     def build(self):
+        self.ideck = ['1','1','1','2','2','2','2','3','3','3','3','3']
+        self.fdeck = [3,3,3]
         self.maplist = []
         if int(self.config.get('timeroptions', 'usetimer')) == 0:
             self.use_timer = False
@@ -1798,7 +1809,177 @@ class MainApp(App):
             self.blightscreeninactive = True
         else:
             self.blightscreeninactive = False
+    def bp_decks(self, lvl):
+        ## When making the Invader Deck, put 1 of the Stage III cards between Stage I and Stage II. (New Deck Order:111-3-2222-3333)
+        if int(lvl) >= 2:
+            index = self.ideck.index('2')
+            self.ideck.insert(index, '3')
+            self.ideck.reverse()
+            index = self.ideck.index('3')
+            self.ideck.pop(index)
+            self.ideck.reverse()
+        ##When making the Invader Deck, remove an additional Stage I card. (New Deck Order:11-3-2222-3333)
+        if('1' in self.ideck):
+            if int(lvl) >= 3:
+                index = self.ideck.index('1')
+                self.ideck.pop(index)
+        ##When making the Invader Deck, remove an additional Stage II card. (New Deck Order:11-3-222-3333)
+        if int(lvl) >= 4:
+            index = self.ideck.index('2')
+            self.ideck.pop(index)
+        ##When making the Invader Deck, remove an additional Stage I card. (New Deck Order:1-3-222-3333)
+        if('1' in self.ideck):
+            if int(lvl) >= 5:
+                index = self.ideck.index('1')
+                self.ideck.pop(index)
+        ##When making the Invader Deck, remove all Stage I cards. (New Deck Order:3-222-3333) 
+        if('1' in self.ideck):
+            if int(lvl) >= 6:
+                index = self.ideck.index('1')
+                self.ideck.pop(index)
+        ##Fear Deck
+        fearchange =  { 1: [0,0,0],
+                        2: [0,0,0],
+                        3: [0,1,0],
+                        4: [1,1,0],
+                        5: [1,1,0],
+                        6: [1,1,1]}
+        self.fdeck[0] = self.fdeck[0] + fearchange[int(lvl)][0]
+        self.fdeck[1] = self.fdeck[1] + fearchange[int(lvl)][1]
+        self.fdeck[2] = self.fdeck[2] + fearchange[int(lvl)][2]
+        print(self.ideck)
+        print(self.fdeck)
 
+    def england_decks(self, lvl):
+        fearchange =  { 1: [0,1,0],
+                        2: [1,1,0],
+                        3: [1,2,1],
+                        4: [1,2,2],
+                        5: [1,2,2],
+                        6: [1,2,1]}       
+        self.fdeck[0] = self.fdeck[0] + fearchange[int(lvl)][0]
+        self.fdeck[1] = self.fdeck[1] + fearchange[int(lvl)][1]
+        self.fdeck[2] = self.fdeck[2] + fearchange[int(lvl)][2]
+        print(self.ideck)
+        print(self.fdeck)
+    def sweden_decks(self):
+        fearchange =  { 1: [0,0,0],
+                        2: [0,1,0],
+                        3: [0,1,0],
+                        4: [0,1,1],
+                        5: [1,1,1],
+                        6: [1,1,2]}       
+        self.fdeck[0] = self.fdeck[0] + fearchange[int(lvl)][0]
+        self.fdeck[1] = self.fdeck[1] + fearchange[int(lvl)][1]
+        self.fdeck[2] = self.fdeck[2] + fearchange[int(lvl)][2]
+        print(self.ideck)
+        print(self.fdeck)        
+    def france_decks(self, lvl):
+        fearchange =  { 1: [0,0,0],
+                        2: [0,1,0],
+                        3: [1,1,0],
+                        4: [1,1,1],
+                        5: [1,2,1],
+                        6: [1,2,2]}       
+        self.fdeck[0] = self.fdeck[0] + fearchange[int(lvl)][0]
+        self.fdeck[1] = self.fdeck[1] + fearchange[int(lvl)][1]
+        self.fdeck[2] = self.fdeck[2] + fearchange[int(lvl)][2]
+        print(self.ideck)
+        print(self.fdeck)       
+    def habsburg_decks(self, lvl):
+        ## When making the Invader Deck, Remove 1 additional Stage I Card. (New deck order: 11-2222-33333) 
+        if int(lvl) >= 3:
+            if '1' in self.ideck:
+                index = self.ideck.index('1')
+                self.ideck.pop(index)
+        fearchange =  { 1: [0,1,0],
+                        2: [1,2,-1],
+                        3: [1,2,0],
+                        4: [1,2,0],
+                        5: [1,3,0],
+                        6: [2,3,0]}       
+        self.fdeck[0] = self.fdeck[0] + fearchange[int(lvl)][0]
+        self.fdeck[1] = self.fdeck[1] + fearchange[int(lvl)][1]
+        self.fdeck[2] = self.fdeck[2] + fearchange[int(lvl)][2]
+        print(self.ideck)
+        print(self.fdeck)
+    def russia_decks(self, lvl):
+        ##When making the Invader Deck, put 1 Stage III Card after each Stage II Card. (New Deck Order: 111-2-3-2-3-2-3-2-33) 
+        if int(lvl) >= 4:
+            rideck = self.ideck[:]
+            rideck.reverse()
+            count = 0
+            newdeck = []
+            for x in  range(len(self.ideck)):
+                if rideck[0] == '3' and self.ideck[x] == '2':
+                    newdeck.append(self.ideck[x])
+                    newdeck.append('3')
+                    rideck.pop(0)
+                    count = count +1
+                elif rideck[0] == '3' and self.ideck[x] == 'C':
+                    newdeck.append(self.ideck[x])
+                    newdeck.append('3')
+                    rideck.pop(0)
+                    count = count +1
+                else:
+                    newdeck.append(self.ideck[x])
+            for x in range(count):
+                newdeck.pop(-1)
+            self.ideck = newdeck
+        fearchange =  { 1: [0,0,1],
+                        2: [1,0,1],
+                        3: [1,1,0],
+                        4: [1,1,1],
+                        5: [1,2,1],
+                        6: [2,2,1]}       
+        self.fdeck[0] = self.fdeck[0] + fearchange[int(lvl)][0]
+        self.fdeck[1] = self.fdeck[1] + fearchange[int(lvl)][1]
+        self.fdeck[2] = self.fdeck[2] + fearchange[int(lvl)][2]  
+        print(self.ideck)
+        print(self.fdeck)
+    def scotland_decks(self, lvl):
+        ##Place "Coastal Lands" as the 3rd Stage II card, and move the two Stage II Cards above it up by one. (New Deck Order: 11-22-1-C2-33333, where C is the Stage II Coastal Lands Card.) 
+        if int(lvl) >= 2:
+            self.ideck.reverse()
+            index = self.ideck.index('2')
+            index = self.ideck.index('2', index+1)
+            self.ideck.pop(index)
+            self.ideck.insert(index, 'C')
+            index = self.ideck.index('2')
+            index = self.ideck.index('2', index+1)
+            self.ideck.pop(index)
+            self.ideck.insert(index+2, '2')
+            index = self.ideck.index('2')
+            index = self.ideck.index('2', index+1)
+            self.ideck.pop(index)
+            self.ideck.insert(index+2, '2')
+            self.ideck.reverse()
+            
+        ##During Setup, replace the bottom Stage I Card with the bottom Stage III Card. (New Deck Order: 11-22-3-C2-3333)) 
+        if int(lvl) >= 4:
+            self.ideck.reverse()
+            index = self.ideck.index('3')
+            self.ideck.pop(index)
+            if '1' in self.ideck:
+                index = self.ideck.index('1')
+                self.ideck.pop(index)
+            self.ideck.insert(index, 3)
+            self.ideck.reverse()
+        fearchange =  { 1: [0,1,0],
+                        2: [1,1,0],
+                        3: [1,2,1],
+                        4: [2,2,1],
+                        5: [2,3,1],
+                        6: [3,3,1]}       
+        self.fdeck[0] = self.fdeck[0] + fearchange[int(lvl)][0]
+        self.fdeck[1] = self.fdeck[1] + fearchange[int(lvl)][1]
+        self.fdeck[2] = self.fdeck[2] + fearchange[int(lvl)][2]              
+        print(self.ideck)
+        print(self.fdeck)
+            
+
+
+        
 MainApp().run()
 
 
