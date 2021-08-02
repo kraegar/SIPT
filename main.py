@@ -1633,7 +1633,7 @@ class MainApp(App):
     fontsize = NumericProperty(15)
     imagewidth = NumericProperty(0.07)
     ##
-    
+    blightscreeninactive = False
        
     def build(self):
         self.ideck = ['1','1','1','2','2','2','2','3','3','3','3','3']
