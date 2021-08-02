@@ -101,11 +101,10 @@ class PhaseScreen(Screen):
                 nextP = 'HighImmigration'
             elif app.opponent == 'England' and int(app.level) >= 4 and app.turn > 1:
                 nextP = 'HighImmigration'
+            elif app.turn > 1:
+                nextP = 'Ravage'
             else:
-                if app.turn > 1:
-                    nextP = 'Ravage'
-                else:
-                    nextP = 'Build'
+                nextP = 'Build'
         if app.currentPhase == 'HighImmigration':
             if app.turn > 1:
                 nextP = 'Ravage'
@@ -197,12 +196,22 @@ class PhaseScreen(Screen):
             return False
     def calc_health_damage(self):
         app = App.get_running_app()
-        self.ehealth = str(app.opponentmod_rules[app.opponent][int(app.level)][0])
-        self.edamage = str(app.opponentmod_rules[app.opponent][int(app.level)][3])
-        self.thealth = str(app.opponentmod_rules[app.opponent][int(app.level)][1])
-        self.tdamage = str(app.opponentmod_rules[app.opponent][int(app.level)][4])
-        self.chealth = str(app.opponentmod_rules[app.opponent][int(app.level)][2])
-        self.cdamage = str(app.opponentmod_rules[app.opponent][int(app.level)][5])      
+        self.ehealth = '1'
+        self.edamage = '1'
+        self.thealth = '2'
+        self.tdamage = '2'
+        self.chealth = '3'
+        self.cdamage = '3'
+        self.dhealth = '2'
+        self.ddamage = '2'
+        self.ehealth = str(int(self.ehealth) + app.opponentmod_rules[app.opponent][int(app.level)][0])
+        self.edamage = str(int(self.edamage) + app.opponentmod_rules[app.opponent][int(app.level)][4])
+        self.thealth = str(int(self.thealth) + app.opponentmod_rules[app.opponent][int(app.level)][1])
+        self.tdamage = str(int(self.tdamage) + app.opponentmod_rules[app.opponent][int(app.level)][5])
+        self.chealth = str(int(self.chealth) + app.opponentmod_rules[app.opponent][int(app.level)][2])
+        self.cdamage = str(int(self.cdamage) + app.opponentmod_rules[app.opponent][int(app.level)][6]) 
+        self.dhealth = str(int(self.dhealth) + app.opponentmod_rules[app.opponent][int(app.level)][3])
+        self.ddamage = str(int(self.ddamage) + app.opponentmod_rules[app.opponent][int(app.level)][7])
     time = StringProperty()
     def timer(self, *args):
         app = App.get_running_app()
@@ -440,8 +449,8 @@ class MainScreen(Screen):
         self.opp = value
         self.build_levels()
         self.lvl = app.level
-        if self.opp != 'None' and self.lvl == '0':
-            self.level_clicked('1')
+        #if self.opp != 'None' and self.lvl == '0':
+        #    self.level_clicked('1')
         if self.opp == 'None':
             self.level_clicked('0')
     def level_clicked(self, value):
@@ -502,7 +511,7 @@ class MainScreen(Screen):
         app = App.get_running_app()
         self.max_levels = ['0']
         if app.opponent != 'None':
-            self.max_levels = ['1','2','3','4','5','6']
+            self.max_levels = ['0','1','2','3','4','5','6']
 
 class SpiritSelectScreen(Screen):
     spirit_values = ListProperty([])
@@ -844,29 +853,53 @@ class MapLayoutScreen(Screen):
 #Corresponds to kivy main
 class BoardSetupScreen(Screen):
     text = StringProperty('')
+    ideck = ['1','1','1','2','2','2','2','3','3','3','3','3']
     def on_enter(self):                 #override of on_enter, runs when screen is constructed
         app = App.get_running_app()
         app.currentPhase = 'BoardSetup'
         write_state()
         start = ''
         fear = ''
-        invaders = ''
+        #invaders = 
         exsetup = ''
         ft = ''
         bt = ''
         list = []
-        if app.fear_cards[app.opponent][int(app.level)-1] != '':
-            fear = 'Fear Cards ' + app.fear_cards[app.opponent][int(app.level)-1] + '\n'  #calculate fear cards into local fear
+        fdeck = [3,3,3]
+        self.ideck = ['1','1','1','2','2','2','2','3','3','3','3','3']
+        fdeck[0] = fdeck[0] + app.fear_cards[app.opponent][int(app.level)][0]
+        fdeck[1] = fdeck[1] + app.fear_cards[app.opponent][int(app.level)][1]
+        fdeck[2] = fdeck[2] + app.fear_cards[app.opponent][int(app.level)][2]
+        ftotal = fdeck[0] + fdeck[1] + fdeck[2]
+        fear = 'Fear Cards ' + str(ftotal) + '(' + '/'.join(map(str, fdeck))+ ')\n'  #calculate fear cards into local fear
         if fear != '':
             list.append({'image': app.icons['Fear Cards'], 'text': fear})
         #loop to add all setup changes together (cumulative) from app.setup_changes up to opponent level into local start
-        for x in range(int(app.level)):
+        for x in range(int(app.level)+1):
             start += app.setup_changes[app.opponent][x]
         if start != '':
             list.append({'image': app.icons[app.opponent], 'text': start})    
-        invaders = 'Invader Deck: ' + app.invader_deck[app.opponent][int(app.level)-1]  + '\n' #set local invaders to invader deck based on opponent & level
-        if invaders != '':
-            list.append({'image': app.icons['Invader Cards'], 'text': invaders})
+        #invaders = 'Invader Deck: ' + app.invader_deck[app.opponent][int(app.level)-1]  + '\n' #set local invaders to invader deck based on opponent & level
+        #if invaders != '':
+        #    list.append({'image': app.icons['Invader Cards'], 'text': invaders})
+        if(app.opponent) == 'Brandenburg-Prussia':
+            self.bp_invaderdeck(app.level)
+        if(app.opponent) == 'Scotland': 
+            self.scotland_invaderdeck(app.level)
+        if(app.opponent) == 'Russia':
+            self.russia_invaderdeck(app.level)
+        if(app.opponent) == 'Habsburg':
+            self.habsburg_invaderdeck(app.level)
+        invaders = ''
+        last = self.ideck[0]
+        for card in self.ideck:
+            if card == last:
+                invaders = invaders + card
+            else:
+                invaders = invaders + '-'
+                invaders = invaders + card
+            last = card
+        list.append({'image': app.icons['Invader Cards'], 'text': invaders})
         if app.thematic:
             exsetup = 'Follow the icons on the thematic map for all invaders and tokens.'
         else:
@@ -890,6 +923,93 @@ class BoardSetupScreen(Screen):
         #self.text = '\n'.join([start, fear, invaders, exsetup, ft, bt])
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list
+    def bp_invaderdeck(self, lvl):
+        ## When making the Invader Deck, put 1 of the Stage III cards between Stage I and Stage II. (New Deck Order:111-3-2222-3333)
+        if int(lvl) >= 2:
+            index = self.ideck.index('2')
+            self.ideck.insert(index, '3')
+            self.ideck.reverse()
+            index = self.ideck.index('3')
+            self.ideck.pop(index)
+            self.ideck.reverse()
+        ##When making the Invader Deck, remove an additional Stage I card. (New Deck Order:11-3-2222-3333)
+        if('1' in self.ideck):
+            if int(lvl) >= 3:
+                index = self.ideck.index('1')
+                self.ideck.pop(index)
+        ##When making the Invader Deck, remove an additional Stage II card. (New Deck Order:11-3-222-3333)
+        if int(lvl) >= 4:
+            index = self.ideck.index('2')
+            self.ideck.pop(index)
+        ##When making the Invader Deck, remove an additional Stage I card. (New Deck Order:1-3-222-3333)
+        if('1' in self.ideck):
+            if int(lvl) >= 5:
+                index = self.ideck.index('1')
+                self.ideck.pop(index)
+        ##When making the Invader Deck, remove all Stage I cards. (New Deck Order:3-222-3333) 
+        if('1' in self.ideck):
+            if int(lvl) >= 6:
+                index = self.ideck.index('1')
+                self.ideck.pop(index)
+
+  
+    def habsburg_invaderdeck(self, lvl):
+        ## When making the Invader Deck, Remove 1 additional Stage I Card. (New deck order: 11-2222-33333) 
+        if int(lvl) >= 3:
+            if '1' in self.ideck:
+                index = self.ideck.index('1')
+                self.ideck.pop(index)
+    def russia_invaderdeck(self, lvl):
+        ##When making the Invader Deck, put 1 Stage III Card after each Stage II Card. (New Deck Order: 111-2-3-2-3-2-3-2-33) 
+        if int(lvl) >= 4:
+            rideck = self.ideck[:]
+            rideck.reverse()
+            count = 0
+            newdeck = []
+            for x in  range(len(self.ideck)):
+                if rideck[0] == '3' and self.ideck[x] == '2':
+                    newdeck.append(self.ideck[x])
+                    newdeck.append('3')
+                    rideck.pop(0)
+                    count = count +1
+                elif rideck[0] == '3' and self.ideck[x] == 'C':
+                    newdeck.append(self.ideck[x])
+                    newdeck.append('3')
+                    rideck.pop(0)
+                    count = count +1
+                else:
+                    newdeck.append(self.ideck[x])
+            for x in range(count):
+                newdeck.pop(-1)
+            self.ideck = newdeck
+    def scotland_invaderdeck(self, lvl):
+        ##Place "Coastal Lands" as the 3rd Stage II card, and move the two Stage II Cards above it up by one. (New Deck Order: 11-22-1-C2-33333, where C is the Stage II Coastal Lands Card.) 
+        if int(lvl) >= 2:
+            self.ideck.reverse()
+            index = self.ideck.index('2')
+            index = self.ideck.index('2', index+1)
+            self.ideck.pop(index)
+            self.ideck.insert(index, 'C')
+            index = self.ideck.index('2')
+            index = self.ideck.index('2', index+1)
+            self.ideck.pop(index)
+            self.ideck.insert(index+2, '2')
+            index = self.ideck.index('2')
+            index = self.ideck.index('2', index+1)
+            self.ideck.pop(index)
+            self.ideck.insert(index+2, '2')
+            self.ideck.reverse()
+            
+        ##During Setup, replace the bottom Stage I Card with the bottom Stage III Card. (New Deck Order: 11-22-3-C2-3333)) 
+        if int(lvl) >= 4:
+            self.ideck.reverse()
+            index = self.ideck.index('3')
+            self.ideck.pop(index)
+            if '1' in self.ideck:
+                index = self.ideck.index('1')
+                self.ideck.pop(index)
+            self.ideck.insert(index, '3')
+            self.ideck.reverse()
         
 class SpiritSetupScreen(Screen):
     spirits_text = StringProperty('')
@@ -901,7 +1021,7 @@ class SpiritSetupScreen(Screen):
         for spirit in app.spirits:
             if spirit != 'None':
                 #self.spirits_text = self.spirits_text + x + ': ' + app.spirit_setup[x] + '\n'
-                list.append({'image': app.icons[spirit], 'text': app.spirit_setup[spirit]})
+                list.append({'image': app.icons[spirit], 'text': spirit + ':\n' + app.spirit_setup[spirit]})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list
         
@@ -919,7 +1039,7 @@ class FirstExploreScreen(Screen):
         if description != '':
             list.append({'image': app.icons[app.currentPhase], 'text': description})
         if app.displayopts[app.currentPhase]['rules']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 rules += app.firstexplorescreen_rules[app.opponent][x]
         if rules != '':
             list.append({'image': app.icons[app.opponent], 'text': rules})
@@ -968,12 +1088,12 @@ class GrowthScreen(Screen):
                 list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 opprules += app.growthscreen_rules[app.opponent][x]
         if opprules != '':
             list.append({'image': app.icons[app.opponent], 'text': opprules})
         if app.displayopts[app.currentPhase]['all']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 allrules += app.allscreen_rules[app.opponent][x]
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
@@ -1030,12 +1150,12 @@ class PowerCardsScreen(Screen):
                 list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 opprules += app.powercardscreen_rules[app.opponent][x]
         if opprules != '':
             list.append({'image': app.icons[app.opponent], 'text': opprules}) 
         if app.displayopts[app.currentPhase]['all']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 allrules += app.allscreen_rules[app.opponent][x]
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
@@ -1070,12 +1190,12 @@ class FastPowerScreen(Screen):
                 list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 opprules += app.fastpowerscreen_rules[app.opponent][x]
         if opprules != '':
             list.append({'image': app.icons[app.opponent], 'text': opprules}) 
         if app.displayopts[app.currentPhase]['all']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 allrules += app.allscreen_rules[app.opponent][x]
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
@@ -1109,12 +1229,12 @@ class BlightedIslandScreen(Screen):
                 list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 opprules += app.blightedislandscreen_rules[app.opponent][x]
         if opprules != '':
             list.append({'image': app.icons[app.opponent], 'text': opprules}) 
         if app.displayopts[app.currentPhase]['all']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 allrules += app.allscreen_rules[app.opponent][x]
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
@@ -1149,12 +1269,12 @@ class EventScreen(Screen):
                 list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 opprules += app.eventscreen_rules[app.opponent][x]
         if opprules != '':
             list.append({'image': app.icons[app.opponent], 'text': opprules})                
         if app.displayopts[app.currentPhase]['all']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 allrules += app.allscreen_rules[app.opponent][x]
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})                
@@ -1193,12 +1313,12 @@ class FearScreen(Screen):
                 list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 opprules += app.fearscreen_rules[app.opponent][x]
         if opprules != '':
             list.append({'image': app.icons[app.opponent], 'text': opprules})                     
         if app.displayopts[app.currentPhase]['all']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 allrules += app.allscreen_rules[app.opponent][x]
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})   
@@ -1233,7 +1353,7 @@ class HighImmigrationScreen(Screen):
                 list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 opprules += app.highimmigrationscreen_rules[app.opponent][x]
         if opprules != '':
             list.append({'image': app.icons[app.opponent], 'text': opprules})
@@ -1243,7 +1363,7 @@ class HighImmigrationScreen(Screen):
         if disease != '':
             list.append({'image': app.icons['disease'], 'text': disease})
         if app.displayopts[app.currentPhase]['all']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 allrules += app.allscreen_rules[app.opponent][x]
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
@@ -1287,12 +1407,12 @@ class RavageScreen(Screen):
                 list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 opprules += app.ravagescreen_rules[app.opponent][x]
         if opprules != '':
             list.append({'image': app.icons[app.opponent], 'text': opprules})
         if app.displayopts[app.currentPhase]['all']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 allrules += app.allscreen_rules[app.opponent][x]
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
@@ -1332,12 +1452,12 @@ class BuildScreen(Screen):
                 list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 opprules += app.buildscreen_rules[app.opponent][x]
         if opprules != '':
             list.append({'image': app.icons[app.opponent], 'text': opprules})
         if app.displayopts[app.currentPhase]['all']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 allrules += app.allscreen_rules[app.opponent][x]
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
@@ -1386,12 +1506,12 @@ class ExploreScreen(Screen):
                 self.list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 opprules += app.explorescreen_rules[app.opponent][x]
         if opprules != '':
             self.list.append({'image': app.icons[app.opponent], 'text': opprules})
         if app.displayopts[app.currentPhase]['all']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 allrules += app.allscreen_rules[app.opponent][x]
         if allrules != '':
             self.list.append({'image': app.icons[app.opponent], 'text': allrules})
@@ -1427,12 +1547,12 @@ class AdvanceCardsScreen(Screen):
 
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 opprules += app.advancecardsscreen_rules[app.opponent][x]
         if opprules != '':
             list.append({'image': app.icons[app.opponent], 'text': opprules})
         if app.displayopts[app.currentPhase]['all']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 allrules += app.allscreen_rules[app.opponent][x]
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
@@ -1466,12 +1586,12 @@ class SlowPowerScreen(Screen):
                 list.append({'image': app.icons['badlands'], 'text': badlands})
         #loop to add all phase changes together (cumulative) up to opponent level into local opprules
         if app.displayopts[app.currentPhase]['opponent']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 opprules += app.slowpowerscreen_rules[app.opponent][x]
         if opprules != '':
             list.append({'image': app.icons[app.opponent], 'text': opprules})
         if app.displayopts[app.currentPhase]['all']:
-            for x in range(int(app.level)):
+            for x in range(int(app.level)+1):
                 allrules += app.allscreen_rules[app.opponent][x]
         if allrules != '':
             list.append({'image': app.icons[app.opponent], 'text': allrules})
@@ -1576,7 +1696,6 @@ class MainApp(App):
     fear_cards = data.fear_cards
     setup_changes = data.setup_changes
     expansion_setup = data.expansion_setup
-    invader_deck = data.invader_deck
     stage2_flag = data.stage2_flag
     loss_rules = data.loss_rules
     allscreen_rules = data.allscreen_rules
@@ -1612,10 +1731,12 @@ class MainApp(App):
     promopack2 = False
     expansion = 'None'          #global variable for expansion
     opponent = 'None'           #global variable for opponent
+    opponents = ['None']
     thematic = False
     spirits = ['None', 'None', 'None', 'None', 'None', 'None']
     aspects = ['None', 'None', 'None', 'None', 'None', 'None']
     scenario = 'None'
+    levels = ['0']
     level = '0'              #global variable for opponent level
     stage = 'I'             #global variable for current stage
     blight = 'Healthy'      #global variable for current blight (Healthy, Blighted)
@@ -1636,7 +1757,6 @@ class MainApp(App):
     blightscreeninactive = False
        
     def build(self):
-        self.ideck = ['1','1','1','2','2','2','2','3','3','3','3','3']
         self.fdeck = [3,3,3]
         self.maplist = []
         if int(self.config.get('timeroptions', 'usetimer')) == 0:
@@ -1809,173 +1929,7 @@ class MainApp(App):
             self.blightscreeninactive = True
         else:
             self.blightscreeninactive = False
-    def bp_decks(self, lvl):
-        ## When making the Invader Deck, put 1 of the Stage III cards between Stage I and Stage II. (New Deck Order:111-3-2222-3333)
-        if int(lvl) >= 2:
-            index = self.ideck.index('2')
-            self.ideck.insert(index, '3')
-            self.ideck.reverse()
-            index = self.ideck.index('3')
-            self.ideck.pop(index)
-            self.ideck.reverse()
-        ##When making the Invader Deck, remove an additional Stage I card. (New Deck Order:11-3-2222-3333)
-        if('1' in self.ideck):
-            if int(lvl) >= 3:
-                index = self.ideck.index('1')
-                self.ideck.pop(index)
-        ##When making the Invader Deck, remove an additional Stage II card. (New Deck Order:11-3-222-3333)
-        if int(lvl) >= 4:
-            index = self.ideck.index('2')
-            self.ideck.pop(index)
-        ##When making the Invader Deck, remove an additional Stage I card. (New Deck Order:1-3-222-3333)
-        if('1' in self.ideck):
-            if int(lvl) >= 5:
-                index = self.ideck.index('1')
-                self.ideck.pop(index)
-        ##When making the Invader Deck, remove all Stage I cards. (New Deck Order:3-222-3333) 
-        if('1' in self.ideck):
-            if int(lvl) >= 6:
-                index = self.ideck.index('1')
-                self.ideck.pop(index)
-        ##Fear Deck
-        fearchange =  { 1: [0,0,0],
-                        2: [0,0,0],
-                        3: [0,1,0],
-                        4: [1,1,0],
-                        5: [1,1,0],
-                        6: [1,1,1]}
-        self.fdeck[0] = self.fdeck[0] + fearchange[int(lvl)][0]
-        self.fdeck[1] = self.fdeck[1] + fearchange[int(lvl)][1]
-        self.fdeck[2] = self.fdeck[2] + fearchange[int(lvl)][2]
-        print(self.ideck)
-        print(self.fdeck)
 
-    def england_decks(self, lvl):
-        fearchange =  { 1: [0,1,0],
-                        2: [1,1,0],
-                        3: [1,2,1],
-                        4: [1,2,2],
-                        5: [1,2,2],
-                        6: [1,2,1]}       
-        self.fdeck[0] = self.fdeck[0] + fearchange[int(lvl)][0]
-        self.fdeck[1] = self.fdeck[1] + fearchange[int(lvl)][1]
-        self.fdeck[2] = self.fdeck[2] + fearchange[int(lvl)][2]
-        print(self.ideck)
-        print(self.fdeck)
-    def sweden_decks(self):
-        fearchange =  { 1: [0,0,0],
-                        2: [0,1,0],
-                        3: [0,1,0],
-                        4: [0,1,1],
-                        5: [1,1,1],
-                        6: [1,1,2]}       
-        self.fdeck[0] = self.fdeck[0] + fearchange[int(lvl)][0]
-        self.fdeck[1] = self.fdeck[1] + fearchange[int(lvl)][1]
-        self.fdeck[2] = self.fdeck[2] + fearchange[int(lvl)][2]
-        print(self.ideck)
-        print(self.fdeck)        
-    def france_decks(self, lvl):
-        fearchange =  { 1: [0,0,0],
-                        2: [0,1,0],
-                        3: [1,1,0],
-                        4: [1,1,1],
-                        5: [1,2,1],
-                        6: [1,2,2]}       
-        self.fdeck[0] = self.fdeck[0] + fearchange[int(lvl)][0]
-        self.fdeck[1] = self.fdeck[1] + fearchange[int(lvl)][1]
-        self.fdeck[2] = self.fdeck[2] + fearchange[int(lvl)][2]
-        print(self.ideck)
-        print(self.fdeck)       
-    def habsburg_decks(self, lvl):
-        ## When making the Invader Deck, Remove 1 additional Stage I Card. (New deck order: 11-2222-33333) 
-        if int(lvl) >= 3:
-            if '1' in self.ideck:
-                index = self.ideck.index('1')
-                self.ideck.pop(index)
-        fearchange =  { 1: [0,1,0],
-                        2: [1,2,-1],
-                        3: [1,2,0],
-                        4: [1,2,0],
-                        5: [1,3,0],
-                        6: [2,3,0]}       
-        self.fdeck[0] = self.fdeck[0] + fearchange[int(lvl)][0]
-        self.fdeck[1] = self.fdeck[1] + fearchange[int(lvl)][1]
-        self.fdeck[2] = self.fdeck[2] + fearchange[int(lvl)][2]
-        print(self.ideck)
-        print(self.fdeck)
-    def russia_decks(self, lvl):
-        ##When making the Invader Deck, put 1 Stage III Card after each Stage II Card. (New Deck Order: 111-2-3-2-3-2-3-2-33) 
-        if int(lvl) >= 4:
-            rideck = self.ideck[:]
-            rideck.reverse()
-            count = 0
-            newdeck = []
-            for x in  range(len(self.ideck)):
-                if rideck[0] == '3' and self.ideck[x] == '2':
-                    newdeck.append(self.ideck[x])
-                    newdeck.append('3')
-                    rideck.pop(0)
-                    count = count +1
-                elif rideck[0] == '3' and self.ideck[x] == 'C':
-                    newdeck.append(self.ideck[x])
-                    newdeck.append('3')
-                    rideck.pop(0)
-                    count = count +1
-                else:
-                    newdeck.append(self.ideck[x])
-            for x in range(count):
-                newdeck.pop(-1)
-            self.ideck = newdeck
-        fearchange =  { 1: [0,0,1],
-                        2: [1,0,1],
-                        3: [1,1,0],
-                        4: [1,1,1],
-                        5: [1,2,1],
-                        6: [2,2,1]}       
-        self.fdeck[0] = self.fdeck[0] + fearchange[int(lvl)][0]
-        self.fdeck[1] = self.fdeck[1] + fearchange[int(lvl)][1]
-        self.fdeck[2] = self.fdeck[2] + fearchange[int(lvl)][2]  
-        print(self.ideck)
-        print(self.fdeck)
-    def scotland_decks(self, lvl):
-        ##Place "Coastal Lands" as the 3rd Stage II card, and move the two Stage II Cards above it up by one. (New Deck Order: 11-22-1-C2-33333, where C is the Stage II Coastal Lands Card.) 
-        if int(lvl) >= 2:
-            self.ideck.reverse()
-            index = self.ideck.index('2')
-            index = self.ideck.index('2', index+1)
-            self.ideck.pop(index)
-            self.ideck.insert(index, 'C')
-            index = self.ideck.index('2')
-            index = self.ideck.index('2', index+1)
-            self.ideck.pop(index)
-            self.ideck.insert(index+2, '2')
-            index = self.ideck.index('2')
-            index = self.ideck.index('2', index+1)
-            self.ideck.pop(index)
-            self.ideck.insert(index+2, '2')
-            self.ideck.reverse()
-            
-        ##During Setup, replace the bottom Stage I Card with the bottom Stage III Card. (New Deck Order: 11-22-3-C2-3333)) 
-        if int(lvl) >= 4:
-            self.ideck.reverse()
-            index = self.ideck.index('3')
-            self.ideck.pop(index)
-            if '1' in self.ideck:
-                index = self.ideck.index('1')
-                self.ideck.pop(index)
-            self.ideck.insert(index, 3)
-            self.ideck.reverse()
-        fearchange =  { 1: [0,1,0],
-                        2: [1,1,0],
-                        3: [1,2,1],
-                        4: [2,2,1],
-                        5: [2,3,1],
-                        6: [3,3,1]}       
-        self.fdeck[0] = self.fdeck[0] + fearchange[int(lvl)][0]
-        self.fdeck[1] = self.fdeck[1] + fearchange[int(lvl)][1]
-        self.fdeck[2] = self.fdeck[2] + fearchange[int(lvl)][2]              
-        print(self.ideck)
-        print(self.fdeck)
             
 
 
