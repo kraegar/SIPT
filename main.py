@@ -866,6 +866,7 @@ class BoardSetupScreen(Screen):
         bt = ''
         list = []
         fdeck = [3,3,3]
+        fear_per = 4
         self.ideck = ['1','1','1','2','2','2','2','3','3','3','3','3']
         fdeck[0] = fdeck[0] + app.fear_cards[app.opponent][int(app.level)][0]
         fdeck[1] = fdeck[1] + app.fear_cards[app.opponent][int(app.level)][1]
@@ -879,9 +880,7 @@ class BoardSetupScreen(Screen):
             start += app.setup_changes[app.opponent][x]
         if start != '':
             list.append({'image': app.icons[app.opponent], 'text': start})    
-        #invaders = 'Invader Deck: ' + app.invader_deck[app.opponent][int(app.level)-1]  + '\n' #set local invaders to invader deck based on opponent & level
-        #if invaders != '':
-        #    list.append({'image': app.icons['Invader Cards'], 'text': invaders})
+        ## Invader Deck
         if(app.opponent) == 'Brandenburg-Prussia':
             self.bp_invaderdeck(app.level)
         if(app.opponent) == 'Scotland': 
@@ -906,10 +905,7 @@ class BoardSetupScreen(Screen):
             exsetup = app.expansion_setup[app.expansion]     #copy app.expansion_setup into local exsetup
         if exsetup != '':
             list.append({'image': app.icons['Land'], 'text': exsetup})
-        if app.opponent == 'England' and int(app.level) == 6:
-            fear_per = 5
-        else:
-            fear_per = 4
+        fear_per = fear_per + app.opp_fear_tokens[app.opponent][int(app.level)]
 
         app.fear_tokens = fear_per * int(app.players)    #calculate number of fear tokens into global fear_tokens
         
@@ -1700,6 +1696,7 @@ class MainApp(App):
     loss_rules = data.loss_rules
     allscreen_rules = data.allscreen_rules
     opponentmod_rules = data.opponentmod_rules
+    opp_fear_tokens = data.opp_fear_tokens
     firstexplorescreen_rules = data.firstexplorescreen_rules
     growthscreen_rules = data.growthscreen_rules
     energyscreen_rules = data.energyscreen_rules
@@ -1721,9 +1718,6 @@ class MainApp(App):
     ##
     #data = ListProperty([])
 
-    ideck = [1,1,1,2,2,2,2,3,3,3,3,3]
-    fdeck = [3,3,3]
-    
     ## Global variables
     branchandclaw = False
     jaggedearth = False
