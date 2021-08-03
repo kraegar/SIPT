@@ -338,10 +338,6 @@ MainManager:
 				id: branchandclaw
 				active: root.bc
 				on_active: root.bc_clicked(self.active)
-		#BoxLayout:
-			#orientation: "horizontal"
-			#cols: 2
-			#size_hint_y: .0775
 			Label:
 				size_hint_x: 40
 				text: "Jagged Earth:"
@@ -364,10 +360,6 @@ MainManager:
 				id: promo1
 				active: root.pp1
 				on_active: root.promo1_clicked(self.active)	
-		#BoxLayout:
-			#orientation: "horizontal"
-			#cols: 2
-			#size_hint_y: .0775
 			Label:
 				size_hint_x: 40
 				text: "Promo Pack 2:"
@@ -401,26 +393,52 @@ MainManager:
 			size_hint_y: .0775
 			Label:
 				id: opponent
-				text: 'Adversary'
+				text: 'Adversary 1'
 				font_size: 20
 			Spinner:
 				background_color: [1,0,0,1]
-				text: root.opp
+				text: root.opp[0]
 				values: root.opp_list
-				on_text: root.opponent_clicked(self.text)
+				on_text: root.opponent_clicked(0,self.text)
 		BoxLayout:
 			orientation: "horizontal"
 			cols: 2
 			size_hint_y: .0775
 			Label:
 				id: level
-				text: "Adversary Level"
+				text: "Adversary 1 Level"
 				font_size: 20
 			Spinner:
 				background_color: [0, 0, 1, 1]
-				text: root.lvl
-				on_text: root.level_clicked(self.text)
-				values: root.max_levels
+				text: root.lvl[0]
+				on_text: root.level_clicked(0,self.text)
+				values: root.max_levels[0]
+		BoxLayout:
+			orientation: "horizontal"
+			cols: 2
+			size_hint_y: .0775
+			Label:
+				id: opponent
+				text: 'Adversary 2'
+				font_size: 20
+			Spinner:
+				background_color: [1,0,0,1]
+				text: root.opp[1]
+				values: root.opp_list
+				on_text: root.opponent_clicked(1,self.text)
+		BoxLayout:
+			orientation: "horizontal"
+			cols: 2
+			size_hint_y: .0775
+			Label:
+				id: level
+				text: "Adversary 2 Level"
+				font_size: 20
+			Spinner:
+				background_color: [0, 0, 1, 1]
+				text: root.lvl[1]
+				on_text: root.level_clicked(1,self.text)
+				values: root.max_levels[1]
 		BoxLayout:
 			orientation: "horizontal"
 			cols: 2
@@ -447,16 +465,7 @@ MainManager:
 				text: root.play
 				on_text: root.players_clicked(self.text)
 				values: root.max_play		
-#		BoxLayout:
-#			orientation: "horizontal"
-#			cols: 2
-#			size_hint_y: .075
-#options button, needs moved
-#			ScaleButton:
-#				on_release: app.open_settings()
-#				text: 'Options'
-#				font_size: self.height*0.8
-#				size_hint_x: .3
+
 
 <SpiritSelectScreen>:
 	name: 'SpiritSelect'

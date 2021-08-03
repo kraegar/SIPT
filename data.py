@@ -178,7 +178,7 @@ setup_changes = { 'None':                {0: '',
                                           5: '',
                                           6: ''},
                   'France':              {0: '',
-                                          1: 'Return all but 7 towns per player to the box before setup.\n',
+                                          1: '',
                                           2: 'Put the Slave Rebellion Event under the top 3 cards of the event deck.\n',
                                           3: 'On each board add one town to the highest numbered land without a town.\nAdd one town to land 1.\n',
                                           4: '',
@@ -226,13 +226,13 @@ expansion_setup = { 'None': '',
 #dictionary accessed via stage2_flag[opponent] = value
 #scotland must be updated during MainApp build due to change to player count
 stage2_flag = { 'None': '',
-                'Brandenburg-Prussia': 'If the invader card has a flag:\nOn each board with towns or cities: Add one town to a land without a town.\n',
-                'England': 'If the invader card has a flag:\nOn each board with towns or cities: Build in the land with the most towns/cities.\n',
-                'France': 'If the invader card has a flag:\nAfter exploring, on each board, pick a land of the shown terrain. If it has towns/cities, add one blight. Otherwise add one town.',
-                'Sweden': 'If the invader card has a flag:\nAfter invaders explore into each land this phase, if that land has at least as many invaders as dahan, replace one dahan with one town.\n',
-                'Scotland': 'If the invader card has a flag:\nOn the single board with the most coastal towns/cities add one town to the (number of players) lands with the fewest towns.\n',
-                'Russia': 'If the invader card has a flag: On each board:\nAdd 2 explorers (total) among lands with beasts. If you can\'t, instead add 2 explorers among lands with beasts on a different board.\n',
-                'Habsburg': 'If the invader card has a flag:\nAfter exploring: On each board with 4 or fewer blight, add one town to a land without towns/blight. On each board with 2 or fewer blight, do so again.\n'
+                'Brandenburg-Prussia': 'On each board with towns or cities: Add one town to a land without a town.\n',
+                'England': 'On each board with towns or cities: Build in the land with the most towns/cities.\n',
+                'France': 'After exploring, on each board, pick a land of the shown terrain. If it has towns/cities, add one blight. Otherwise add one town.',
+                'Sweden': 'After invaders explore into each land this phase, if that land has at least as many invaders as dahan, replace one dahan with one town.\n',
+                'Scotland': 'On the single board with the most coastal towns/cities add one town to the (number of players) lands with the fewest towns.\n',
+                'Russia': 'On each board:\nAdd 2 explorers (total) among lands with beasts. If you can\'t, instead add 2 explorers among lands with beasts on a different board.\n',
+                'Habsburg': 'After exploring: On each board with 4 or fewer blight, add one town to a land without towns/blight. On each board with 2 or fewer blight, do so again.\n'
                 }
 
 #allscreen rules has 7 entries instead of the usual 6.  The first entry is for any additional loss condition.
@@ -299,10 +299,10 @@ allscreen_rules = {
     'Russia': {             
                             0: '',
                             1: '',
-                            2: 'The first time each Action would Destroy explorers: If possible, 1 of those explorers is pushed; 1 fear when you do so.',
+                            2: 'The first time each Action would Destroy explorers: If possible, 1 of those explorers is pushed; 1 fear when you do so.\n',
                             3: '',
                             4: '',
-                            5: '',
+                            5: 'When an invader card is revealed in the fear deck, immediately place it in the build space (face up).\n',
                             6: ''},
     'Habsburg': {            
                             0: '',
@@ -361,13 +361,13 @@ opponentmod_rules = {
                               4: [0,0,0,0,0,0,0,0],
                               5: [0,0,0,0,0,0,0,0],
                               6: [0,0,0,0,0,0,0,0]},
-    'Russia':               { 0: [0,0,0,0,0,0,0,0],
-                              1: [0,0,0,0,0,0,0,0],
-                              2: [0,0,0,0,0,0,0,0],
-                              3: [0,0,0,0,0,0,0,0],
-                              4: [0,0,0,0,0,0,0,0],
-                              5: [0,0,0,0,0,0,0,0],
-                              6: [0,0,0,0,0,0,0,0]},
+    'Russia':               { 0: [0,0,0,0,1,0,0,0],
+                              1: [0,0,0,0,1,0,0,0],
+                              2: [0,0,0,0,1,0,0,0],
+                              3: [0,0,0,0,1,0,0,0],
+                              4: [0,0,0,0,1,0,0,0],
+                              5: [0,0,0,0,1,0,0,0],
+                              6: [0,0,0,0,1,0,0,0]},
     'Habsburg':             { 0: [0,0,0,0,0,0,0,0],
                               1: [0,0,0,0,0,0,0,0],
                               2: [0,0,0,0,0,0,0,0],
@@ -968,7 +968,7 @@ fearscreen_rules = {
                             2: '',
                             3: '',
                             4: '',
-                            5: 'When an invader card is revealed, immediately place it in the build space (face up).\n',
+                            5: '',
                             6: ''},
     'Habsburg': {
                             0: '',
@@ -1082,7 +1082,7 @@ ravagescreen_rules = {
                             6: ''},
     'Sweden': {
                             0: '',
-                            1: 'If the invaders do at least 6 damage to the land during Ravage, add and extra blight. OThe additional blight does not destroy presence or cascade.\n',
+                            1: 'If the invaders do at least 6 damage to the land during Ravage, add and extra blight. The additional blight does not destroy presence or cascade.\n',
                             2: '',
                             3: '',
                             4: '',
@@ -1133,7 +1133,7 @@ buildscreen_rules = {
                             6: ''},
     'England': {
                             0: '',
-                            1: 'Invader build actions affect lands without invaders, if they are adjacent to at least 2 towns/cities before the build action\n',
+                            1: 'Invader build actions affect matching lands without invaders, if they are adjacent to at least 2 towns/cities before the build action\n',
                             2: '',
                             3: '',
                             4: '',
@@ -1213,7 +1213,7 @@ explorescreen_rules = {
                             3: '',
                             4: '',
                             5: '',
-                            6: 'After the normal explore, on each board add one explorer to a land without any.\n'},
+                            6: 'After resolving an Explore card, on each board add one explorer to a land without any.\n'},
     'Sweden': {
                             0: '',
                             1: '',
@@ -1244,7 +1244,7 @@ explorescreen_rules = {
                             2: '',
                             3: '',
                             4: '',
-                            5: 'When the Habsburg reminder card is revealed, on each board, add one city to a coastal land without cities and one town to the 3 inland lands with the fewest blight.\n',
+                            5: '',
                             6: ''}
     }
 
@@ -1311,7 +1311,7 @@ advancecardsscreen_rules = {
                             2: '',
                             3: '',
                             4: '',
-                            5: '',
+                            5: 'When the Habsburg reminder card is revealed, on each board, add one city to a coastal land without cities and one town to the 3 inland lands with the fewest blight.\n',
                             6: ''}
     }
 
