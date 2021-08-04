@@ -1138,7 +1138,6 @@ class EnergyScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'Energy'
-        print(app.turn)
         write_state()
         description = ''
         opprules = ""
