@@ -163,7 +163,8 @@ class PhaseScreen(Screen):
             self.time = ''
     def on_back(self):
         app = App.get_running_app()
-        
+        if app.currentPhase == 'Growth':
+            app.turn = app.turn - 1
         self.start_clock()
         prev = app.previousPhase[-1]
         self.title = app.screenTitles[prev]
@@ -273,7 +274,8 @@ class PhaseScreen(Screen):
         app.spirit_list = (store.get('spirit_list')['value'])
         app.scenarios_list = (store.get('scenarios_list')['value'])
         app.currentPhase = app.previousPhase[-1]
-        self.lvl = app.level
+
+        app.fromLoad = True
         self.calc_health_damage()
         app.stage2_flag['Scotland'] = 'Loss condition: If the invader card has a flag:\nOn the single board with the most coastal towns/cities add one town to the '+ str(app.players) +' lands with the fewest towns.\n'
         app.loss_rules['Habsburg'] = 'Loss condition: Track how many blight come off the blight cards during ravages that do 8+ damage to the land. If that number ever exceeds ' + str(app.players) +' , the invaders win.\n'
@@ -1083,9 +1085,10 @@ class GrowthScreen(Screen):
     text = StringProperty('')
     def on_enter(self):
         app = App.get_running_app()
+        if app.currentPhase != 'Energy' and app.fromLoad != True:
+            app.turn = app.turn + 1
         app.currentPhase = 'Growth'
         write_state()
-        app.turn = app.turn +1
         self.text = ''
         description = ''
         badlands = ""
@@ -1099,7 +1102,7 @@ class GrowthScreen(Screen):
         if app.displayopts[app.currentPhase]['spirits']:
             for x in app.spirits:
                 if app.spirit_growth_count[x] > 1:
-                    spirits_text = 'Spirits with more than one Growth action can use energy gained from one action to pay for another.\n'
+                    spirits_text = 'Spirits with more than one Growth action can use energy gained from one action to pay for another.  The same growth option cannot be chosen twice.\n'
         if spirits_text != '':
             list.append({'image': app.icons['spirits text'], 'text': spirits_text})
 
@@ -1135,6 +1138,7 @@ class EnergyScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'Energy'
+        print(app.turn)
         write_state()
         description = ''
         opprules = ""
@@ -1795,7 +1799,7 @@ class MainApp(App):
     imagewidth = NumericProperty(0.07)
     ##
     blightscreeninactive = False
-    
+    fromLoad = False
     def build(self):
         self.fdeck = [3,3,3]
         self.maplist = []
