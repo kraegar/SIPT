@@ -1,3 +1,4 @@
+#:kivy 2.0
 #ScreenManagement - all screens defined here.
 #:import Factory kivy.factory.Factory
 MainManager:
@@ -24,7 +25,7 @@ MainManager:
 	GridLayout:
 		cols: 1
 		Label:
-			text: 'Welcome to the Spirit Island Phase Tracker, by Tony Akens and Tricia Blosser.\nSpirit Island and all terms, text, and assets belongs to More Than Play Games.\n\nThis app is intended to assist in playing the board game, by helping remind you of rules as you play.\nTo get started, select the expansions you\'ll be playing with.\nThis will set the available adversaries and number of players.\nNext, select your adversary, adversary level, and number of players.\nHit start to begin.\nAs you play, use the \"Next Screen\" button to advance through the phases.\nAs you play, if your island becomes blighted, check the \"Blighted Island\" button.  You\'ll begin on Stage I, when you flip your first card from Stage II, press the \"Stage2\" button. Do the same for your first Stage III card.\nThis app saves its state automatically. To reload your previous state, just hit the \"Reload Previous Session\" from the main screen.'
+			text: 'Welcome to the Spirit Island Phase Tracker, by Tony Akens.\nSpirit Island and all terms, text, and assets belongs to More Than Play Games.\n\nThis app is intended to assist in playing the board game, by helping remind you of rules as you play.\nTo get started, select the expansions you\'ll be playing with.\nThis will set the available adversaries and number of players.\nNext, select your adversary, adversary level, and number of players.\nHit start to begin.\nAs you play, use the \"Next Screen\" button to advance through the phases.\nAs you play, if your island becomes blighted, check the \"Blighted Island\" button.  You\'ll begin on Stage I, when you flip your first card from Stage II, press the \"Stage2\" button. Do the same for your first Stage III card.\nThis app saves its state automatically. To reload your previous state, just hit the \"Reload Previous Session\" from the main screen.'
 			text_size: self.width, None
 			height: self.texture_size[1]
 		Button:
@@ -338,10 +339,6 @@ MainManager:
 				id: branchandclaw
 				active: root.bc
 				on_active: root.bc_clicked(self.active)
-		#BoxLayout:
-			#orientation: "horizontal"
-			#cols: 2
-			#size_hint_y: .0775
 			Label:
 				size_hint_x: 40
 				text: "Jagged Earth:"
@@ -364,10 +361,6 @@ MainManager:
 				id: promo1
 				active: root.pp1
 				on_active: root.promo1_clicked(self.active)	
-		#BoxLayout:
-			#orientation: "horizontal"
-			#cols: 2
-			#size_hint_y: .0775
 			Label:
 				size_hint_x: 40
 				text: "Promo Pack 2:"
@@ -401,26 +394,52 @@ MainManager:
 			size_hint_y: .0775
 			Label:
 				id: opponent
-				text: 'Adversary'
+				text: 'Adversary 1'
 				font_size: 20
 			Spinner:
 				background_color: [1,0,0,1]
-				text: root.opp
+				text: root.opp[0]
 				values: root.opp_list
-				on_text: root.opponent_clicked(self.text)
+				on_text: root.opponent_clicked(0,self.text)
 		BoxLayout:
 			orientation: "horizontal"
 			cols: 2
 			size_hint_y: .0775
 			Label:
 				id: level
-				text: "Adversary Level"
+				text: "Adversary 1 Level"
 				font_size: 20
 			Spinner:
 				background_color: [0, 0, 1, 1]
-				text: root.lvl
-				on_text: root.level_clicked(self.text)
-				values: root.max_levels
+				text: root.lvl[0]
+				on_text: root.level_clicked(0,self.text)
+				values: root.max_levels[0]
+		BoxLayout:
+			orientation: "horizontal"
+			cols: 2
+			size_hint_y: .0775
+			Label:
+				id: opponent
+				text: 'Adversary 2'
+				font_size: 20
+			Spinner:
+				background_color: [1,0,0,1]
+				text: root.opp[1]
+				values: root.opp_list
+				on_text: root.opponent_clicked(1,self.text)
+		BoxLayout:
+			orientation: "horizontal"
+			cols: 2
+			size_hint_y: .0775
+			Label:
+				id: level
+				text: "Adversary 2 Level"
+				font_size: 20
+			Spinner:
+				background_color: [0, 0, 1, 1]
+				text: root.lvl[1]
+				on_text: root.level_clicked(1,self.text)
+				values: root.max_levels[1]
 		BoxLayout:
 			orientation: "horizontal"
 			cols: 2
@@ -447,16 +466,7 @@ MainManager:
 				text: root.play
 				on_text: root.players_clicked(self.text)
 				values: root.max_play		
-#		BoxLayout:
-#			orientation: "horizontal"
-#			cols: 2
-#			size_hint_y: .075
-#options button, needs moved
-#			ScaleButton:
-#				on_release: app.open_settings()
-#				text: 'Options'
-#				font_size: self.height*0.8
-#				size_hint_x: .3
+
 
 <SpiritSelectScreen>:
 	name: 'SpiritSelect'
