@@ -940,7 +940,7 @@ class BoardSetupScreen(Screen):
             last = card
         list.append({'image': app.icons['Invader Cards'], 'text': invaders})
         if app.thematic:
-            exsetup = 'Follow the icons on the thematic map for all invaders and tokens.'
+            exsetup = 'Follow the icons on the thematic map for all invaders and tokens. Land #9 on the West board should have 2 Badlands tokens, not just 1.'
         else:
             exsetup = app.expansion_setup[app.expansion]     #copy app.expansion_setup into local exsetup
         if exsetup != '':
