@@ -508,7 +508,6 @@ class MainScreen(Screen):
             rlist.remove('Random')
             rlist.remove('None')
             value = random.choice(rlist)
-            self.opp[num] = ''
             self.opp[num] = value
         app.opponents[num] = value
         self.opp[num] = value
