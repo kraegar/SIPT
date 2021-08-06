@@ -65,9 +65,6 @@ class PhaseScreen(Screen):
             print(keycode)
             if keycode == 40 or keycode == 128:  # 40 - Enter key pressed
                 phase = App.get_running_app().root.get_screen('Phase').ids.PhaseManager #.get_screen(app.currentPhase).ids.RV
-                #phase.on_next_Phase()
-                #print(phase)
-                print(keycode)
                 phase.current = self.on_next_Phase()
     def on_next_Phase(self):
         app = App.get_running_app()
