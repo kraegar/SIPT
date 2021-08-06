@@ -60,8 +60,8 @@ class PhaseScreen(Screen):
         self.calc_health_damage()
     def __init__(self, **kwargs):
         super(PhaseScreen, self).__init__(**kwargs)
-        Window.bind(on_key_up=self._on_keyboard_up)
-    def _on_keyboard_up(self, instance, keyboard, keycode):
+        Window.bind(on_key_down=self._on_keyboard_down)
+    def _on_keyboard_down(self, instance, keyboard, keycode, other, other1):
             print(keycode)
             if keycode == 40:  # 40 - Enter key pressed
                 phase = App.get_running_app().root.get_screen('Phase').ids.PhaseManager #.get_screen(app.currentPhase).ids.RV
