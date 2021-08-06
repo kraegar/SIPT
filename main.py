@@ -63,7 +63,7 @@ class PhaseScreen(Screen):
         Window.bind(on_key_down=self._on_keyboard_down)
     def _on_keyboard_down(self, instance, keyboard, keycode, other, other1):
             print(keycode)
-            if keycode == 40:  # 40 - Enter key pressed
+            if keycode == 40 or keycode == 128:  # 40 - Enter key pressed
                 phase = App.get_running_app().root.get_screen('Phase').ids.PhaseManager #.get_screen(app.currentPhase).ids.RV
                 #phase.on_next_Phase()
                 #print(phase)
