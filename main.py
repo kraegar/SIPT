@@ -1,6 +1,7 @@
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.core.window import Window
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -57,6 +58,17 @@ class PhaseScreen(Screen):
         else:
             self.time = ''
         self.calc_health_damage()
+    def __init__(self, **kwargs):
+        super(PhaseScreen, self).__init__(**kwargs)
+        Window.bind(on_key_up=self._on_keyboard_up)
+    def _on_keyboard_up(self, instance, keyboard, keycode):
+            print(keycode)
+            if keycode == 40:  # 40 - Enter key pressed
+                phase = App.get_running_app().root.get_screen('Phase').ids.PhaseManager #.get_screen(app.currentPhase).ids.RV
+                #phase.on_next_Phase()
+                #print(phase)
+                print(keycode)
+                phase.current = self.on_next_Phase()
     def on_next_Phase(self):
         app = App.get_running_app()
         self.calc_health_damage()
