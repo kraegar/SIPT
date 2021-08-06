@@ -1,7 +1,7 @@
 # SIPT
 Spirit Island Phase Tracker
 
-This is a phase tracker for the board game Spirit Island.  The intent is to help players track phases and rule changes based on adversary, level, turn, and other statuses that may affect the game. It also has some help such as board setup changes and spirit setup.
+This is a phase tracker for the board game Spirit Island.  The intent is to help players track phases and rule changes based on adversary, level, turn, and other statuses that may affect the game. It also has some help such as board setup changes and spirit setup.  All game assets, images, terms and names are property of Greater than Games and Eric Reuss.
 
 
 To run this, you must install python 3 and kivy.
