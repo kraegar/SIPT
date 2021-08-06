@@ -372,22 +372,32 @@ MainManager:
 				on_active: root.promo2_clicked(self.active)			
 		BoxLayout:
 			orientation: "horizontal"
-			cols: 4
+			cols: 5
 			size_hint_y: .0775
 			Label:
 				size_hint_x: 40
-				text: "Thematic Map:"
+				text: "Thematic Map [No Tokens]:"
 				font_size: 20
 			CheckBox:
-				size_hint_x: 10
+				size_hint_x: 5
 				id: thematicmap
 				active: root.theme
 				on_active: root.thematic_clicked(self.active)		
+			CheckBox:
+				size_hint_x: 5
+				id: thematictokens
+				active: root.notoke
+				on_active: root.notokens_clicked(self.active)
+				disabled: root.notoken_disabled
 			Label:
 				size_hint_x: 40
-				
-			Label:
+				text: "Extra Board:"
+				font_size: 20
+			CheckBox:
 				size_hint_x: 10
+				id: extraBoard
+				active: root.extrab
+				on_active: root.extraboard_clicked(self.active)
 		BoxLayout:
 			orientation: "horizontal"
 			cols: 2
@@ -450,9 +460,9 @@ MainManager:
 				font_size: 20
 			Spinner:
 				background_color: [.5,0,.5,1]
-				text: "None"
+				text: root.scen
 				values: root.scen_list
-				on_text: ""
+				on_text: root.scenario_clicked(self.text)
 		BoxLayout:
 			orientation: "horizontal"
 			cols: 2
@@ -465,7 +475,19 @@ MainManager:
 				background_color: [0, 1, 1, 1]
 				text: root.play
 				on_text: root.players_clicked(self.text)
-				values: root.max_play		
+				values: root.max_play	
+		BoxLayout:
+			orientation: "horizontal"
+			cols: 2
+			size_hint_y: 0.0775
+			Label:
+				id: difficulty
+				text: "Difficulty"
+				font_size: 20
+			Label:
+				id: diff
+				text: root.diff
+				font_size:20
 
 
 <SpiritSelectScreen>:

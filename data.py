@@ -91,7 +91,7 @@ base_scenarios = ['Blitz', 'Guard the Isles Heart', 'None', 'Rituals of Terror',
 bc_scenarios = ['Second Wave', 'Powers Long Forgotten', 'Ward the Shores', 'Rituals of the Destroying Flame']
 je_scenarios = ['Elemental Invocation', 'Despicable Theft', 'The Great River']
 pp1_scenarios = []
-pp2_scenarios = ['A Diversity of Spirits', 'Varied Terrains']
+pp2_scenarios = ['Diversity of Spirits', 'Varied Terrains']
 
 
 #Fear Card counts, taken from Opponent cards
@@ -1484,7 +1484,8 @@ screenDescriptions = {  'FirstExplore': 'Reveal the top card of the Invader deck
                         'Explore': 'Turn the top card of the Invader Deck face-up. Invaders explore in accessible lands (in any order) of the shown type only, venturing for from Towns and Cities or approaching from the Ocean.\n', 
                         'AdvanceCards': 'Slide all of the Invader cards left.', 
                         'SlowPower': 'Players resolve slow powers, which may be either Innate Powers printed on their Spirit Panel or Power cards they played.\n', 
-                        'TimePasses': 'Players discard all Power cards played this turn into their personal discard piles. All elements go away. All Damage done during the turn goes away. If using any reminder tokens for single-turn effects, remove those at this time.\n'}
+                        'TimePasses': 'Players discard all Power cards played this turn into their personal discard piles. All elements go away. All Damage done during the turn goes away. If using any reminder tokens for single-turn effects, remove those at this time.\n'
+                        }
                         
 icons = {   'explorer': 'resources/tokens/Icon Explorer.png',
             'town': 'resources/tokens/Icon Town.png',
@@ -1551,3 +1552,76 @@ icons = {   'explorer': 'resources/tokens/Icon Explorer.png',
             'SlowPower': 'resources/phases/Misc Speed Slow Coloured.png',
             'TimePasses': 'resources/phases/Misc Spirit 1.png'
             }
+
+oppoenent_difficulty = {
+    'None': {
+                            0: '0'},
+    'Brandenburg-Prussia':  {
+                            0: '1',
+                            1: '2',
+                            2: '4',
+                            3: '6',
+                            4: '7',
+                            5: '9',
+                            6: '10'},
+    'England': {
+                            0: '1',
+                            1: '3',
+                            2: '4',
+                            3: '6',
+                            4: '7',
+                            5: '9',
+                            6: '11'},
+    'France': {
+                            0: '2',
+                            1: '3',
+                            2: '5',
+                            3: '7',
+                            4: '8',
+                            5: '9',
+                            6: '10'},
+    'Sweden': {
+                            0: '1',
+                            1: '2',
+                            2: '3',
+                            3: '5',
+                            4: '6',
+                            5: '7',
+                            6: '8'},
+    'Scotland': {
+                            0: '1',
+                            1: '3',
+                            2: '4',
+                            3: '6',
+                            4: '7',
+                            5: '8',
+                            6: '10'},
+    'Russia': {
+                            0: '1',
+                            1: '3',
+                            2: '4',
+                            3: '6',
+                            4: '7',
+                            5: '9',
+                            6: '11'},
+                            }
+
+
+
+
+scenario_difficulty = {
+                    'None': 0,
+                    'Diversity of Spirits': 0,
+                    'Blitz': 0,
+                    'Guard the Isles Heart': 0,
+                    'Powers Long Forgotten': 1,
+                    'Elemental Invocation': 1,
+                    'Second Wave': 1,
+                    'Despicable Theft': 2,
+                    'Varied Terrains': 2,
+                    'Ward the Shores': 2,
+                    'The Great River': 3,
+                    'Rituals of the Destroying Flame': 3,
+                    'Rituals of Terror': 3,
+                    'Dahan Insurrection': 4
+}
