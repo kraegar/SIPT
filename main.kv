@@ -330,7 +330,7 @@ MainManager:
 			orientation: "horizontal"
 			cols: 4
 			size_hint_y: .0775
-			Label:
+			ScaleLabel:
 				size_hint_x: 40
 				text: "Branch and Claw:"
 				font_size: 20
@@ -339,7 +339,7 @@ MainManager:
 				id: branchandclaw
 				active: root.bc
 				on_active: root.bc_clicked(self.active)
-			Label:
+			ScaleLabel:
 				size_hint_x: 40
 				text: "Jagged Earth:"
 				font_size: 20
@@ -352,7 +352,7 @@ MainManager:
 			orientation: "horizontal"
 			cols: 4
 			size_hint_y: .0775
-			Label:
+			ScaleLabel:
 				size_hint_x: 40
 				text: "Promo Pack 1:"
 				font_size: 20
@@ -361,7 +361,7 @@ MainManager:
 				id: promo1
 				active: root.pp1
 				on_active: root.promo1_clicked(self.active)	
-			Label:
+			ScaleLabel:
 				size_hint_x: 40
 				text: "Promo Pack 2:"
 				font_size: 20
@@ -372,45 +372,58 @@ MainManager:
 				on_active: root.promo2_clicked(self.active)			
 		BoxLayout:
 			orientation: "horizontal"
-			cols: 4
+			cols: 5
 			size_hint_y: .0775
-			Label:
-				size_hint_x: 40
-				text: "Thematic Map:"
+			ScaleLabel:
+				size_hint_x: .4
+				text: "Thematic Map [No Tokens]:"
 				font_size: 20
 			CheckBox:
-				size_hint_x: 10
+				size_hint_x: .05
 				id: thematicmap
 				active: root.theme
 				on_active: root.thematic_clicked(self.active)		
-			Label:
-				size_hint_x: 40
-				
-			Label:
-				size_hint_x: 10
+			CheckBox:
+				size_hint_x: .05
+				id: thematictokens
+				active: root.notoke
+				on_active: root.notokens_clicked(self.active)
+				disabled: root.notoken_disabled
+			ScaleLabel:
+				size_hint_x: .4
+				text: "Extra Board:"
+				font_size: 20
+			CheckBox:
+				size_hint_x: .10
+				id: extraBoard
+				active: root.extrab
+				on_active: root.extraboard_clicked(self.active)
 		BoxLayout:
 			orientation: "horizontal"
 			cols: 2
 			size_hint_y: .0775
-			Label:
+			ScaleLabel:
+				size_hint_x: .5
 				id: opponent
 				text: 'Adversary 1'
 				font_size: 20
 			Spinner:
+				size_hint_x: .4
 				background_color: [1,0,0,1]
 				text: root.opp[0]
 				values: root.opp_list
 				on_text: root.opponent_clicked(0,self.text)
-		BoxLayout:
-			orientation: "horizontal"
-			cols: 2
-			size_hint_y: .0775
-			Label:
-				id: level
-				text: "Adversary 1 Level"
-				font_size: 20
+#		BoxLayout:
+#			orientation: "horizontal"
+#			cols: 2
+#			size_hint_y: .0775
+#			Label:
+#				id: level
+#				text: "Adversary 1 Level"
+#				font_size: 20
 			Spinner:
-				background_color: [0, 0, 1, 1]
+				size_hint_x: .1
+				background_color: [1,0,0,1]
 				text: root.lvl[0]
 				on_text: root.level_clicked(0,self.text)
 				values: root.max_levels[0]
@@ -418,24 +431,27 @@ MainManager:
 			orientation: "horizontal"
 			cols: 2
 			size_hint_y: .0775
-			Label:
+			ScaleLabel:
+				size_hint_x: 0.5
 				id: opponent
 				text: 'Adversary 2'
 				font_size: 20
 			Spinner:
-				background_color: [1,0,0,1]
+				size_hint_x: 0.4
+				background_color: [0, 0, 1, 1]
 				text: root.opp[1]
 				values: root.opp_list
 				on_text: root.opponent_clicked(1,self.text)
-		BoxLayout:
-			orientation: "horizontal"
-			cols: 2
-			size_hint_y: .0775
-			Label:
-				id: level
-				text: "Adversary 2 Level"
-				font_size: 20
+#		BoxLayout:
+#			orientation: "horizontal"
+#			cols: 2
+#			size_hint_y: .0775
+#			Label:
+#				id: level
+#				text: "Adversary 2 Level"
+#				font_size: 20
 			Spinner:
+				size_hint_x: 0.1
 				background_color: [0, 0, 1, 1]
 				text: root.lvl[1]
 				on_text: root.level_clicked(1,self.text)
@@ -444,20 +460,20 @@ MainManager:
 			orientation: "horizontal"
 			cols: 2
 			size_hint_y: .0775
-			Label:
+			ScaleLabel:
 				id: opponent
 				text: 'Scenario'
 				font_size: 20
 			Spinner:
 				background_color: [.5,0,.5,1]
-				text: "None"
+				text: root.scen
 				values: root.scen_list
-				on_text: ""
+				on_text: root.scenario_clicked(self.text)
 		BoxLayout:
 			orientation: "horizontal"
 			cols: 2
 			size_hint_y: .0775
-			Label:
+			ScaleLabel:
 				id: player
 				text: "Players"
 				font_size: 20
@@ -465,7 +481,19 @@ MainManager:
 				background_color: [0, 1, 1, 1]
 				text: root.play
 				on_text: root.players_clicked(self.text)
-				values: root.max_play		
+				values: root.max_play	
+		BoxLayout:
+			orientation: "horizontal"
+			cols: 2
+			size_hint_y: 0.0775
+			ScaleLabel:
+				id: difficulty
+				text: "Difficulty"
+				font_size: 20
+			ScaleLabel:
+				id: diff
+				text: root.diff
+				font_size:20
 
 
 <SpiritSelectScreen>:

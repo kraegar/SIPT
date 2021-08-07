@@ -33,3 +33,6 @@ To run the app:
 cd c:\sipt_venv\apps\sipt\
 
 python main.py
+
+
+If running on a raspberry pi, the app is now enabled for remote "next" clicks with a Bluetooth camera shutter control such as the following: https://www.amazon.com/gp/product/B08Y6K9NCJ/

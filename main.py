@@ -1,6 +1,7 @@
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.core.window import Window
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -15,6 +16,7 @@ from kivy.storage.jsonstore import JsonStore
 from settings_json import settings_json
 import datetime
 import random
+import math
 import data # this louds our variables from data.py
 
 Config.set('graphics', 'resizable', True)
@@ -57,6 +59,13 @@ class PhaseScreen(Screen):
         else:
             self.time = ''
         self.calc_health_damage()
+    def __init__(self, **kwargs):
+        super(PhaseScreen, self).__init__(**kwargs)
+        Window.bind(on_key_down=self._on_keyboard_down)
+    def _on_keyboard_down(self, instance, keyboard, keycode, other, other1):
+            if keycode == 40 or keycode == 128:  # 40 - Enter key pressed
+                phase = App.get_running_app().root.get_screen('Phase').ids.PhaseManager #.get_screen(app.currentPhase).ids.RV
+                phase.current = self.on_next_Phase()
     def on_next_Phase(self):
         app = App.get_running_app()
         self.calc_health_damage()
@@ -260,6 +269,7 @@ class PhaseScreen(Screen):
         app.expansion = (store.get('expansion')['value'])
         app.opponents = (store.get('opponents')['value'])
         app.thematic = (store.get('thematic')['value'])
+        app.extraboard = (store.get('extraboard')['value'])
         app.spirits = (store.get('spirits')['value'])
         app.aspects = (store.get('aspects')['value'])
         app.scenario = (store.get('scenario')['value'])
@@ -380,6 +390,7 @@ class MainScreen(Screen):
     pp1 = BooleanProperty(False)
     pp2 = BooleanProperty(False)
     theme = BooleanProperty(False)
+    extrab = BooleanProperty(False)
     opp = ListProperty(['None', 'None'])
     lvl = ListProperty(['',''])
     play = StringProperty('1')
@@ -388,6 +399,10 @@ class MainScreen(Screen):
     next = StringProperty('BoardSetup')
     opp_list = ListProperty()
     scen_list = ListProperty()
+    diff = StringProperty('0')
+    notoke = BooleanProperty(False)
+    notoken_disabled = BooleanProperty(True)
+    scen = StringProperty('None')
     def on_enter(self):
         app = App.get_running_app()
         self.scen_list = app.scenarios_list
@@ -401,7 +416,11 @@ class MainScreen(Screen):
         self.play = str(app.players)
         self.lvl = app.levels
         self.theme = app.thematic
+        self.extrab = app.extraboard
         self.opp_list = sorted(app.opponent_list)
+        self.diff = app.difficulty
+        self.notoke = app.notokens
+        self.scen = app.scenario
     def bc_clicked(self, value):
         app = App.get_running_app()
         if value == True:
@@ -414,6 +433,7 @@ class MainScreen(Screen):
         for x in range(len(self.opp)):
             if self.opp[x] not in self.opp_list:
                 self.opponent_clicked(x, 'None')
+        self.eval_tokens()
     def je_clicked(self, value):
         app = App.get_running_app()
         if value == True:
@@ -428,6 +448,7 @@ class MainScreen(Screen):
                 self.opponent_clicked(x, 'None')  
         if self.play not in self.max_play:
             self.players_clicked('0')
+        self.eval_tokens()
     def promo1_clicked(self, value):
         app = App.get_running_app()
         if value == True:
@@ -458,6 +479,28 @@ class MainScreen(Screen):
             app.thematic = True
         else:
             app.thematic = False
+            self.notoke = False
+            app.notoke = False
+        self.calculate_difficulty()
+        self.eval_tokens()
+    def eval_tokens(self):
+        app = App.get_running_app()
+        if app.thematic == True and (app.branchandclaw == True or app.jaggedearth == True):
+            self.notoken_disabled = False
+        else:
+            self.notoken_disabled = True
+    def notokens_clicked(self, value):
+        app = App.get_running_app()
+        self.notoke = value
+        app.notokens = value
+        self.calculate_difficulty()
+    def extraboard_clicked(self,value):
+        app = App.get_running_app()
+        if value == True:
+            app.extraboard = True
+        else:
+            app.extraboard = False
+        self.calculate_difficulty()
     def opponent_clicked(self, num, value):
         app = App.get_running_app()
         if(value == 'Random'):
@@ -465,7 +508,6 @@ class MainScreen(Screen):
             rlist.remove('Random')
             rlist.remove('None')
             value = random.choice(rlist)
-            self.opp[num] = ''
             self.opp[num] = value
         app.opponents[num] = value
         self.opp[num] = value
@@ -473,10 +515,17 @@ class MainScreen(Screen):
         self.lvl[num] = app.levels[num]
         if self.opp[num] == 'None':
             self.level_clicked(num, '0')
+        self.calculate_difficulty()
+    def scenario_clicked(self, value):
+        app = App.get_running_app()
+        self.scen = value
+        app.scenario = value
+        self.calculate_difficulty()
     def level_clicked(self, num, value):
         app = App.get_running_app()
         app.levels[num] = value
         self.lvl[num] = app.levels[num]
+        self.calculate_difficulty()
     def players_clicked(self, value):
         app = App.get_running_app()
         app.players = value
@@ -528,13 +577,36 @@ class MainScreen(Screen):
         if app.promopack2:
             app.scenarios_list = app.scenarios_list + app.pp2_scenarios
         self.scen_list = sorted(app.scenarios_list)   
+        self.calculate_difficulty()
     def build_levels(self, num):
         app = App.get_running_app()
         if app.opponents[num] == 'None':
             self.max_levels[num] = ['0']
         else:
             self.max_levels[num] = ['0','1','2','3','4','5','6']
-        
+    def calculate_difficulty(self):
+        app = App.get_running_app()
+        d1 = app.opponent_difficulty[app.opponents[0]][int(app.levels[0])]
+        d2 = app.opponent_difficulty[app.opponents[1]][int(app.levels[1])]
+        ds = app.scenario_difficulty[app.scenario]
+        dh = max(d1,d2)
+        dl = 0.5 * float(min(d1,d2))
+        dl = math.ceil(dl)
+        ad = float(dh) + dl
+        if app.thematic == True:
+            if app.branchandclaw == False and app.jaggedearth == False:
+                ad = ad + 3
+            else:
+                if self.notoke == True:
+                    ad = ad + 3
+                else:
+                    ad = ad + 1
+        if app.extraboard:
+            eb = ad/3
+            eb = math.ceil(eb)
+            ad = ad + eb + 2
+        self.diff = str(int(ad + ds))
+        app.difficulty = self.diff
 
 class SpiritSelectScreen(Screen):
     spirit_values = ListProperty([])
@@ -837,33 +909,38 @@ class MapLayoutScreen(Screen):
         app.currentPhase = 'MapLayout'
         write_state()  
         maplist = []
-        if int(app.players) == 1 and app.thematic == False:
+        boards = int(app.players)
+        if app.extraboard == True:
+            boards = boards+1
+            if boards == 7:
+                boards = 6
+        if boards == 1 and app.thematic == False:
             maplist.append({'text': 'Solo Standard', 'image': 'resources/maps/1player-standard.png'})
-        elif int(app.players) == 1 and app.thematic == True:
+        elif boards == 1 and app.thematic == True:
             maplist.append({'text': 'Solo Thematic', 'image': 'resources/maps/1player-thematic.png'})
-        elif int(app.players) == 2 and app.thematic == False:
+        elif boards == 2 and app.thematic == False:
             maplist.append({'text': '2 Player Standard', 'image': 'resources/maps/2player-standard.png'})
             maplist.append({'text': '2 Player Fragmented', 'image': 'resources/maps/2player-fragment.png'})
             maplist.append({'text': '2 Player Opposite Shores', 'image': 'resources/maps/2player-oppositeshores.png'})
-        elif int(app.players) == 2 and app.thematic == True:
+        elif boards == 2 and app.thematic == True:
             maplist.append({'text': '2 Player Thematic', 'image': 'resources/maps/2player-thematic.png'})
-        elif int(app.players) == 3 and app.thematic == False:
+        elif boards == 3 and app.thematic == False:
             maplist.append({'text': '3 Player Standard', 'image': 'resources/maps/3player-standard.png'})
             maplist.append({'text': '3 Player Coastline', 'image': 'resources/maps/3player-coastline.png'})
-        elif int(app.players) == 3 and app.thematic == True:
+        elif boards == 3 and app.thematic == True:
             maplist.append({'text': '3 Player Thematic', 'image': 'resources/maps/3player-thematic.png'})
-        elif int(app.players) == 4 and app.thematic == False:
+        elif boards == 4 and app.thematic == False:
             maplist.append({'text': '4 Player Standard', 'image': 'resources/maps/4player-standard.png'})
             maplist.append({'text': '4 Player Leaf', 'image': 'resources/maps/4player-leaf.png'})    
             maplist.append({'text': '4 Player Snake', 'image': 'resources/maps/4player-snake.png'})    
-        elif int(app.players) == 4 and app.thematic == True:
+        elif boards == 4 and app.thematic == True:
             maplist.append({'text': '4 Player Thematic', 'image': 'resources/maps/4player-thematic.png'})
-        elif int(app.players) == 5:
+        elif boards == 5:
             maplist.append({'text': '5 Player Standard', 'image': 'resources/maps/5player-standard.png'})
             maplist.append({'text': '5 Player Peninsula', 'image': 'resources/maps/5player-peninsula.png'})    
             maplist.append({'text': '5 Player Snail', 'image': 'resources/maps/5player-snail.png'})   
             maplist.append({'text': '5 Player V', 'image': 'resources/maps/5player-v.png'})
-        elif int(app.players) == 6:
+        elif boards == 6:
             maplist.append({'text': '6 Player Standard', 'image': 'resources/maps/6player-standard.png'})
             maplist.append({'text': '6 Player Caldera', 'image': 'resources/maps/6player-caldera.png'})  
             maplist.append({'text': '6 Player Flower', 'image': 'resources/maps/6player-flower.png'})
@@ -920,6 +997,8 @@ class BoardSetupScreen(Screen):
                 self.habsburg_invaderdeck(app.levels[x])
             fear_per = fear_per + app.opp_fear_tokens[app.opponents[x]][int(app.levels[x])]
         app.fear_tokens = fear_per * int(app.players)    #calculate number of fear tokens into global fear_tokens
+        if app.extraboard:
+            app.fear_tokens = app.fear_tokens + int(app.players)
             
         ### Build display items
         ftotal = fdeck[0] + fdeck[1] + fdeck[2]
@@ -940,16 +1019,35 @@ class BoardSetupScreen(Screen):
             last = card
         list.append({'image': app.icons['Invader Cards'], 'text': invaders})
         if app.thematic:
-            exsetup = 'Follow the icons on the thematic map for all invaders and tokens. Land #9 on the West board should have 2 Badlands tokens, not just 1.'
+            if app.expansion == 'None':
+                exsetup = 'Follow the icons on the thematic map for all invaders, ignore the extra token icons.'
+            elif app.notokens == True:
+                exsetup = 'Follow the icons on the thematic map for all invaders, but no not place any extra tokens.'
+            else:
+                exsetup = 'Follow the icons on the thematic map for all invaders and tokens. Land #9 on the West board should have 2 Badlands tokens, not just 1.'
         else:
             exsetup = app.expansion_setup[app.expansion]     #copy app.expansion_setup into local exsetup
         if exsetup != '':
             list.append({'image': app.icons['Land'], 'text': exsetup})
-
-        blight_tokens = (2 * int(app.players)) + 1
+        bp = int(app.players)
+        if app.extraboard == True:
+            bp = bp+1
+        blight_tokens = (2 * bp) + 1
         bt = 'Blight Tokens: ' + str(blight_tokens)+ '\n'
         if bt != '':
             list.append({'image': app.icons['blight tokens'], 'text': bt})
+        if app.extraboard == True:
+            list.append({'image': 'resources/maps/1player-standard.png', 'text': 'On the extra board setup up dahan, blight, and tokens normally. Do NOT place any Invaders or Blight tokens indicated by Adversary setup on the extra board.'})
+            if int(app.players) == 1:
+                list.append({'image': 'resources/maps/1player-standard.png', 'text': 'Do not place any adversary tokens on the extra board'})
+            if int(app.players) == 2:
+                list.append({'image': 'resources/maps/1player-standard.png', 'text': 'Do not place any adversary tokens on the extra board'})
+            if int(app.players) == 3:
+                list.append({'image': 'resources/maps/1player-standard.png', 'text': 'Perform the only the coastal adversary setup on the extra board.'})
+            if int(app.players) == 4:
+                list.append({'image': 'resources/maps/1player-standard.png', 'text': 'Perform the only the inland adversary setup on the extra board.'})
+            if int(app.players) == 5:
+                list.append({'image': 'resources/maps/1player-standard.png', 'text': 'Perform the normal adversary setup on the extra board.'})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list
         
@@ -1071,6 +1169,17 @@ class FirstExploreScreen(Screen):
                 if rules != '':
                     list.append({'image': app.icons[app.opponents[x]], 'text': rules})
         #self.text = '\n'.join([description + rules])
+        if app.extraboard == True:
+            if int(app.players) == 1:
+                list.append({'image': 'resources/maps/1player-standard.png', 'text': 'Do not perform this explore on the extra board'})
+            if int(app.players) == 2:
+                list.append({'image': 'resources/maps/1player-standard.png', 'text': 'Do not perform this explore on the extra board'})
+            if int(app.players) == 3:
+                list.append({'image': 'resources/maps/1player-standard.png', 'text': 'Perform this explore on the extra board.'})
+            if int(app.players) == 4:
+                list.append({'image': 'resources/maps/1player-standard.png', 'text': 'Perform this explore on the extra board.'})
+            if int(app.players) == 5:
+                list.append({'image': 'resources/maps/1player-standard.png', 'text': 'Perform this explore on the extra board.'})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list
         
@@ -1676,6 +1785,7 @@ def write_state():
     store.put('expansion', value=app.expansion)
     store.put('opponents', value=app.opponents)
     store.put('thematic', value=app.thematic)
+    store.put('extraboard', value=app.extraboard)
     store.put('spirits', value=app.spirits)
     store.put('aspects', value=app.aspects)
     store.put('scenario', value=app.scenario)
@@ -1766,6 +1876,8 @@ class MainApp(App):
     screenTitles = data.screenTitles
     screenDescriptions = data.screenDescriptions
     icons = data.icons
+    opponent_difficulty = data.oppoenent_difficulty
+    scenario_difficulty = data.scenario_difficulty
     ##
     #data = ListProperty([])
 
@@ -1777,6 +1889,8 @@ class MainApp(App):
     expansion = 'None'          #global variable for expansion
     opponents = ['None','None']
     thematic = False
+    notokens = False
+    extraboard = False
     spirits = ['None', 'None', 'None', 'None', 'None', 'None']
     aspects = ['None', 'None', 'None', 'None', 'None', 'None']
     scenario = 'None'
@@ -1794,6 +1908,7 @@ class MainApp(App):
     spirit_list = base_spirits
     scenarios_list = base_scenarios
     opponent_list = base_opp
+    difficulty = '0'
     fontsize = NumericProperty(15)
     imagewidth = NumericProperty(0.07)
     ##
