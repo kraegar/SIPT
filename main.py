@@ -63,6 +63,8 @@ class PhaseScreen(Screen):
         else:
             self.time = ''
         self.calc_health_damage()
+    def on_leave(self):
+        Clock.unschedule(self.clock)
     def __init__(self, **kwargs):
         super(PhaseScreen, self).__init__(**kwargs)
         Window.bind(on_key_down=self._on_keyboard_down)
@@ -428,6 +430,9 @@ class HistoryScreen(Screen):
                 'key': key
             })
             rv.data = gameHistory
+    def on_leave(self, *args):
+        app = App.get_running_app()
+        app.historykey = ''
     def historytoggle(self, key):
         app = App.get_running_app()
         app.historykey = key
