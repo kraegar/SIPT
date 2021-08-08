@@ -480,6 +480,8 @@ class HistoryScreen(Screen):
             app.gamehistory= app.gamehistory + "Thematic Map\n"
             if self.jsondata[key]['notokens'] == True:
                 app.gamehistory= app.gamehistory + "No Tokens\n"
+        app.gamehistory= app.gamehistory + '\n\n'
+        app.gamehistory= app.gamehistory + 'Played on ' + key + '\n'
     def replaygame(self, key):
         app = App.get_running_app()
         app.expansion = self.jsondata[key]['expansion']
