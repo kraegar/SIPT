@@ -2,11 +2,12 @@
 #ScreenManagement - all screens defined here.
 #:import Factory kivy.factory.Factory
 MainManager:
-	id: 'mainmanager'
+	id: 'MainManager'
 	#FadeTransition didn't work. Should look at other transition options.
     #transition: FadeTransition()
 	PhaseScreen:
-
+	HistoryScreen:
+	ChallengeScreen:
 
 #Kivy Screens
 #Currently I'm using a gridlayout with a single column as the main wrapper
@@ -61,6 +62,131 @@ MainManager:
 			size_hint_y: 0.25
 			on_release: root.dismiss() 
 			
+<WinLosePopup@Popup>:
+	title: 'Win / Loss'
+	size_hint_x: 0.9
+	size_hint_y: 0.9
+	GridLayout:
+		cols: 1
+		BoxLayout:
+			size_hint_y: 0.075
+			Label:
+				size_hint_x: 0.2
+			ToggleButton:
+				text: "Win"
+				group: "winlose"
+				size_hint_x: 0.4
+				on_release: app.winloss_clicked('Win')
+			ToggleButton:
+				text: "Loss"
+				group: "winlose"
+				size_hint_x: 0.4
+				on_release: app.winloss_clicked('Loss')
+			Label:
+				size_hint_x: 0.2
+		BoxLayout:
+			size_hint_y: 0.075
+			cols: 2
+			Label:
+				text: app.spirits[0]
+			TextInput:
+				text: app.playernames[0]
+				multiline: False
+				id: player1
+				on_text: app.onplayertext(0, self.text)
+		BoxLayout:
+			size_hint_y: 0 if int(app.players) < 2 else 0.075
+			cols: 2
+			Label:
+				text: app.spirits[1]
+				disabled: True if int(app.players) < 2 else False
+				opacity: 0 if int(app.players) < 2 else 1
+			TextInput:
+				disabled: True if int(app.players) < 2 else False
+				multiline: False
+				opacity: 0 if int(app.players) < 2 else 1
+				text: app.playernames[1]
+				id: player2
+				on_text: app.onplayertext(1, self.text)
+		BoxLayout:
+			size_hint_y: 0 if int(app.players) < 3 else 0.075
+			cols: 2
+			Label:
+				text: app.spirits[2]
+				disabled: True if int(app.players) < 3 else False
+				opacity: 0 if int(app.players) < 3 else 1
+			TextInput:
+				disabled: True if int(app.players) < 3 else False
+				multiline: False
+				opacity: 0 if int(app.players) < 3 else 1
+				text: app.playernames[2]
+				id: player3
+				on_text: app.onplayertext(2, self.text)
+		BoxLayout:
+			size_hint_y: 0 if int(app.players) < 4 else 0.075
+			cols: 2
+			Label:
+				text: app.spirits[3]
+				disabled: True if int(app.players) < 4 else False
+				opacity: 0 if int(app.players) < 4 else 1
+			TextInput:
+				disabled: True if int(app.players) < 4 else False
+				multiline: False
+				opacity: 0 if int(app.players) < 4 else 1
+				text: app.playernames[3]
+				id: player4
+				on_text: app.onplayertext(4, self.text)
+		BoxLayout:
+			size_hint_y: 0 if int(app.players) < 5 else 0.075
+			cols: 2
+			Label:
+				text: app.spirits[4]
+				disabled: True if int(app.players) < 5 else False
+				opacity: 0 if int(app.players) < 5 else 1
+			TextInput:
+				disabled: True if int(app.players) < 5 else False
+				multiline: False
+				opacity: 0 if int(app.players) < 5 else 1
+				text: app.playernames[4]
+				id: player5
+				on_text: app.onplayertext(5, self.text)
+		BoxLayout:
+			size_hint_y: 0 if int(app.players) < 6 else 0.075
+			cols: 2
+			Label:
+				text: app.spirits[5]
+				disabled: True if int(app.players) < 6 else False
+				opacity: 0 if int(app.players) < 6 else 1
+			TextInput:
+				disabled: True if int(app.players) < 6 else False
+				multiline: False
+				opacity: 0 if int(app.players) < 6 else 1
+				text: app.playernames[5]
+				id: player6
+				on_text: app.onplayertext(6, self.text)
+		BoxLayout:
+			size_hint_y: 0.075
+			cols: 2
+			ScaleLabel:
+				valign: 'bottom'
+				text: 'Reason:'
+			Spinner:
+				id: reasonspinner
+				text: app.reason
+				values: app.reasons
+				on_text: app.setreason(self.text)
+		Label:
+			size_hint_y: .3
+		BoxLayout:
+			cols: 2
+			size_hint_y: 0.075
+			Button:
+				text: 'Go Back'
+				on_release: root.dismiss()
+			Button:
+				text: 'Save record and exit'
+				disabled: True if (app.winloss == 'None' or app.reason == 'None') else False
+				on_release: app.write_winloss()
 
 
 <ScaleLabel@Label>:
@@ -142,6 +268,140 @@ MainManager:
 		text_size: self.width, None
 		font_size: app.fontsize
 
+<HistoryDetailPopup@Popup>:
+	title: 'History Detail'
+	size_hint_x: 0.9
+	size_hint_y: 0.9
+	GridLayout:
+		cols:1
+		Label:
+			size_hint_y: 0.925
+			text: app.gamehistory
+			height: self.texture_size[1]
+			text_size: self.width, None
+		Button:
+			size_hint_y: 0.075
+			text: 'Go Back'
+			on_release: root.dismiss()
+
+<HistoryViewClass@BoxLayout>:
+	h_opp1: ''
+	h_opp2: ''
+	h_opp1_icon: ''
+	h_opp2_icon: ''
+	h_lvl1: ''
+	h_lvl2: ''
+	h_spirits1_icon: ''
+	h_spirits2_icon: ''
+	h_spirits3_icon: ''
+	h_spirits4_icon: ''
+	h_spirits5_icon: ''
+	h_spirits6_icon: ''
+	h_diff: ''
+	h_winloss: ''
+	key: ''
+	canvas:
+		Color:
+			rgba: (0,1,0,.25) if root.h_winloss == 'Win' else (1,0,0,0.25)
+		Rectangle:
+			pos: self.pos
+			size: self.size
+		Color: 
+			rgba: (0,0,0,1)
+		Line:
+			width:1
+			rectangle: self.x, self.y, self.width, self.height
+	BoxLayout:
+		orientation: 'vertical'
+		size_hint_y: 0.9
+		valign: 'center'
+		Image:
+			source: root.h_opp1_icon
+		ScaleLabel:
+			text: "Level: " + root.h_lvl1
+			opacity: 0 if root.h_opp1 == 'None' else 1
+	BoxLayout:
+		orientation: 'vertical'
+		size_hint_y: 0.9
+		valign: 'center'
+		Image:
+			source: root.h_opp2_icon
+		ScaleLabel:
+			text: "Level: " + root.h_lvl2
+			opacity: 0 if root.h_opp2 == 'None' else 1
+	BoxLayout:
+		orientation: 'vertical'
+		size_hint_y: 0.9
+		valign: 'center'
+		Image:
+			source: root.h_spirits1_icon
+		Image:
+			source: root.h_spirits2_icon
+	BoxLayout:
+		orientation: 'vertical'
+		size_hint_y: 0.9
+		valign: 'center'
+		Image:
+			source: root.h_spirits3_icon
+		Image:
+			source: root.h_spirits4_icon
+	BoxLayout:
+		orientation: 'vertical'
+		size_hint_y: 0.9
+		valign: 'center'
+		Image:
+			size_hint_y: 0.45
+			source: root.h_spirits5_icon
+		Image:
+			size_hint_y: 0.45
+			source: root.h_spirits6_icon
+	ScaleLabel:
+		text: "Difficulty:\n" + root.h_diff
+	CheckBox:
+		id: root.key
+		group: 'historytoggle'
+		on_release: app.root.get_screen('History').historytoggle(root.key)
+
+<HistoryScreen>:
+	name: 'History'
+	GridLayout:
+		cols: 1
+		HISTORYRV:
+			id: HISTORYRV
+			viewclass: 'HistoryViewClass'
+			bar_width: 10
+			bar_color: 1,1,1,0.75
+			bar_inactive_color: 1,1,1,0.25
+			RecycleBoxLayout:
+				default_size_hint: 1, None
+				orientation: 'vertical'
+				size_hint_y: None
+				height: self.minimum_height
+		BoxLayout:
+			size_hint_y: 0.075	
+			ScaleButton:
+				disabled: True if app.historykey == '' else False
+				text: 'View Selected Game Details'
+				on_release: Factory.HistoryDetailPopup().open()
+			ScaleButton:
+				text: 'Replay Selected Game'
+				disabled: True if app.historykey == '' else False
+				on_release: app.root.get_screen('History').replaygame(app.historykey)
+		Button:
+			size_hint_y: 0.075
+			text: 'Return to Main Screen'
+			on_release: app.root.current = 'Phase'
+
+<ChallengeScreen>:
+	name: 'Challenge'
+	GridLayout:
+		cols: 1
+		Label:
+			text: 'Challenge'
+		Button:
+			size_hint_y: 0.075
+			text: 'Return to Main Screen'
+			on_release: app.root.current = 'Phase'
 
 <PhaseScreen>:
 	name: 'Phase'
@@ -165,7 +425,15 @@ MainManager:
 							pos: (self.width - configbutton.width)/2 + self.pos[0], (self.height - configbutton.width)/2 + self.pos[1]
 							size: configbutton.width, configbutton.width
 					on_release: app.open_settings()
-				Label:
+				Button:
+					id: winlose
+					opacity: 0 if root.setupScreens else 1
+					canvas:
+						Rectangle:
+							source: "resources/flag.png"
+							pos: (self.width - configbutton.width)/2 + self.pos[0], (self.height - configbutton.width)/2 + self.pos[1]
+							size: winlose.width, winlose.width
+					on_release: Factory.WinLosePopup().open()
 			ScaleLabel:
 				text: root.title
 				font_size: self.height*0.7
@@ -303,24 +571,38 @@ MainManager:
 				id: stage3
 				group: "stage_group"
 				font_size: self.height*0.95
-				on_press: root.on_stage_toggle ("III")		
+				on_press: root.on_stage_toggle ("III")	
+		BoxLayout:
+			cols:2
+			size_hint_y: 0.075 if root.currentP == 'Main' else 0
+			opacity: 1 if root.currentP == 'Main' else 0
+			ScaleButton:
+				text: 'Challenge Games'
+				on_release: app.root.current = 'Challenge'
+			ScaleButton:
+				text: 'Game History'
+				on_release: app.root.current = 'History'
 		BoxLayout:
 			cols: 2
 			size_hint_y: .075
+			
 			ScaleButton:
 				#on_release: root.read_state() if root.currentP == 'Main' else app.root.current = root.on_back()
 				#on_release: PhaseManager.current = root.on_back()
 				on_release: PhaseManager.current = root.read_state() if root.currentP == 'Main' else root.on_back()
 				text: 'Load Previous\nSession' if root.currentP == 'Main' else 'Back'
 				font_size: self.height*0.4
-				size_hint_x: .3
+				size_hint_x: .3 
 				height: 55
+			
 			ScaleButton:
 				on_release: PhaseManager.current = root.on_next_Phase()
 				#text: root.next_button_text() + root.time
 				text: root.next_button_value if root.setupScreens else "Next Phase  " + root.time
 				font_size: self.height*0.8
+				size_hint_x: 0.7
 				height: 55
+
 
 <MainScreen>:
     name: 'Main'

@@ -1,3 +1,4 @@
+from kivy import app
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -5,6 +6,7 @@ from kivy.core.window import Window
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
 from kivy.properties import ObjectProperty, StringProperty, NumericProperty, BooleanProperty, ListProperty
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.spinner import Spinner
@@ -17,6 +19,8 @@ from settings_json import settings_json
 import datetime
 import random
 import math
+import json
+import datetime
 import data # this louds our variables from data.py
 
 Config.set('graphics', 'resizable', True)
@@ -283,6 +287,7 @@ class PhaseScreen(Screen):
         app.opponent_list = (store.get('opponent_list')['value'])
         app.spirit_list = (store.get('spirit_list')['value'])
         app.scenarios_list = (store.get('scenarios_list')['value'])
+        app.difficulty = (store.get('difficulty')['value'])
         app.currentPhase = app.previousPhase[-1]
 
         app.fromLoad = True
@@ -381,6 +386,119 @@ class PhaseScreen(Screen):
             self.next_button_value = 'Next Phase'
             self.setupScreens = False
         return nextP
+
+class HistoryScreen(Screen):
+    jsondata = {}
+    def on_enter(self):
+        gameHistory = []
+        app = App.get_running_app()
+        rv = app.root.get_screen('History').ids.HISTORYRV
+        try:
+            with open('history.json', 'r+') as history:
+                try:
+                    self.jsondata = json.load(history)
+                except:
+                    self.jsondata = {}
+            history.close()
+        except:
+            self.jsondata = {}
+        for key in self.jsondata:
+            h_opponents = self.jsondata[key]['opponents']
+            h_levels = self.jsondata[key]['levels']
+            h_spirits = self.jsondata[key]['spirits']
+            h_scenario = self.jsondata[key]['scenario']
+            h_difficulty = self.jsondata[key]['difficulty']
+            h_winloss = self.jsondata[key]['winloss']
+
+            gameHistory.append({
+                'h_opp1': h_opponents[0],
+                'h_opp2': h_opponents[1],
+                'h_opp1_icon': app.icons[h_opponents[0]],
+                'h_opp2_icon': app.icons[h_opponents[1]],
+                'h_lvl1':  h_levels[0],
+                'h_lvl2': h_levels[1],
+                'h_spirits1_icon': app.icons[h_spirits[0]],
+                'h_spirits2_icon': app.icons[h_spirits[1]],
+                'h_spirits3_icon': app.icons[h_spirits[2]],
+                'h_spirits4_icon': app.icons[h_spirits[3]],
+                'h_spirits5_icon': app.icons[h_spirits[4]],
+                'h_spirits6_icon': app.icons[h_spirits[5]],
+                'h_diff': str(h_difficulty),
+                'h_winloss': h_winloss,
+                'key': key
+            })
+            rv.data = gameHistory
+    def historytoggle(self, key):
+        app = App.get_running_app()
+        app.historykey = key
+        app.gamehistory = ''
+        app.gamehistory= app.gamehistory + self.jsondata[key]['reason'] + ' '
+        app.gamehistory= app.gamehistory + self.jsondata[key]['winloss']
+        app.gamehistory= app.gamehistory + ' in ' + str(self.jsondata[key]['turn']) + ' turns\n'
+        app.gamehistory= app.gamehistory + 'The island was ' + self.jsondata[key]['blight'] + '\n'
+        app.gamehistory= app.gamehistory + 'Difficulty: ' + self.jsondata[key]['difficulty'] + '\n\n'
+        if self.jsondata[key]['opponents'][0] != 'None':
+            app.gamehistory= app.gamehistory + 'Adversary: ' + self.jsondata[key]['opponents'][0]
+            app.gamehistory= app.gamehistory + ' Level ' + self.jsondata[key]['levels'][0] + '\n'
+        if self.jsondata[key]['opponents'][1] != 'None':
+            app.gamehistory= app.gamehistory + 'Adversary: ' + self.jsondata[key]['opponents'][1]
+            app.gamehistory= app.gamehistory + ' Level ' + self.jsondata[key]['levels'][1] + '\n'
+        if self.jsondata[key]['scenario'] != 'None':
+            app.gamehistory= app.gamehistory + 'Scenario: ' + self.jsondata[key]['scenario'] + '\n' 
+        app.gamehistory= app.gamehistory + '\n'
+        
+        app.gamehistory= app.gamehistory + 'Number of Players: ' + str(self.jsondata[key]['players']) + '\n'
+        for x in range(int(self.jsondata[key]['players'])):
+            if self.jsondata[key]['spirits'][x] != 'None':
+                app.gamehistory= app.gamehistory + 'Spirit: ' + self.jsondata[key]['spirits'][x]
+                if self.jsondata[key]['aspects'][x] != 'None':
+                    app.gamehistory= app.gamehistory + ' with aspect ' + self.jsondata[key]['aspects'][x]
+                if self.jsondata[key]['playernames'][x] != '':
+                    app.gamehistory= app.gamehistory + ' played by ' + self.jsondata[key]['playernames'][x]
+                app.gamehistory= app.gamehistory + '\n'
+        app.gamehistory= app.gamehistory + '\n'
+
+        app.gamehistory= app.gamehistory + 'Expansions:\n'
+        if self.jsondata[key]['branchandclaw'] == True:
+            app.gamehistory= app.gamehistory + "  Branch and Claw\n"
+        if self.jsondata[key]['jaggedearth'] == True:
+            app.gamehistory= app.gamehistory + "  Jagged Earth\n"
+        if self.jsondata[key]['promopack1'] == True:
+            app.gamehistory= app.gamehistory + "  Promo Pack 1\n"
+        if self.jsondata[key]['promopack2'] == True:
+            app.gamehistory= app.gamehistory + "  Promo Pack 2\n"
+        app.gamehistory= app.gamehistory + '\n'
+        app.gamehistory= app.gamehistory + 'Game Options:\n'
+        if self.jsondata[key]['extraboard'] == True:
+            app.gamehistory= app.gamehistory + "  Extra Board\n"
+        if self.jsondata[key]['thematic'] == True:
+            app.gamehistory= app.gamehistory + "Thematic Map\n"
+            if self.jsondata[key]['notokens'] == True:
+                app.gamehistory= app.gamehistory + "No Tokens\n"
+    def replaygame(self, key):
+        app = App.get_running_app()
+        app.expansion = self.jsondata[key]['expansion']
+        app.branchandclaw = self.jsondata[key]['branchandclaw']
+        app.jaggedearth = self.jsondata[key]['jaggedearth']
+        app.promopack1 = self.jsondata[key]['promopack1']
+        app.promopack2 = self.jsondata[key]['promopack2']
+        app.spirits = self.jsondata[key]['spirits']
+        app.aspects = self.jsondata[key]['aspects']
+        app.players = self.jsondata[key]['players']
+        app.opponents = self.jsondata[key]['opponents']
+        app.levels = self.jsondata[key]['levels']
+        app.scenario = self.jsondata[key]['scenario']
+        app.thematic = self.jsondata[key]['thematic']
+        app.notokens = self.jsondata[key]['notokens']
+        app.extraboard = self.jsondata[key]['extraboard']
+        app.difficulty = self.jsondata[key]['difficulty']
+        app.root.get_screen('Phase').ids.PhaseManager.get_screen('Main').on_enter()
+        app.root.get_screen('Phase').ids.PhaseManager.get_screen('SpiritSelect').on_enter()
+        app.root.get_screen('Phase').ids.PhaseManager.get_screen('Main').on_enter()
+        app.root.current = 'Phase'
+
+class ChallengeScreen(Screen):
+    pass
 
 #mainscreen holder. all variables come from the MainApp
 #corresponds to kivy Main
@@ -1800,6 +1918,7 @@ def write_state():
     store.put('currentPhase', value=app.currentPhase)
     store.put('spirit_list', value=app.spirit_list)
     store.put('scenarios_list', value=app.scenarios_list)
+    store.put('difficulty', value=app.difficulty)
 
 
 class RV(RecycleView):
@@ -1812,7 +1931,12 @@ class MAPRV(RecycleView):
     def __init__(self, **kwargs):
         super(MAPRV, self).__init__(**kwargs)
         self.data = []#[{'text': '2 Player Standard', 'image': 'resources/maps/2player-standard.png'}] #app.maplist
-  
+
+class HISTORYRV(RecycleView):
+    def __init__(self, **kwargs):
+        super(HISTORYRV,self).__init__(**kwargs)
+        self.data = []
+
 #Screen manager that controls which screen is which
 class MainManager(ScreenManager):
     pass
@@ -1832,6 +1956,9 @@ class MainApp(App):
     flagicon3 = BooleanProperty(False)
     stage2flag = StringProperty('')
     s2list = ListProperty([])
+    reasons = ListProperty([])
+    reason = StringProperty('None')
+    playernames = ['','','','','','']
     ## Imports from data.py
     base_opp = data.base_opp
     bc_opp = data.bc_opp
@@ -1878,6 +2005,8 @@ class MainApp(App):
     icons = data.icons
     opponent_difficulty = data.oppoenent_difficulty
     scenario_difficulty = data.scenario_difficulty
+    winreasons = data.winreasons
+    lossreasons = data.lossreasons
     ##
     #data = ListProperty([])
 
@@ -1911,9 +2040,12 @@ class MainApp(App):
     difficulty = '0'
     fontsize = NumericProperty(15)
     imagewidth = NumericProperty(0.07)
+    winloss = StringProperty('None')
     ##
     blightscreeninactive = False
     fromLoad = False
+    historykey = StringProperty('')
+    gamehistory = StringProperty('')
     def build(self):
         self.fdeck = [3,3,3]
         self.maplist = []
@@ -2089,8 +2221,71 @@ class MainApp(App):
             self.blightscreeninactive = True
         else:
             self.blightscreeninactive = False
-
-            
+    def winloss_clicked(self, value):
+        self.winloss = value
+        if value == 'Win':
+            self.reasons = self.winreasons
+            if self.scenario != 'None':
+                self.reasons.append(self.scenario + ' Win condition')
+        elif value == 'Loss':
+            self.reasons = self.lossreasons
+            if self.opponents[0] != 'None':
+                self.reasons.append(self.opponents[0] + ' loss condition')
+            if self.opponents[1] != 'None':
+                self.reasons.append(self.opponents[1] + ' loss condition')
+            if self.scenario != 'None':
+                self.reasons.append(self.scenario + ' loss condition')
+        if self.reason not in self.reasons:
+            self.reason = 'None'
+    def onplayertext(self, player, text):
+        self.playernames[int(player)] = str(text)
+    def setreason(self, value):
+        self.reason = value
+    def write_winloss(self):
+        record = {}
+        #playernames = [player1,player2,player3,player4,player5,player6]
+        record['winloss'] = self.winloss
+        record['reason'] = self.reason
+        record['expansion'] = self.expansion
+        record['branchandclaw'] = self.branchandclaw
+        record['jaggedearth'] = self.jaggedearth
+        record['promopack1'] = self.promopack1
+        record['promopack2'] = self.promopack2
+        record['spirits'] = self.spirits
+        record['aspects'] = self.aspects
+        record['players'] = self.players
+        record['playernames'] = self.playernames
+        record['opponents'] = self.opponents
+        record['levels'] = self.levels
+        record['scenario'] = self.scenario
+        record['thematic'] = self.thematic
+        record['notokens'] = self.notokens
+        record['turn'] = self.turn
+        record['blight'] = self.blight
+        record['extraboard'] = self.extraboard
+        record['difficulty'] = self.difficulty
+        string = str(datetime.datetime.now())
+        string = string.rsplit('.',1)[0]
+        new_rec = {}
+        new_rec[string] = record
+        try:
+            with open('history.json', 'r+') as history:
+                try:
+                    jsondata = json.load(history)
+                except:
+                    jsondata = {}
+            history.close()
+        except:
+            jsondata = {}
+        jsondata.update(new_rec)
+        with open('history.json', 'w+') as history:
+            #json.dump(jsondata, history)
+            history.write(
+                '{' + 
+                ',\n'.join("\"" + i + "\"" + ":" + json.dumps(jsondata[i]) for i in jsondata) +
+                '}\n'
+            )
+        self.stop()
 
 
         
