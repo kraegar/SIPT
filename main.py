@@ -120,9 +120,9 @@ class PhaseScreen(Screen):
                     England3 = True
                 elif app.opponents[x] == 'England' and int(app.levels[x]) >=4:
                     England4 = True
-            if England3 == True  and app.stage != "III" and app.turn > 1:
+            if England3 == True  and app.stage != "III" and app.turn > 2:
                 nextP = 'HighImmigration'
-            elif England4 == True and app.turn > 1:
+            elif England4 == True and app.turn > 2:
                 nextP = 'HighImmigration'
             elif app.turn > 1:
                 nextP = 'Ravage'
@@ -343,9 +343,9 @@ class PhaseScreen(Screen):
                     England3 = True
                 elif app.opponents[x] == 'England' and int(app.levels[x]) >=4:
                     England4 = True
-            if England3 == True  and app.stage != "III" and app.turn > 1:
+            if England3 == True  and app.stage != "III" and app.turn > 2:
                 nextP = 'HighImmigration'
-            elif England4 == True and app.turn > 1:
+            elif England4 == True and app.turn > 2:
                 nextP = 'HighImmigration'
             elif app.turn > 1:
                 nextP = 'Ravage'
@@ -545,6 +545,8 @@ class MainScreen(Screen):
         self.theme = app.thematic
         self.extrab = app.extraboard
         self.opp_list = sorted(app.opponent_list)
+        self.opp_list.append(self.opp_list.pop(self.opp_list.index('None')))
+        self.opp_list.append(self.opp_list.pop(self.opp_list.index('Random')))
         self.diff = app.difficulty
         self.notoke = app.notokens
         self.scen = app.scenario
@@ -671,6 +673,8 @@ class MainScreen(Screen):
         if app.promopack2:
             app.opponent_list = app.opponent_list + app.pp2_opp
         self.opp_list = sorted(app.opponent_list) 
+        self.opp_list.append(self.opp_list.pop(self.opp_list.index('None')))
+        self.opp_list.append(self.opp_list.pop(self.opp_list.index('Random')))
         if app.branchandclaw and app.jaggedearth:
             app.expansion = "BC and JE"
         elif app.branchandclaw and not app.jaggedearth:
@@ -691,6 +695,8 @@ class MainScreen(Screen):
         if app.promopack2:
             app.spirit_list = app.spirit_list + app.pp2_spirits
         app.spirit_list = sorted(app.spirit_list)
+        app.spirit_list.append(app.spirit_list.pop(app.spirit_list.index('None')))
+        app.spirit_list.append(app.spirit_list.pop(app.spirit_list.index('Random')))
     def build_scenarios(self):
         app = App.get_running_app()
         scenario_list = app.base_scenarios
@@ -704,6 +710,7 @@ class MainScreen(Screen):
         if app.promopack2:
             app.scenarios_list = app.scenarios_list + app.pp2_scenarios
         self.scen_list = sorted(app.scenarios_list)   
+        self.scen_list.append(self.scen_list.pop(self.scen_list.index('None')))
         self.calculate_difficulty()
     def build_levels(self, num):
         app = App.get_running_app()
@@ -773,6 +780,8 @@ class SpiritSelectScreen(Screen):
         #app.france_decks(4)
         #app.habsburg_decks(4)
         self.spirit_values = sorted(app.spirit_list)
+        self.spirit_values.append(self.spirit_values.pop(self.spirit_values.index('None')))
+        self.spirit_values.append(self.spirit_values.pop(self.spirit_values.index('Random')))
         app.currentPhase = 'SpiritSelect'
         write_state(self)
         self.play = int(app.players)
