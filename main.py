@@ -21,6 +21,7 @@ import random
 import math
 import json
 import datetime
+import os
 import data # this louds our variables from data.py
 
 Config.set('graphics', 'resizable', True)
@@ -210,12 +211,12 @@ class PhaseScreen(Screen):
         if value:
             app.blight = 'Blighted'
             self.blighted = True
-            write_state()
+            write_state(self)
             return True
         else:
             app.blight = 'Healthy'
             self.blighted = False
-            write_state()
+            write_state(self)
             return False
     def calc_health_damage(self):
         app = App.get_running_app()
@@ -265,9 +266,10 @@ class PhaseScreen(Screen):
             self.I = False
             self.II = False
         app.on_stage_toggle(app.stage)
-        write_state()
+        write_state(self)
     def read_state(self):
         app = App.get_running_app()
+        store = get_data_store(self)
         app.branchandclaw = (store.get('branchandclaw')['value'])
         app.jaggedearth = (store.get('jaggedearth')['value'])
         app.promopack1 = (store.get('promopack1')['value'])
@@ -772,7 +774,7 @@ class SpiritSelectScreen(Screen):
         #app.habsburg_decks(4)
         self.spirit_values = sorted(app.spirit_list)
         app.currentPhase = 'SpiritSelect'
-        write_state()
+        write_state(self)
         self.play = int(app.players)
         self.spirit1 = app.spirits[0]
         self.spirit2 = app.spirits[1]
@@ -1032,7 +1034,7 @@ class MapLayoutScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'MapLayout'
-        write_state()  
+        write_state(self)  
         maplist = []
         boards = int(app.players)
         if app.extraboard == True:
@@ -1082,7 +1084,7 @@ class BoardSetupScreen(Screen):
     def on_enter(self):                 #override of on_enter, runs when screen is constructed
         app = App.get_running_app()
         app.currentPhase = 'BoardSetup'
-        write_state()
+        write_state(self)
         
         fear = ''
         #invaders = 
@@ -1279,7 +1281,7 @@ class FirstExploreScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'FirstExplore'
-        write_state()
+        write_state(self)
         description = ''
         list = []
         if app.displayopts['All']['phase']:
@@ -1322,7 +1324,7 @@ class GrowthScreen(Screen):
         if app.currentPhase != 'Energy' and app.fromLoad != True:
             app.turn = app.turn + 1
         app.currentPhase = 'Growth'
-        write_state()
+        write_state(self)
         self.text = ''
         description = ''
         badlands = ""
@@ -1372,7 +1374,7 @@ class EnergyScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'Energy'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1391,7 +1393,7 @@ class PowerCardsScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'PowerCards'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1434,7 +1436,7 @@ class FastPowerScreen(Screen):
         app = App.get_running_app()
         
         app.currentPhase = 'FastPower'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1475,7 +1477,7 @@ class BlightedIslandScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'BlightedIsland'
-        write_state()
+        write_state(self)
         opprules = ""
         allrules = ""
         badlands = ""
@@ -1516,7 +1518,7 @@ class EventScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'Event'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1563,7 +1565,7 @@ class FearScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'Fear'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1604,7 +1606,7 @@ class HighImmigrationScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'HighImmigration'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1651,7 +1653,7 @@ class RavageScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'Ravage'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1702,7 +1704,7 @@ class BuildScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'Build'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1754,7 +1756,7 @@ class ExploreScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'Explore'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1814,7 +1816,7 @@ class AdvanceCardsScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'AdvanceCards'
-        write_state()
+        write_state(self)
         opprules = ""
         allrules = ""
         description = ''
@@ -1849,7 +1851,7 @@ class SlowPowerScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'SlowPower'
-        write_state()
+        write_state(self)
         opprules = ""
         allrules = ""
         badlands = ""
@@ -1890,7 +1892,7 @@ class TimePassesScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'TimePasses'
-        write_state()
+        write_state(self)
         description = ''
         list = []
         if app.displayopts['All']['phase']:
@@ -1900,9 +1902,15 @@ class TimePassesScreen(Screen):
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list
         
-store = JsonStore('sipt.json')
-def write_state():
+#store = JsonStore('sipt.json')
+#def write_state(self):
+def get_data_store(self):
+    store = os.path.join(App.get_running_app().user_data_dir, 'sipt.json')
+    return JsonStore(store)
+
+def write_state(self):
     app = App.get_running_app()
+    store = get_data_store(self)
     store.put('branchandclaw', value=app.branchandclaw)
     store.put('jaggedearth', value=app.jaggedearth)
     store.put('promopack1', value=app.promopack1)
