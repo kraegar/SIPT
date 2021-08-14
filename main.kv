@@ -53,6 +53,8 @@ MainManager:
 				size_hint_x: .2
 				active: app.blightscreeninactive
 				on_active: app.no_blight_screen(self.active)
+				background_checkbox_normal: 'resources/checkbox_unchecked.png'
+				background_checkbox_down: 'resources/checkbox_checked.png'
 			Label: 
 				text: 'Select if Blighted Island Card has no ongoing effect'
 				text_size: self.width, None
@@ -542,6 +544,8 @@ MainManager:
 				active: root.blighted
 				on_active:  Factory.BlightPopup().open() if root.blight_checkbox(self.active) else ""
 				id: blight
+				background_checkbox_normal: 'resources/checkbox_unchecked.png'
+				background_checkbox_down: 'resources/checkbox_checked.png'
 			ScaleLabel:
 				canvas:
 					Color:
@@ -613,73 +617,93 @@ MainManager:
 			cols: 4
 			size_hint_y: .0775
 			ScaleLabel:
-				size_hint_x: 40
+				size_hint_x: .45
 				text: "Branch and Claw:"
 				font_size: 20
 			CheckBox:
-				size_hint_x: 10
+				size_hint_x: .05
 				id: branchandclaw
 				active: root.bc
 				on_active: root.bc_clicked(self.active)
+				background_checkbox_normal: 'resources/checkbox_unchecked.png'
+				background_checkbox_down: 'resources/checkbox_checked.png'
 			ScaleLabel:
-				size_hint_x: 40
+				size_hint_x: .45
 				text: "Jagged Earth:"
 				font_size: 20
 			CheckBox:
-				size_hint_x: 10
+				size_hint_x: .05
 				id: jaggedearth
 				active: root.je
 				on_active: root.je_clicked(self.active)
+				background_checkbox_normal: 'resources/checkbox_unchecked.png'
+				background_checkbox_down: 'resources/checkbox_checked.png'
 		BoxLayout:
 			orientation: "horizontal"
 			cols: 4
 			size_hint_y: .0775
 			ScaleLabel:
-				size_hint_x: 40
+				size_hint_x: .45
 				text: "Promo Pack 1:"
 				font_size: 20
 			CheckBox:
-				size_hint_x: 10
+				size_hint_x: 0.05
 				id: promo1
 				active: root.pp1
 				on_active: root.promo1_clicked(self.active)	
+				background_checkbox_normal: 'resources/checkbox_unchecked.png'
+				background_checkbox_down: 'resources/checkbox_checked.png'
 			ScaleLabel:
-				size_hint_x: 40
+				size_hint_x: .45
 				text: "Promo Pack 2:"
 				font_size: 20
 			CheckBox:
-				size_hint_x: 10
+				size_hint_x: 0.05
 				id: promo2
 				active: root.pp2
-				on_active: root.promo2_clicked(self.active)			
+				on_active: root.promo2_clicked(self.active)	
+				background_checkbox_normal: 'resources/checkbox_unchecked.png'
+				background_checkbox_down: 'resources/checkbox_checked.png'		
 		BoxLayout:
 			orientation: "horizontal"
 			cols: 5
 			size_hint_y: .0775
 			ScaleLabel:
-				size_hint_x: .4
-				text: "Thematic Map [No Tokens]:"
+				size_hint_x: .25
+				text: "Thematic Map:"
 				font_size: 20
 			CheckBox:
 				size_hint_x: .05
 				id: thematicmap
 				active: root.theme
-				on_active: root.thematic_clicked(self.active)		
+				on_active: root.thematic_clicked(self.active)	
+				background_checkbox_normal: 'resources/checkbox_unchecked.png'
+				background_checkbox_down: 'resources/checkbox_checked.png'	
+			ScaleLabel:
+				size_hint_x: .25
+				text: "No Tokens:"
+				disabled: root.notoken_disabled
+				font_size: 20
 			CheckBox:
 				size_hint_x: .05
 				id: thematictokens
 				active: root.notoke
 				on_active: root.notokens_clicked(self.active)
 				disabled: root.notoken_disabled
+				background_checkbox_normal: 'resources/checkbox_unchecked.png'
+				background_checkbox_down: 'resources/checkbox_checked.png'
+				background_checkbox_disabled_normal: 'resources/checkbox_disabled.png'
 			ScaleLabel:
-				size_hint_x: .4
+				size_hint_x: .45
 				text: "Extra Board:"
 				font_size: 20
 			CheckBox:
-				size_hint_x: .10
+				size_hint_x: .05
 				id: extraBoard
 				active: root.extrab
 				on_active: root.extraboard_clicked(self.active)
+				background_checkbox_normal: 'resources/checkbox_unchecked.png'
+				background_checkbox_down: 'resources/checkbox_checked.png'
 		BoxLayout:
 			orientation: "horizontal"
 			cols: 2
