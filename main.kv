@@ -413,7 +413,7 @@ MainManager:
 		size_hint_y: 1
 		size_hint_x: 1
 		BoxLayout:
-			size_hint_y: .15
+			size_hint_y: .1
 			cols: 3
 			BoxLayout:
 				size_hint_x: .05
@@ -424,8 +424,11 @@ MainManager:
 					canvas:
 						Rectangle:
 							source: "resources/gear.png"
-							pos: (self.width - configbutton.width)/2 + self.pos[0], (self.height - configbutton.width)/2 + self.pos[1]
-							size: configbutton.width, configbutton.width
+							#pos: (self.width - configbutton.width)/2 + self.pos[0], (self.height - configbutton.width)/2 + self.pos[1]
+							#pos: configbutton.center_x  - self.width*0.5 , configbutton.center_y - self.height * .5
+							pos: configbutton.center_x - ((configbutton.width*0.9)/2), configbutton.center_y - ((configbutton.height*0.9)/2)
+							size: min(configbutton.width, configbutton.height)*0.9, min(configbutton.width, configbutton.height)*0.9
+							
 					on_release: app.open_settings()
 				Button:
 					id: winlose
@@ -433,8 +436,8 @@ MainManager:
 					canvas:
 						Rectangle:
 							source: "resources/flag.png"
-							pos: (self.width - configbutton.width)/2 + self.pos[0], (self.height - configbutton.width)/2 + self.pos[1]
-							size: winlose.width, winlose.width
+							pos: winlose.center_x - ((winlose.width*0.9)/2), winlose.center_y - ((winlose.height*0.9)/2)
+							size: winlose.width*0.9, winlose.height*0.9
 					on_release: Factory.WinLosePopup().open()
 			ScaleLabel:
 				text: root.title
