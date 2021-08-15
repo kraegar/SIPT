@@ -219,7 +219,7 @@ setup_changes = { 'None':                {0: '',
 expansion_setup = { 'None': '',
                     'Branch and Claw': 'On each board:\nPut one Beast Token in the lowest land with no printed icons.\nPut one Disease Token in land #2',
                     'Jagged Earth': 'On each board:\nPut one Beast Token in the lowest land with no printed icons.\nPut one Disease Token in land #2',
-                    'BC and JE': ''
+                    'BC and JE': 'On each board:\nPut one Beast Token in the lowest land with no printed icons.\nPut one Disease Token in land #2'
                     }
 
 #global variable for the stage 2 invader card flag impact
