@@ -398,12 +398,14 @@ class HistoryScreen(Screen):
         app = App.get_running_app()
         rv = app.root.get_screen('History').ids.HISTORYRV
         try:
-            with open('history.json', 'r+') as history:
+            historystore = os.path.join(app.user_data_dir, 'history.json')
+            with open(historystore, 'r+') as history:
                 try:
                     self.jsondata = json.load(history)
                 except:
                     self.jsondata = {}
             history.close()
+            
         except:
             self.jsondata = {}
         for key in self.jsondata:
@@ -2293,7 +2295,8 @@ class MainApp(App):
         new_rec = {}
         new_rec[string] = record
         try:
-            with open('history.json', 'r+') as history:
+            historystore = os.path.join(self.user_data_dir, 'history.json')
+            with open(historystore, 'r+') as history:
                 try:
                     jsondata = json.load(history)
                 except:
@@ -2302,7 +2305,8 @@ class MainApp(App):
         except:
             jsondata = {}
         jsondata.update(new_rec)
-        with open('history.json', 'w+') as history:
+        historystore = os.path.join(self.user_data_dir, 'history.json')
+        with open(historystore, 'w+') as history:
             #json.dump(jsondata, history)
             history.write(
                 '{' + 
