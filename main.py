@@ -1910,6 +1910,8 @@ class TimePassesScreen(Screen):
             description = app.screenDescriptions[app.currentPhase]
         if description != '':
             list.append({'image': app.icons[app.currentPhase], 'text': description})
+        if 'Shroud of Silent Mist' in app.spirits:
+            list.append({'image': app.icons['Shroud of Silent Mist'], 'text': 'Invaders and Dahan in Shroud of Silent Mist lands don\'t heal damage, 1 fear per Shroud of Silent Mist land with damaged invaders (max 5)'})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list
         
