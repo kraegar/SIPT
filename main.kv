@@ -614,7 +614,7 @@ MainManager:
 		cols: 1
 		BoxLayout:
 			orientation: "horizontal"
-			cols: 4
+			cols: 5
 			size_hint_y: .0775
 			ScaleLabel:
 				size_hint_x: .45
@@ -632,15 +632,17 @@ MainManager:
 				text: "Jagged Earth:"
 				font_size: 20
 			CheckBox:
-				size_hint_x: .05
+				size_hint_x: .03
 				id: jaggedearth
 				active: root.je
 				on_active: root.je_clicked(self.active)
 				background_checkbox_normal: 'resources/checkbox_unchecked.png'
 				background_checkbox_down: 'resources/checkbox_checked.png'
+			Label:
+				size_hint_x: 0.02
 		BoxLayout:
 			orientation: "horizontal"
-			cols: 4
+			cols: 5
 			size_hint_y: .0775
 			ScaleLabel:
 				size_hint_x: .45
@@ -658,18 +660,20 @@ MainManager:
 				text: "Promo Pack 2:"
 				font_size: 20
 			CheckBox:
-				size_hint_x: 0.05
+				size_hint_x: 0.03
 				id: promo2
 				active: root.pp2
 				on_active: root.promo2_clicked(self.active)	
 				background_checkbox_normal: 'resources/checkbox_unchecked.png'
 				background_checkbox_down: 'resources/checkbox_checked.png'		
+			Label:
+				size_hint_x: 0.02
 		BoxLayout:
 			orientation: "horizontal"
-			cols: 5
+			cols: 6
 			size_hint_y: .0775
 			ScaleLabel:
-				size_hint_x: .25
+				size_hint_x: .35
 				text: "Thematic Map:"
 				font_size: 20
 			CheckBox:
@@ -694,16 +698,18 @@ MainManager:
 				background_checkbox_down: 'resources/checkbox_checked.png'
 				background_checkbox_disabled_normal: 'resources/checkbox_disabled.png'
 			ScaleLabel:
-				size_hint_x: .45
+				size_hint_x: .33
 				text: "Extra Board:"
 				font_size: 20
 			CheckBox:
-				size_hint_x: .05
+				size_hint_x: .03
 				id: extraBoard
 				active: root.extrab
 				on_active: root.extraboard_clicked(self.active)
 				background_checkbox_normal: 'resources/checkbox_unchecked.png'
 				background_checkbox_down: 'resources/checkbox_checked.png'
+			Label:
+				size_hint_x: 0.025
 		BoxLayout:
 			orientation: "horizontal"
 			cols: 2
