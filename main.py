@@ -2222,7 +2222,6 @@ class MainApp(App):
             self.timer_seconds = int(self.config.get('timeroptions', 'timerseconds'))
         elif section == 'Display': 
             self.imagewidth = float(self.config.get('Display', 'imagewidth'))/100
-            self.bannerheight = float(self.config.get('Display', 'bannerheight'))/100
             self.fontsize = int(self.config.get('Display', 'fontsize'))
         else:
             self.displayopts[section][key]=int(value)
