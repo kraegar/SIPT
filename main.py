@@ -296,7 +296,7 @@ class PhaseScreen(Screen):
 
         app.fromLoad = True
         self.calc_health_damage()
-        app.stage2_flag['Scotland'] = 'Loss condition: If the invader card has a flag:\nOn the single board with the most coastal towns/cities add one town to the '+ str(app.players) +' lands with the fewest towns.\n'
+        app.stage2_flag['Scotland'] = 'If the invader card has a flag:\nOn the single board with the most coastal towns/cities add one town to the '+ str(app.players) +' lands with the fewest towns.\n'
         app.loss_rules['Habsburg'] = 'Loss condition: Track how many blight come off the blight cards during ravages that do 8+ damage to the land. If that number ever exceeds ' + str(app.players) +' , the invaders win.\n'
         if app.blight != 'Healthy':
             self.blighted = True
@@ -661,7 +661,7 @@ class MainScreen(Screen):
         app = App.get_running_app()
         app.players = value
         self.play = app.players
-        app.stage2_flag['Scotland'] = 'Loss condition: If the invader card has a flag:\nOn the single board with the most coastal towns/cities add one town to the '+ str(app.players) +' lands with the fewest towns.\n'
+        app.stage2_flag['Scotland'] = 'If the invader card has a flag:\nOn the single board with the most coastal towns/cities add one town to the '+ str(app.players) +' lands with the fewest towns.\n'
         app.loss_rules['Habsburg'] = 'Loss condition: Track how many blight come off the blight cards during ravages that do 8+ damage to the land. If that number ever exceeds ' + str(app.players) +' , the invaders win.\n'
     def build_expansions(self):
         app = App.get_running_app()
