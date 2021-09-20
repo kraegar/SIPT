@@ -1377,7 +1377,10 @@ class GrowthScreen(Screen):
             if loss != '':
                 list.append({'image': app.icons[app.opponents[x]], 'text': loss})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = []
         rv.data = list
+        rv.refresh_from_data()
+        
         
         
 class EnergyScreen(Screen):
@@ -2074,7 +2077,7 @@ class MainApp(App):
     fromLoad = False
     historykey = StringProperty('')
     gamehistory = StringProperty('')
-    def build(self):
+    def build(self):       
         self.fdeck = [3,3,3]
         self.maplist = []
         if int(self.config.get('timeroptions', 'usetimer')) == 0:

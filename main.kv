@@ -254,19 +254,19 @@ MainManager:
     text: ''
     image: ''
     # define how the data is displayed
-	height: label.height
-    Image:
-		id: image
-        size_hint: app.imagewidth, 1
-		width: self.height
-        source: root.image
-	Label:
+	height: rowlabel.height if self.parent else 100
+	Image:
+		id: rowimage
+		size_hint: app.imagewidth, 1
+		#width: self.height
+		source: root.image
+	Widget:
 		size_hint: 0.007, 1
-    Label:
-		id: label
+	Label:
+		id: rowlabel
 		size_hint_y: None
 		text: root.text
-		height: max(self.texture_size[1], image.width)
+		height: self.texture_size[1] #max(self.texture_size[1], rowimage.width)
 		text_size: self.width, None
 		font_size: app.fontsize
 
@@ -969,6 +969,7 @@ MainManager:
 				
 <BoardSetupScreen>:
     name: 'BoardSetup'
+	id: 'BoardSetup'
 	RV:
 		id: RV
 		viewclass: 'MyViewClass'
