@@ -219,7 +219,7 @@ setup_changes = { 'None':                {0: '',
 expansion_setup = { 'None': '',
                     'Branch and Claw': 'On each board:\nPut one Beast Token in the lowest land with no printed icons.\nPut one Disease Token in land #2',
                     'Jagged Earth': 'On each board:\nPut one Beast Token in the lowest land with no printed icons.\nPut one Disease Token in land #2',
-                    'BC and JE': ''
+                    'BC and JE': 'On each board:\nPut one Beast Token in the lowest land with no printed icons.\nPut one Disease Token in land #2'
                     }
 
 #global variable for the stage 2 invader card flag impact
@@ -1492,7 +1492,7 @@ icons = {   'explorer': 'resources/tokens/Icon Explorer.png',
             'city': 'resources/tokens/Icon City.png',
             'dahan': 'resources/tokens/Icon Dahan.png', 
             'stage2flag': 'resources/tokens/flag.png',
-            'None': 'none.png',
+            'None': 'resources/None.png',
             'Brandenburg-Prussia': 'resources/adversaries/Flag BrandenburgPrussia.png',
             'England': 'resources/adversaries/Flag England.png',
             'France': 'resources/adversaries/Flag France.png',
@@ -1633,3 +1633,17 @@ scenario_difficulty = {
                     'Rituals of Terror': 3,
                     'Dahan Insurrection': 4
 }
+
+winreasons = [
+    'Terror Level 1',
+    'Terror Level 2',
+    'Terror Level 3',
+    'Fear Deck Emptied',
+]
+
+lossreasons = [
+    'Spirit Lost all Presence',
+    'Blight',
+    'Empty Invader Deck',
+    'Forfeit'
+]

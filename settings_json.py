@@ -25,7 +25,7 @@ settings_json = json.dumps([
      'desc': 'Size of the font used in descriptions',
      'section': 'Display',
      'key': 'fontsize',     
-     'options': ['10', '15', '20', '25', '30']},
+     'options': ['10', '15', '20', '25', '30', '40', '50', '75']},
 
      {'type': 'options',
      'title': 'Image Width',
@@ -33,7 +33,7 @@ settings_json = json.dumps([
      'section': 'Display',
      'key': 'imagewidth',
      'options': ['5', '7.5', '10', '12.5', '15']},
-    
+ 
     {'type': 'title',
      'title': 'All Screens'},
 

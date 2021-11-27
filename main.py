@@ -1,3 +1,4 @@
+from kivy import app
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -5,6 +6,7 @@ from kivy.core.window import Window
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
 from kivy.properties import ObjectProperty, StringProperty, NumericProperty, BooleanProperty, ListProperty
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.spinner import Spinner
@@ -17,6 +19,9 @@ from settings_json import settings_json
 import datetime
 import random
 import math
+import json
+import datetime
+import os
 import data # this louds our variables from data.py
 
 Config.set('graphics', 'resizable', True)
@@ -59,6 +64,8 @@ class PhaseScreen(Screen):
         else:
             self.time = ''
         self.calc_health_damage()
+    def on_leave(self):
+        Clock.unschedule(self.clock)
     def __init__(self, **kwargs):
         super(PhaseScreen, self).__init__(**kwargs)
         Window.bind(on_key_down=self._on_keyboard_down)
@@ -113,9 +120,9 @@ class PhaseScreen(Screen):
                     England3 = True
                 elif app.opponents[x] == 'England' and int(app.levels[x]) >=4:
                     England4 = True
-            if England3 == True  and app.stage != "III" and app.turn > 1:
+            if England3 == True  and app.stage != "III" and app.turn > 2:
                 nextP = 'HighImmigration'
-            elif England4 == True and app.turn > 1:
+            elif England4 == True and app.turn > 2:
                 nextP = 'HighImmigration'
             elif app.turn > 1:
                 nextP = 'Ravage'
@@ -204,12 +211,12 @@ class PhaseScreen(Screen):
         if value:
             app.blight = 'Blighted'
             self.blighted = True
-            write_state()
+            write_state(self)
             return True
         else:
             app.blight = 'Healthy'
             self.blighted = False
-            write_state()
+            write_state(self)
             return False
     def calc_health_damage(self):
         app = App.get_running_app()
@@ -259,9 +266,10 @@ class PhaseScreen(Screen):
             self.I = False
             self.II = False
         app.on_stage_toggle(app.stage)
-        write_state()
+        write_state(self)
     def read_state(self):
         app = App.get_running_app()
+        store = get_data_store(self)
         app.branchandclaw = (store.get('branchandclaw')['value'])
         app.jaggedearth = (store.get('jaggedearth')['value'])
         app.promopack1 = (store.get('promopack1')['value'])
@@ -283,11 +291,12 @@ class PhaseScreen(Screen):
         app.opponent_list = (store.get('opponent_list')['value'])
         app.spirit_list = (store.get('spirit_list')['value'])
         app.scenarios_list = (store.get('scenarios_list')['value'])
+        app.difficulty = (store.get('difficulty')['value'])
         app.currentPhase = app.previousPhase[-1]
 
         app.fromLoad = True
         self.calc_health_damage()
-        app.stage2_flag['Scotland'] = 'Loss condition: If the invader card has a flag:\nOn the single board with the most coastal towns/cities add one town to the '+ str(app.players) +' lands with the fewest towns.\n'
+        app.stage2_flag['Scotland'] = 'If the invader card has a flag:\nOn the single board with the most coastal towns/cities add one town to the '+ str(app.players) +' lands with the fewest towns.\n'
         app.loss_rules['Habsburg'] = 'Loss condition: Track how many blight come off the blight cards during ravages that do 8+ damage to the land. If that number ever exceeds ' + str(app.players) +' , the invaders win.\n'
         if app.blight != 'Healthy':
             self.blighted = True
@@ -334,9 +343,9 @@ class PhaseScreen(Screen):
                     England3 = True
                 elif app.opponents[x] == 'England' and int(app.levels[x]) >=4:
                     England4 = True
-            if England3 == True  and app.stage != "III" and app.turn > 1:
+            if England3 == True  and app.stage != "III" and app.turn > 2:
                 nextP = 'HighImmigration'
-            elif England4 == True and app.turn > 1:
+            elif England4 == True and app.turn > 2:
                 nextP = 'HighImmigration'
             elif app.turn > 1:
                 nextP = 'Ravage'
@@ -382,6 +391,126 @@ class PhaseScreen(Screen):
             self.setupScreens = False
         return nextP
 
+class HistoryScreen(Screen):
+    jsondata = {}
+    def on_enter(self):
+        gameHistory = []
+        app = App.get_running_app()
+        rv = app.root.get_screen('History').ids.HISTORYRV
+        try:
+            historystore = os.path.join(app.user_data_dir, 'history.json')
+            with open(historystore, 'r+') as history:
+                try:
+                    self.jsondata = json.load(history)
+                except:
+                    self.jsondata = {}
+            history.close()
+            
+        except:
+            self.jsondata = {}
+        for key in self.jsondata:
+            h_opponents = self.jsondata[key]['opponents']
+            h_levels = self.jsondata[key]['levels']
+            h_spirits = self.jsondata[key]['spirits']
+            h_scenario = self.jsondata[key]['scenario']
+            h_difficulty = self.jsondata[key]['difficulty']
+            h_winloss = self.jsondata[key]['winloss']
+
+            gameHistory.append({
+                'h_opp1': h_opponents[0],
+                'h_opp2': h_opponents[1],
+                'h_opp1_icon': app.icons[h_opponents[0]],
+                'h_opp2_icon': app.icons[h_opponents[1]],
+                'h_lvl1':  h_levels[0],
+                'h_lvl2': h_levels[1],
+                'h_spirits1_icon': app.icons[h_spirits[0]],
+                'h_spirits2_icon': app.icons[h_spirits[1]],
+                'h_spirits3_icon': app.icons[h_spirits[2]],
+                'h_spirits4_icon': app.icons[h_spirits[3]],
+                'h_spirits5_icon': app.icons[h_spirits[4]],
+                'h_spirits6_icon': app.icons[h_spirits[5]],
+                'h_diff': str(h_difficulty),
+                'h_winloss': h_winloss,
+                'key': key
+            })
+            rv.data = gameHistory
+    def on_leave(self, *args):
+        app = App.get_running_app()
+        app.historykey = ''
+    def historytoggle(self, key):
+        app = App.get_running_app()
+        app.historykey = key
+        app.gamehistory = ''
+        app.gamehistory= app.gamehistory + self.jsondata[key]['reason'] + ' '
+        app.gamehistory= app.gamehistory + self.jsondata[key]['winloss']
+        app.gamehistory= app.gamehistory + ' in ' + str(self.jsondata[key]['turn']) + ' turns\n'
+        app.gamehistory= app.gamehistory + 'The island was ' + self.jsondata[key]['blight'] + '\n'
+        app.gamehistory= app.gamehistory + 'Difficulty: ' + self.jsondata[key]['difficulty'] + '\n\n'
+        if self.jsondata[key]['opponents'][0] != 'None':
+            app.gamehistory= app.gamehistory + 'Adversary: ' + self.jsondata[key]['opponents'][0]
+            app.gamehistory= app.gamehistory + ' Level ' + self.jsondata[key]['levels'][0] + '\n'
+        if self.jsondata[key]['opponents'][1] != 'None':
+            app.gamehistory= app.gamehistory + 'Adversary: ' + self.jsondata[key]['opponents'][1]
+            app.gamehistory= app.gamehistory + ' Level ' + self.jsondata[key]['levels'][1] + '\n'
+        if self.jsondata[key]['scenario'] != 'None':
+            app.gamehistory= app.gamehistory + 'Scenario: ' + self.jsondata[key]['scenario'] + '\n' 
+        app.gamehistory= app.gamehistory + '\n'
+        
+        app.gamehistory= app.gamehistory + 'Number of Players: ' + str(self.jsondata[key]['players']) + '\n'
+        for x in range(int(self.jsondata[key]['players'])):
+            if self.jsondata[key]['spirits'][x] != 'None':
+                app.gamehistory= app.gamehistory + 'Spirit: ' + self.jsondata[key]['spirits'][x]
+                if self.jsondata[key]['aspects'][x] != 'None':
+                    app.gamehistory= app.gamehistory + ' with aspect ' + self.jsondata[key]['aspects'][x]
+                if self.jsondata[key]['playernames'][x] != '':
+                    app.gamehistory= app.gamehistory + ' played by ' + self.jsondata[key]['playernames'][x]
+                app.gamehistory= app.gamehistory + '\n'
+        app.gamehistory= app.gamehistory + '\n'
+
+        app.gamehistory= app.gamehistory + 'Expansions:\n'
+        if self.jsondata[key]['branchandclaw'] == True:
+            app.gamehistory= app.gamehistory + "  Branch and Claw\n"
+        if self.jsondata[key]['jaggedearth'] == True:
+            app.gamehistory= app.gamehistory + "  Jagged Earth\n"
+        if self.jsondata[key]['promopack1'] == True:
+            app.gamehistory= app.gamehistory + "  Promo Pack 1\n"
+        if self.jsondata[key]['promopack2'] == True:
+            app.gamehistory= app.gamehistory + "  Promo Pack 2\n"
+        app.gamehistory= app.gamehistory + '\n'
+        app.gamehistory= app.gamehistory + 'Game Options:\n'
+        if self.jsondata[key]['extraboard'] == True:
+            app.gamehistory= app.gamehistory + "  Extra Board\n"
+        if self.jsondata[key]['thematic'] == True:
+            app.gamehistory= app.gamehistory + "Thematic Map\n"
+            if self.jsondata[key]['notokens'] == True:
+                app.gamehistory= app.gamehistory + "No Tokens\n"
+        app.gamehistory= app.gamehistory + '\n\n'
+        app.gamehistory= app.gamehistory + 'Played on ' + key + '\n'
+    def replaygame(self, key):
+        app = App.get_running_app()
+        app.expansion = self.jsondata[key]['expansion']
+        app.branchandclaw = self.jsondata[key]['branchandclaw']
+        app.jaggedearth = self.jsondata[key]['jaggedearth']
+        app.promopack1 = self.jsondata[key]['promopack1']
+        app.promopack2 = self.jsondata[key]['promopack2']
+        app.spirits = self.jsondata[key]['spirits']
+        app.aspects = self.jsondata[key]['aspects']
+        app.players = self.jsondata[key]['players']
+        app.opponents = self.jsondata[key]['opponents']
+        app.levels = self.jsondata[key]['levels']
+        app.scenario = self.jsondata[key]['scenario']
+        app.thematic = self.jsondata[key]['thematic']
+        app.notokens = self.jsondata[key]['notokens']
+        app.extraboard = self.jsondata[key]['extraboard']
+        app.difficulty = self.jsondata[key]['difficulty']
+        app.root.get_screen('Phase').ids.PhaseManager.get_screen('Main').on_enter()
+        app.root.get_screen('Phase').ids.PhaseManager.get_screen('SpiritSelect').on_enter()
+        app.root.get_screen('Phase').ids.PhaseManager.get_screen('Main').on_enter()
+        app.root.current = 'Phase'
+
+class ChallengeScreen(Screen):
+    pass
+
 #mainscreen holder. all variables come from the MainApp
 #corresponds to kivy Main
 class MainScreen(Screen):
@@ -418,6 +547,8 @@ class MainScreen(Screen):
         self.theme = app.thematic
         self.extrab = app.extraboard
         self.opp_list = sorted(app.opponent_list)
+        self.opp_list.append(self.opp_list.pop(self.opp_list.index('None')))
+        self.opp_list.append(self.opp_list.pop(self.opp_list.index('Random')))
         self.diff = app.difficulty
         self.notoke = app.notokens
         self.scen = app.scenario
@@ -530,7 +661,7 @@ class MainScreen(Screen):
         app = App.get_running_app()
         app.players = value
         self.play = app.players
-        app.stage2_flag['Scotland'] = 'Loss condition: If the invader card has a flag:\nOn the single board with the most coastal towns/cities add one town to the '+ str(app.players) +' lands with the fewest towns.\n'
+        app.stage2_flag['Scotland'] = 'If the invader card has a flag:\nOn the single board with the most coastal towns/cities add one town to the '+ str(app.players) +' lands with the fewest towns.\n'
         app.loss_rules['Habsburg'] = 'Loss condition: Track how many blight come off the blight cards during ravages that do 8+ damage to the land. If that number ever exceeds ' + str(app.players) +' , the invaders win.\n'
     def build_expansions(self):
         app = App.get_running_app()
@@ -544,6 +675,8 @@ class MainScreen(Screen):
         if app.promopack2:
             app.opponent_list = app.opponent_list + app.pp2_opp
         self.opp_list = sorted(app.opponent_list) 
+        self.opp_list.append(self.opp_list.pop(self.opp_list.index('None')))
+        self.opp_list.append(self.opp_list.pop(self.opp_list.index('Random')))
         if app.branchandclaw and app.jaggedearth:
             app.expansion = "BC and JE"
         elif app.branchandclaw and not app.jaggedearth:
@@ -564,6 +697,8 @@ class MainScreen(Screen):
         if app.promopack2:
             app.spirit_list = app.spirit_list + app.pp2_spirits
         app.spirit_list = sorted(app.spirit_list)
+        app.spirit_list.append(app.spirit_list.pop(app.spirit_list.index('None')))
+        app.spirit_list.append(app.spirit_list.pop(app.spirit_list.index('Random')))
     def build_scenarios(self):
         app = App.get_running_app()
         scenario_list = app.base_scenarios
@@ -577,6 +712,7 @@ class MainScreen(Screen):
         if app.promopack2:
             app.scenarios_list = app.scenarios_list + app.pp2_scenarios
         self.scen_list = sorted(app.scenarios_list)   
+        self.scen_list.append(self.scen_list.pop(self.scen_list.index('None')))
         self.calculate_difficulty()
     def build_levels(self, num):
         app = App.get_running_app()
@@ -646,8 +782,10 @@ class SpiritSelectScreen(Screen):
         #app.france_decks(4)
         #app.habsburg_decks(4)
         self.spirit_values = sorted(app.spirit_list)
+        self.spirit_values.append(self.spirit_values.pop(self.spirit_values.index('None')))
+        self.spirit_values.append(self.spirit_values.pop(self.spirit_values.index('Random')))
         app.currentPhase = 'SpiritSelect'
-        write_state()
+        write_state(self)
         self.play = int(app.players)
         self.spirit1 = app.spirits[0]
         self.spirit2 = app.spirits[1]
@@ -907,7 +1045,7 @@ class MapLayoutScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'MapLayout'
-        write_state()  
+        write_state(self)  
         maplist = []
         boards = int(app.players)
         if app.extraboard == True:
@@ -957,7 +1095,7 @@ class BoardSetupScreen(Screen):
     def on_enter(self):                 #override of on_enter, runs when screen is constructed
         app = App.get_running_app()
         app.currentPhase = 'BoardSetup'
-        write_state()
+        write_state(self)
         
         fear = ''
         #invaders = 
@@ -1154,7 +1292,7 @@ class FirstExploreScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'FirstExplore'
-        write_state()
+        write_state(self)
         description = ''
         list = []
         if app.displayopts['All']['phase']:
@@ -1197,7 +1335,7 @@ class GrowthScreen(Screen):
         if app.currentPhase != 'Energy' and app.fromLoad != True:
             app.turn = app.turn + 1
         app.currentPhase = 'Growth'
-        write_state()
+        write_state(self)
         self.text = ''
         description = ''
         badlands = ""
@@ -1239,7 +1377,10 @@ class GrowthScreen(Screen):
             if loss != '':
                 list.append({'image': app.icons[app.opponents[x]], 'text': loss})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
+        rv.data = []
         rv.data = list
+        rv.refresh_from_data()
+        
         
         
 class EnergyScreen(Screen):
@@ -1247,7 +1388,7 @@ class EnergyScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'Energy'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1266,7 +1407,7 @@ class PowerCardsScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'PowerCards'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1309,7 +1450,7 @@ class FastPowerScreen(Screen):
         app = App.get_running_app()
         
         app.currentPhase = 'FastPower'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1350,7 +1491,7 @@ class BlightedIslandScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'BlightedIsland'
-        write_state()
+        write_state(self)
         opprules = ""
         allrules = ""
         badlands = ""
@@ -1391,7 +1532,7 @@ class EventScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'Event'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1438,7 +1579,7 @@ class FearScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'Fear'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1479,7 +1620,7 @@ class HighImmigrationScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'HighImmigration'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1526,7 +1667,7 @@ class RavageScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'Ravage'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1577,7 +1718,7 @@ class BuildScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'Build'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1629,7 +1770,7 @@ class ExploreScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'Explore'
-        write_state()
+        write_state(self)
         description = ''
         opprules = ""
         allrules = ""
@@ -1689,7 +1830,7 @@ class AdvanceCardsScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'AdvanceCards'
-        write_state()
+        write_state(self)
         opprules = ""
         allrules = ""
         description = ''
@@ -1724,7 +1865,7 @@ class SlowPowerScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'SlowPower'
-        write_state()
+        write_state(self)
         opprules = ""
         allrules = ""
         badlands = ""
@@ -1765,19 +1906,27 @@ class TimePassesScreen(Screen):
     def on_enter(self):
         app = App.get_running_app()
         app.currentPhase = 'TimePasses'
-        write_state()
+        write_state(self)
         description = ''
         list = []
         if app.displayopts['All']['phase']:
             description = app.screenDescriptions[app.currentPhase]
         if description != '':
             list.append({'image': app.icons[app.currentPhase], 'text': description})
+        if 'Shroud of Silent Mist' in app.spirits:
+            list.append({'image': app.icons['Shroud of Silent Mist'], 'text': 'Invaders and Dahan in Shroud of Silent Mist lands don\'t heal damage, 1 fear per Shroud of Silent Mist land with damaged invaders (max 5)'})
         rv = App.get_running_app().root.get_screen('Phase').ids.PhaseManager.get_screen(app.currentPhase).ids.RV
         rv.data = list
         
-store = JsonStore('sipt.json')
-def write_state():
+#store = JsonStore('sipt.json')
+#def write_state(self):
+def get_data_store(self):
+    store = os.path.join(App.get_running_app().user_data_dir, 'sipt.json')
+    return JsonStore(store)
+
+def write_state(self):
     app = App.get_running_app()
+    store = get_data_store(self)
     store.put('branchandclaw', value=app.branchandclaw)
     store.put('jaggedearth', value=app.jaggedearth)
     store.put('promopack1', value=app.promopack1)
@@ -1800,6 +1949,7 @@ def write_state():
     store.put('currentPhase', value=app.currentPhase)
     store.put('spirit_list', value=app.spirit_list)
     store.put('scenarios_list', value=app.scenarios_list)
+    store.put('difficulty', value=app.difficulty)
 
 
 class RV(RecycleView):
@@ -1812,7 +1962,12 @@ class MAPRV(RecycleView):
     def __init__(self, **kwargs):
         super(MAPRV, self).__init__(**kwargs)
         self.data = []#[{'text': '2 Player Standard', 'image': 'resources/maps/2player-standard.png'}] #app.maplist
-  
+
+class HISTORYRV(RecycleView):
+    def __init__(self, **kwargs):
+        super(HISTORYRV,self).__init__(**kwargs)
+        self.data = []
+
 #Screen manager that controls which screen is which
 class MainManager(ScreenManager):
     pass
@@ -1832,6 +1987,9 @@ class MainApp(App):
     flagicon3 = BooleanProperty(False)
     stage2flag = StringProperty('')
     s2list = ListProperty([])
+    reasons = ListProperty([])
+    reason = StringProperty('None')
+    playernames = ['','','','','','']
     ## Imports from data.py
     base_opp = data.base_opp
     bc_opp = data.bc_opp
@@ -1878,6 +2036,8 @@ class MainApp(App):
     icons = data.icons
     opponent_difficulty = data.oppoenent_difficulty
     scenario_difficulty = data.scenario_difficulty
+    winreasons = data.winreasons
+    lossreasons = data.lossreasons
     ##
     #data = ListProperty([])
 
@@ -1911,10 +2071,13 @@ class MainApp(App):
     difficulty = '0'
     fontsize = NumericProperty(15)
     imagewidth = NumericProperty(0.07)
+    winloss = StringProperty('None')
     ##
     blightscreeninactive = False
     fromLoad = False
-    def build(self):
+    historykey = StringProperty('')
+    gamehistory = StringProperty('')
+    def build(self):       
         self.fdeck = [3,3,3]
         self.maplist = []
         if int(self.config.get('timeroptions', 'usetimer')) == 0:
@@ -1979,7 +2142,7 @@ class MainApp(App):
         config.setdefaults('Display', {
                                 'fontsize': 15,
                                 'imagewidth': 7.5
-                            })
+                            })              
         config.setdefaults('All', {
                                 'phase': 1,
                                 'badlands': 1
@@ -2089,8 +2252,73 @@ class MainApp(App):
             self.blightscreeninactive = True
         else:
             self.blightscreeninactive = False
-
-            
+    def winloss_clicked(self, value):
+        self.winloss = value
+        if value == 'Win':
+            self.reasons = self.winreasons
+            if self.scenario != 'None':
+                self.reasons.append(self.scenario + ' Win condition')
+        elif value == 'Loss':
+            self.reasons = self.lossreasons
+            if self.opponents[0] != 'None':
+                self.reasons.append(self.opponents[0] + ' loss condition')
+            if self.opponents[1] != 'None':
+                self.reasons.append(self.opponents[1] + ' loss condition')
+            if self.scenario != 'None':
+                self.reasons.append(self.scenario + ' loss condition')
+        if self.reason not in self.reasons:
+            self.reason = 'None'
+    def onplayertext(self, player, text):
+        self.playernames[int(player)] = str(text)
+    def setreason(self, value):
+        self.reason = value
+    def write_winloss(self):
+        record = {}
+        #playernames = [player1,player2,player3,player4,player5,player6]
+        record['winloss'] = self.winloss
+        record['reason'] = self.reason
+        record['expansion'] = self.expansion
+        record['branchandclaw'] = self.branchandclaw
+        record['jaggedearth'] = self.jaggedearth
+        record['promopack1'] = self.promopack1
+        record['promopack2'] = self.promopack2
+        record['spirits'] = self.spirits
+        record['aspects'] = self.aspects
+        record['players'] = self.players
+        record['playernames'] = self.playernames
+        record['opponents'] = self.opponents
+        record['levels'] = self.levels
+        record['scenario'] = self.scenario
+        record['thematic'] = self.thematic
+        record['notokens'] = self.notokens
+        record['turn'] = self.turn
+        record['blight'] = self.blight
+        record['extraboard'] = self.extraboard
+        record['difficulty'] = self.difficulty
+        string = str(datetime.datetime.now())
+        string = string.rsplit('.',1)[0]
+        new_rec = {}
+        new_rec[string] = record
+        try:
+            historystore = os.path.join(self.user_data_dir, 'history.json')
+            with open(historystore, 'r+') as history:
+                try:
+                    jsondata = json.load(history)
+                except:
+                    jsondata = {}
+            history.close()
+        except:
+            jsondata = {}
+        jsondata.update(new_rec)
+        historystore = os.path.join(self.user_data_dir, 'history.json')
+        with open(historystore, 'w+') as history:
+            #json.dump(jsondata, history)
+            history.write(
+                '{' + 
+                ',\n'.join("\"" + i + "\"" + ":" + json.dumps(jsondata[i]) for i in jsondata) +
+                '}\n'
+            )
+        self.stop()
 
 
         
